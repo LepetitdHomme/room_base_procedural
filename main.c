@@ -1,9 +1,7 @@
 #include "includes/common.h"
 
-int main(int argc, char *argv[]) {
-  (void)argc;
-  (void)argv; /* signature necessary for windows, but -wall raises unused variables */
-
+int main() {
+  srand(time(NULL));
   printf("Starting SDL2 application\n");
   /* Initialize SDL */
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -18,7 +16,10 @@ int main(int argc, char *argv[]) {
       return 1;
   }
 
-  SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+  state_t state;
+  state.renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+  // init_grid(&state);
+  init_level(&state, 1); 
 
   /* Event loop */
   SDL_Event event;
@@ -31,23 +32,20 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    SDL_SetRenderDrawColor(state.renderer, 0, 0, 0, 255);
+    SDL_RenderClear(state.renderer);
     /* Draw your graphics here (currently an empty black window) */
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
 
-    SDL_RenderPresent(renderer);
+    draw_grid(&state);
+    SDL_RenderPresent(state.renderer);
 
-    /* SDL_Delay(16); Uncomment to limit frame rate (approximately 60 FPS) */
+    // SDL_Delay(30);
   }
 
   /* Clean up */
+  SDL_DestroyRenderer(state.renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();
-
-  /* Marking variables as unused */
-  (void)quit;  /* Use (void) to explicitly indicate that the variable is intentionally unused */
-
-  printf("SDL2 application closed\n");
 
   return 0;
 }

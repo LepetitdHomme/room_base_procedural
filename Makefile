@@ -11,15 +11,17 @@
 #   sudo make install
 
 CC=gcc
-CFLAGS=-I/includes
+CFLAGS=-I/includes -I/opt/homebrew/Cellar/sdl2/2.30.0/include
+LDFLAGS=-L/opt/homebrew/Cellar/sdl2/2.30.0/lib
+LIBS=-lSDL2
 DEPS = common.h
-OBJ = main.o
+OBJ = main.o grid.o room.o tools.o level.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 play: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS) -lm `sdl2-config --cflags --libs`
+	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 clean:
 	rm -f *.o play

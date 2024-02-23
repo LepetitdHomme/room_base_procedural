@@ -12,7 +12,7 @@ SDL_Rect    g_rect(int grid_w, int grid_h, int w, int h) {
     height = h;
   }
 
-  printf("room: %d - %d\n", width, height);
+  // printf("room: %d - %d\n", width, height);
   rect.x = random_int(1, grid_w - 1 - width);
   rect.y = random_int(1, grid_h - 1 - height);
   rect.w = width;
@@ -29,7 +29,6 @@ int        place_new_room(state_t *state, int max_rect_side) {
   SDL_Rect rect;
 
   rect = g_rect(state->grid_w, state->grid_h, random_int(5, max_rect_side), random_int(5, max_rect_side));
-  // printf("%d - %d\n", , GRID_H);
   // printf("%d - %d - %d - %d\n", rect.x, rect.y, rect.w, rect.h);
 
   for (int i = rect.x - 1 ; i < rect.x + rect.w + 1 ; i++) {

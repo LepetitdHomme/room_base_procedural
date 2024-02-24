@@ -18,7 +18,7 @@ LDFLAGS=
 LIBS=
 
 DEPS = common.h
-OBJ = main.o grid.o room.o tools.o level.o
+OBJ = main.o grid.o room.o tools.o level.o ll_rooms.o
 
 # macOS configuration
 ifeq ($(UNAME_S),Darwin)

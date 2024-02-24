@@ -21,7 +21,7 @@ SDL_Rect    g_rect(int grid_w, int grid_h, int w, int h) {
   return rect;
 }
 
-int        place_new_room(state_t *state, int max_rect_side) {
+SDL_Rect        place_new_room(state_t *state, int max_rect_side) {
   if (max_rect_side <= 5) {
     printf("error when placing room\n");
     exit(EXIT_FAILURE);
@@ -34,7 +34,8 @@ int        place_new_room(state_t *state, int max_rect_side) {
   for (int i = rect.x - 1 ; i < rect.x + rect.w + 1 ; i++) {
     for (int j = rect.y - 1; j < rect.y + rect.h + 1 ; j++) {
       if (state->grid[i][j] != 0) {
-        return 1;
+        rect.x = -1; // custom failure
+        return rect;
       }
     }
   }
@@ -46,5 +47,5 @@ int        place_new_room(state_t *state, int max_rect_side) {
       state->grid[i][j] = color;
     }
   }
-  return 0;
+  return rect;
 }

@@ -11,15 +11,31 @@ int       max_rect_side(int x, int y, int n) {
 }
 
 void      init_level(state_t *state, int complexity) {
-  int rooms_number,tmp,max_rect;
+  int rooms_number,max_rect;
+  SDL_Rect room;
 
+  free_level(state);
   init_grid(state, complexity);
   rooms_number = BASE_ROOM_NUMBER * complexity;
   max_rect = max_rect_side(state->grid_w, state->grid_h, rooms_number);
 
   while (rooms_number > 0) {
-    tmp = place_new_room(state, max_rect);
-    if (tmp == 0)
-      rooms_number--;
+    room = place_new_room(state, max_rect);
+    if (room.x == -1) {
+      continue;
+    }
+    rooms_number--;
+
+    // add room to state level rooms
+    rooms_append(state, room);
+  }
+}
+
+void     free_level(state_t *state) {
+  if (state->grid != NULL) {
+    free_grid(state);
+  }
+  if (state->rooms != NULL) {
+    free_rooms(state);
   }
 }

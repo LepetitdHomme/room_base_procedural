@@ -18,8 +18,10 @@ int main() {
 
   state_t state;
   state.renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-  // init_grid(&state);
+  state.grid = NULL;
+  state.rooms = NULL;
   init_level(&state, 1); 
+  through_list(&state);
 
   /* Event loop */
   SDL_Event event;

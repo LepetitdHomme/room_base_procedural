@@ -49,6 +49,7 @@ SDL_Rect        place_new_room(state_t *state, int max_rect_side) {
     }
   }
 
+  // TODO: draw later on the grid ; from ll_rooms.
   int color = 127;
 
   for(int i = rect.x ; i < rect.x + rect.w ; i++) {

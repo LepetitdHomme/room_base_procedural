@@ -23,11 +23,30 @@ typedef struct {
   int     y;
 } coord_t;
 
+typedef struct {
+  int src, dest;
+  double weight; // distance
+} edge_t;
+
+typedef struct {
+  int parent;
+  int rank;
+} subset_t;
+
+struct door_node;
+
 typedef struct room_node {
-  SDL_Rect          room;
-  coord_t           center;
-  struct room_node  *next;
+  int                   id;
+  SDL_Rect              room;
+  coord_t               center;
+  struct room_node      *next;
+  struct door_node      *doors;
 } room_t;
+
+typedef struct door_node {
+  room_t            *room;
+  struct door_node  *next;
+} door_t;
 
 typedef struct {
   SDL_Renderer  *renderer;
@@ -37,14 +56,15 @@ typedef struct {
   int           num_rooms;
   int           **grid;
   room_t        *rooms;
-
 } state_t;
 
 /*          tools */
 int         random_int(int lower, int upper);
+double      distance_between_coords(coord_t center_1, coord_t center_2);
 
 /*          level */
 void        init_level(state_t *state, int complexity);
+void        draw_level(state_t *state);
 void        free_level(state_t *state);
 
 /*          room */
@@ -52,11 +72,18 @@ SDL_Rect    place_new_room(state_t *state, int max_rect_side);
 coord_t     room_center(SDL_Rect room);
 SDL_Rect    g_rect(int grid_w, int grid_h, int w, int h);
 
-
 /*          ll_rooms */
+void        free_doors(room_t *room);
 void        free_rooms(state_t *state);
-void        rooms_append(state_t *state, SDL_Rect room);
+void        rooms_append(state_t *state, SDL_Rect room, int id);
+void        doors_append(state_t *state, room_t *src, room_t *dst);
 void        through_list(state_t *state);
+
+/*          kruskal */
+void        apply_kruskal(state_t *state);
+
+/*          spanning_tree */
+void        min_spanning_tree(state_t *state);
 
 /*          grid */
 void        init_grid(state_t *state, int complexity);

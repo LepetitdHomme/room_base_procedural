@@ -1,7 +1,21 @@
 #include "includes/common.h"
 
-int main() {
-  srand(time(NULL));
+int main(int argc, char *argv[]) {
+  // Seed for the random number generator
+  unsigned int seed;
+
+  if (argc < 2) {
+    // If no seed is provided, use the current time as the seed
+    seed = (unsigned int)time(NULL);
+    printf("No seed provided. Using current time (%u) as seed.\n", seed);
+  } else {
+    // If a seed is provided, use it
+    seed = (unsigned int)atoi(argv[1]);
+    printf("Using provided seed: %u\n", seed);
+  }
+  // Seed the random number generator
+  srand(seed);
+
   printf("Starting SDL2 application\n");
   /* Initialize SDL */
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -20,7 +34,7 @@ int main() {
   state.renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
   state.grid = NULL;
   state.rooms = NULL;
-  init_level(&state, 1); 
+  init_level(&state, 3); 
   through_list(&state);
 
   /* Event loop */
@@ -38,11 +52,14 @@ int main() {
     SDL_RenderClear(state.renderer);
     /* Draw your graphics here (currently an empty black window) */
 
-    draw_grid(&state);
+    draw_level(&state);
+    // draw_grid(&state);
     SDL_RenderPresent(state.renderer);
 
     // SDL_Delay(30);
   }
+
+  free_level(&state);
 
   /* Clean up */
   SDL_DestroyRenderer(state.renderer);

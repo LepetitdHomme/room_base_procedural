@@ -21,6 +21,15 @@ SDL_Rect    g_rect(int grid_w, int grid_h, int w, int h) {
   return rect;
 }
 
+coord_t room_center(SDL_Rect room) {
+  coord_t center;
+
+  center.x = room.w / 2 + room.x;
+  center.y = room.h / 2 + room.y;
+
+  return center;
+}
+
 SDL_Rect        place_new_room(state_t *state, int max_rect_side) {
   if (max_rect_side <= 5) {
     printf("error when placing room\n");
@@ -40,7 +49,7 @@ SDL_Rect        place_new_room(state_t *state, int max_rect_side) {
     }
   }
 
-  int color = 255;
+  int color = 127;
 
   for(int i = rect.x ; i < rect.x + rect.w ; i++) {
     for (int j = rect.y ; j < rect.y + rect.h ; j++) {

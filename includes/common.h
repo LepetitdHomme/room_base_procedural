@@ -18,8 +18,14 @@
 #define MAX_ROOM_SIZE 10
 #define BASE_ROOM_NUMBER 5
 
+typedef struct {
+  int     x;
+  int     y;
+} coord_t;
+
 typedef struct room_node {
   SDL_Rect          room;
+  coord_t           center;
   struct room_node  *next;
 } room_t;
 
@@ -28,6 +34,7 @@ typedef struct {
   int           grid_w;
   int           grid_h;
   int           scale;
+  int           num_rooms;
   int           **grid;
   room_t        *rooms;
 
@@ -42,6 +49,7 @@ void        free_level(state_t *state);
 
 /*          room */
 SDL_Rect    place_new_room(state_t *state, int max_rect_side);
+coord_t     room_center(SDL_Rect room);
 SDL_Rect    g_rect(int grid_w, int grid_h, int w, int h);
 
 

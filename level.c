@@ -16,8 +16,10 @@ void      init_level(state_t *state, int complexity) {
 
   free_level(state);
   init_grid(state, complexity);
-  rooms_number = BASE_ROOM_NUMBER * complexity;
-  max_rect = max_rect_side(state->grid_w, state->grid_h, rooms_number);
+  state->num_rooms = BASE_ROOM_NUMBER * complexity;
+  max_rect = max_rect_side(state->grid_w, state->grid_h, state->num_rooms);
+
+  rooms_number = state->num_rooms;
 
   while (rooms_number > 0) {
     room = place_new_room(state, max_rect);

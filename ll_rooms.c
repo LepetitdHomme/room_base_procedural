@@ -29,6 +29,8 @@ void 		rooms_append(state_t *state, SDL_Rect room) {
 			exit(EXIT_FAILURE);
 		}
 		state->rooms->room = room;
+		state->rooms->center = room_center(room);
+		// state->grid[state->rooms->center.x][state->rooms->center.y] = 255;
 		state->rooms->next = NULL;
 		return;
 	}
@@ -39,6 +41,8 @@ void 		rooms_append(state_t *state, SDL_Rect room) {
 		exit(EXIT_FAILURE);
 	}
 	last_room->next->room = room;
+	last_room->center = room_center(room);
+	// state->grid[last_room->center.x][last_room->center.y] = 255;
 	last_room->next->next = NULL;
 }
 
@@ -46,7 +50,7 @@ void 		through_list(state_t *state) {
 	room_t *tmp = state->rooms;
 
 	while (tmp) {
-		printf("%d - %d - %d - %d\n", tmp->room.x, tmp->room.y, tmp->room.w, tmp->room.h);
+		printf("%d - %d - %d - %d => center: %d - %d\n", tmp->room.x, tmp->room.y, tmp->room.w, tmp->room.h, tmp->center.x, tmp->center.y);
 		tmp = tmp->next;
 	}
 }

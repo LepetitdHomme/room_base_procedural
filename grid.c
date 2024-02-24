@@ -40,6 +40,7 @@ void draw_grid(state_t *state) {
       rect.y = j * state->scale;
       rect.w = state->scale;
       rect.h = state->scale;
+
       SDL_SetRenderDrawColor(state->renderer, state->grid[i][j], state->grid[i][j], state->grid[i][j], 255);
       SDL_RenderDrawRect(state->renderer, &rect);
     }

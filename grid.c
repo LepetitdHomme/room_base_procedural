@@ -34,34 +34,40 @@ SDL_Color pick_color(state_t *state, int i, int j) {
   SDL_Color color;
 
   switch (state->grid[i][j]) {
-    case 0://empty
+    case EMPTY://empty
       color.r = 0;
       color.g = 0;
       color.b = 0;
       color.a = 255;
       break;
-    case 1://wall
+    case WALL://wall
       color.r = 127;
       color.g = 127;
       color.b = 127;
       color.a = 127;
       break;
-    case 2://floor
+    case FLOOR://floor
       color.r = 255;
       color.g = 255;
       color.b = 255;
       color.a = 255;
       break;
-    case 3://door
+    case DOOR_SRC://door
+      color.r = 0;
+      color.g = 255;
+      color.b = 0;
+      color.a = 255;
+      break;
+    case DOOR_DST:
       color.r = 255;
       color.g = 0;
       color.b = 0;
       color.a = 255;
       break;
     default:
-      color.r = 0;
+      color.r = 255;
       color.g = 255;
-      color.b = 0;
+      color.b = 255;
       color.a = 255;
   }
 
@@ -83,7 +89,7 @@ void      draw_grid(state_t *state) {
 
       color = pick_color(state, i, j);
       SDL_SetRenderDrawColor(state->renderer, color.r, color.g, color.b, color.a);
-      SDL_RenderDrawRect(state->renderer, &rect);
+      SDL_RenderFillRect(state->renderer, &rect);
     }
   }
 }

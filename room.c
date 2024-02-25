@@ -21,15 +21,23 @@ SDL_Rect      g_rect(int grid_w, int grid_h, int w, int h) {
   return rect;
 }
 
-int           is_room_wall(SDL_Rect room, int i, int j) {
-  // Check if (i, j) lies on the perimeter of the rectangle
-  if (i == room.x || i == room.x + room.w - 1 || 
-    j == room.y || j == room.y + room.h - 1) {
-    return 0; // Coordinate is on the side of the room rectangle
+int           is_corner_wall(SDL_Rect room, int i, int j) {
+  if (i == room.x && j == room.y || i == room.x + room.w && j == room.y || i == room.x && j == room.y + room.h || i == room.x + room.w && j == room.y + room.h) {
+    return 0;
+  }
+  return 1;
+}
+
+int is_room_wall(SDL_Rect room, int x, int y) {
+  // Check if (x, y) lies on any of the four edges of the rectangle
+  if ((x == room.x || x == room.x + room.w - 1) && (y >= room.y && y < room.y + room.h) ||
+    (y == room.y || y == room.y + room.h - 1) && (x >= room.x && x < room.x + room.w)) {
+    return 0; // Coordinate is on the wall of the room rectangle
   } else {
-    return 1; // Coordinate is not on the side of the room rectangle
+    return 1; // Coordinate is not on the wall of the room rectangle
   }
 }
+
 
 coord_t       room_center(SDL_Rect room) {
   coord_t center;

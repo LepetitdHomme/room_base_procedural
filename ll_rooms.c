@@ -28,97 +28,101 @@ void 		free_rooms(state_t *state) {
 	state->rooms = NULL;
 }
 
-// Function to calculate the equation of a line given two points
-// void calculate_line_equation(coord_t p1, coord_t p2, double *m, double *c) {
-//   // Calculate slope
-//   *m = (double)(p2.y - p1.y) / (double)(p2.x - p1.x);
+void      from_src_room_to_door(door_t *door, room_t *room1, room_t *room2) {
+  int current_x = room1->center.x;
+  int current_y = room1->center.y;
 
-//   // Calculate y-intercept
-//   *c = p1.y - (*m) * p1.x;
-// }
+  int debug = (room1->center.x == 37) ? 1 : 0;
+  if (debug == 1) {
+    printf("centers: %d - %d | %d - %d\n", room1->center.x, room1->center.y, room2->center.x, room2->center.y);
+  }
 
-#include <stdlib.h>
+  int dist_x, dist_y;
 
-void determine_door_coordinates(door_t *door, room_t *room1, room_t *room2) {
-  int x1 = room1->center.x;
-  int y1 = room1->center.y;
-  int x2 = room2->center.x;
-  int y2 = room2->center.y;
+  while (current_x != room2->center.x || current_y != room2->center.y) {
+    dist_x = abs(room2->center.x - current_x);
+    dist_y = abs(room2->center.y - current_y);
 
-  const int dx = abs(x2 - x1);
-  const int dy = abs(y2 - y1);
-  const int sx = x1 < x2 ? 1 : -1;
-  const int sy = y1 < y2 ? 1 : -1;
+    if (dist_x > dist_y) {
+      if (current_x < room2->center.x) {
+        if (debug == 1)
+          DEBUG_MSG("X+1");
+        current_x += 1;
+      } else if (current_x > room2->center.x) {
+        if  (debug == 1) {
+          DEBUG_MSG("X-1");
+        }
+        current_x -= 1;
+      }
+    } else {
+      if (current_y < room2->center.y) {
+        if (debug == 1)
+          DEBUG_MSG("Y+1");
+        current_y += 1;
+      } else if (current_y > room2->center.y) {
+        if (debug == 1) {
+          DEBUG_MSG("Y-1");
+        }
+        current_y -= 1;
+      }
+    }
 
-  int err = (dx > dy ? dx : -dy) / 2;
-  int e2;
-
-  int current_x = x1;
-  int current_y = y1;
-
-  while (1) {
-    // Check if the current position is within the boundaries of room1
     if (is_room_wall(room1->room, current_x, current_y) == 0) {
       door->coord_src.x = current_x;
       door->coord_src.y = current_y;
       break;
     }
-
-    if (current_x == x2 && current_y == y2) {
-      printf("not intersect found\n");
-      // We've reached the end point, but no valid intersection found
-      // You may want to handle this case based on your requirements
+    if (is_room_wall(room2->room, current_x, current_y) == 0) {
       break;
     }
-
-    e2 = err;
-    if (e2 > -dx) {
-      err -= dy;
-      current_x += sx;
-    }
-    if (e2 < dy) {
-      err += dx;
-      current_y += sy;
-    }
   }
+}
 
-  // Reset variables for the next line
-  current_x = x2;
-  current_y = y2;
-  err = (dx > dy ? dx : -dy) / 2;
+void       from_dst_room_to_door(door_t *door, room_t *room1, room_t *room2) {
+  int current_x = room2->center.x;
+  int current_y = room2->center.y;
 
-  while (1) {
-    // Check if the current position is within the boundaries of room2
+  int dist_x, dist_y;
+
+  while (current_x != room1->center.x || current_y != room1->center.y) {
+    dist_x = abs(room1->center.x - current_x);
+    dist_y = abs(room1->center.y - current_y);
+
+    if (dist_x > dist_y) {
+      if (current_x < room1->center.x) {
+        current_x += 1;
+      } else if (current_x > room1->center.x) {
+        current_x -= 1;
+      }
+    } else {
+      if (current_y < room1->center.y) {
+        current_y += 1;
+      } else if (current_y > room1->center.y) {
+        current_y -= 1;
+      }
+    }
+
     if (is_room_wall(room2->room, current_x, current_y) == 0) {
       door->coord_dst.x = current_x;
       door->coord_dst.y = current_y;
       break;
     }
-
-    if (current_x == x1 && current_y == y1) {
-      printf("not intersect found\n");
-      // We've reached the end point, but no valid intersection found
-      // You may want to handle this case based on your requirements
+    if (is_room_wall(room1->room, current_x, current_y) == 0) {
       break;
     }
+  }   
+}
 
-    e2 = err;
-    if (e2 > -dx) {
-      err -= dy;
-      current_x -= sx;
-    }
-    if (e2 < dy) {
-      err += dx;
-      current_y -= sy;
-    }
-  }
+void      determine_door_coordinates(door_t *door, room_t *room1, room_t *room2) {
+  printf("doors for room: %d - %d\n", room1->center.x, room1->center.y);
+  from_src_room_to_door(door, room1, room2);
+  from_dst_room_to_door(door, room1, room2);
 }
 
 void    doors_append(state_t *state, room_t *src, room_t *dst) {
   if (src == NULL || dst == NULL) {
     return;
   }
-  DEBUG_MSG("");
   door_t *tmp = src->doors;
 
   if (tmp == NULL) {

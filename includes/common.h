@@ -19,6 +19,14 @@
 #define MAX_ROOM_SIZE 10
 #define BASE_ROOM_NUMBER 5
 
+enum Type {
+  EMPTY,
+  WALL,
+  FLOOR,
+  DOOR_SRC,
+  DOOR_DST
+};
+
 typedef struct {
   int     x;
   int     y;

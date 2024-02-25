@@ -4,7 +4,6 @@ void    free_doors(room_t *room) {
   door_t *current = room->doors;
   door_t *next = NULL;
 
-  DEBUG_MSG("");
   while (current) {
     next = current->next;
     free(current);
@@ -32,11 +31,6 @@ void      from_src_room_to_door(door_t *door, room_t *room1, room_t *room2) {
   int current_x = room1->center.x;
   int current_y = room1->center.y;
 
-  int debug = (room1->center.x == 37) ? 1 : 0;
-  if (debug == 1) {
-    printf("centers: %d - %d | %d - %d\n", room1->center.x, room1->center.y, room2->center.x, room2->center.y);
-  }
-
   int dist_x, dist_y;
 
   while (current_x != room2->center.x || current_y != room2->center.y) {
@@ -45,24 +39,14 @@ void      from_src_room_to_door(door_t *door, room_t *room1, room_t *room2) {
 
     if (dist_x > dist_y) {
       if (current_x < room2->center.x) {
-        if (debug == 1)
-          DEBUG_MSG("X+1");
         current_x += 1;
       } else if (current_x > room2->center.x) {
-        if  (debug == 1) {
-          DEBUG_MSG("X-1");
-        }
         current_x -= 1;
       }
     } else {
       if (current_y < room2->center.y) {
-        if (debug == 1)
-          DEBUG_MSG("Y+1");
         current_y += 1;
       } else if (current_y > room2->center.y) {
-        if (debug == 1) {
-          DEBUG_MSG("Y-1");
-        }
         current_y -= 1;
       }
     }
@@ -114,7 +98,7 @@ void       from_dst_room_to_door(door_t *door, room_t *room1, room_t *room2) {
 }
 
 void      determine_door_coordinates(door_t *door, room_t *room1, room_t *room2) {
-  printf("doors for room: %d - %d\n", room1->center.x, room1->center.y);
+  // printf("doors for room: %d - %d\n", room1->center.x, room1->center.y);
   from_src_room_to_door(door, room1, room2);
   from_dst_room_to_door(door, room1, room2);
 }

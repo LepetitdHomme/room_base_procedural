@@ -35,7 +35,8 @@ int main(int argc, char *argv[]) {
   state.grid = NULL;
   state.rooms = NULL;
   init_level(&state, 3); 
-  through_list(&state);
+  level_into_grid(&state);
+  // through_list(&state);
 
   /* Event loop */
   SDL_Event event;
@@ -52,11 +53,11 @@ int main(int argc, char *argv[]) {
     SDL_RenderClear(state.renderer);
     /* Draw your graphics here (currently an empty black window) */
 
-    draw_level(&state);
-    // draw_grid(&state);
+    draw_grid(&state);
+    draw_connections(&state);
     SDL_RenderPresent(state.renderer);
 
-    // SDL_Delay(30);
+    SDL_Delay(60);
   }
 
   free_level(&state);

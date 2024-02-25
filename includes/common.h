@@ -9,6 +9,7 @@
 #include <SDL2/SDL.h>
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define SIGN(x) ((x > 0) - (x < 0))
 #define DEBUG_MSG(message) printf("Debug: %s, File %s, Line %d\n", message, __FILE__, __LINE__)
 
 #define WINDOW_WIDTH 800
@@ -45,6 +46,8 @@ typedef struct room_node {
 
 typedef struct door_node {
   room_t            *room;
+  coord_t           coord_src;
+  coord_t           coord_dst;
   struct door_node  *next;
 } door_t;
 
@@ -63,11 +66,13 @@ int         random_int(int lower, int upper);
 double      distance_between_coords(coord_t center_1, coord_t center_2);
 
 /*          level */
+void        draw_connections(state_t *state);
 void        init_level(state_t *state, int complexity);
-void        draw_level(state_t *state);
+void        level_into_grid(state_t *state);
 void        free_level(state_t *state);
 
 /*          room */
+int         is_room_wall(SDL_Rect room, int i, int j);
 SDL_Rect    place_new_room(state_t *state, int max_rect_side);
 coord_t     room_center(SDL_Rect room);
 SDL_Rect    g_rect(int grid_w, int grid_h, int w, int h);

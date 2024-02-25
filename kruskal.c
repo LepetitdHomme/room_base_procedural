@@ -72,8 +72,6 @@ void apply_kruskal(state_t *state) {
   edge_t *edges = (edge_t*)malloc(num_rooms * (num_rooms - 1) / 2 * sizeof(edge_t));
   int edge_count = 0;
 
-  current_room = state->rooms;
-
   /** construct and sort edges of graph **/
   while (current_room != NULL) {
     other_room = current_room->next;

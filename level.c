@@ -31,76 +31,85 @@ void      init_level(state_t *state, int complexity) {
     rooms_number++;
 
   }
-  // Kruskal !
   apply_kruskal(state);
-  // Minimum Spanning Tree
-  // min_spanning_tree(state);
 }
 
 void     free_level(state_t *state) {
   if (state->grid != NULL) {
+    DEBUG_MSG("");
     free_grid(state);
   }
+  DEBUG_MSG("");
   if (state->rooms != NULL) {
     free_rooms(state);
   }
 }
 
-void    draw_level(state_t *state) {
-  room_t *current = state->rooms;
-  door_t *tmp_door = NULL;
-  SDL_Rect rect;
+void    draw_connections(state_t *state) {
+  room_t *tmp = state->rooms;
+  door_t *tmp_d = NULL;
+
+  while (tmp) {
+    tmp_d = tmp->doors;
+    while (tmp_d) {
+      coord_t a,b;
+      a.x = tmp->center.x * state->scale;
+      a.y = tmp->center.y * state->scale;
+      b.x = tmp_d->room->center.x * state->scale;
+      b.y = tmp_d->room->center.y * state->scale;
+      SDL_SetRenderDrawColor(state->renderer, 255, 0, 0, 255);
+      SDL_RenderDrawLine(state->renderer, a.x, a.y, b.x, b.y);
+      tmp_d = tmp_d->next;
+    }
+    tmp = tmp->next;
+  }
+}
+
+void    level_into_grid(state_t *state) {
+  room_t *current = NULL;
+  door_t *door = NULL;
+  
+  // printf("grid: %d - %d\n", state->grid_w, state->grid_h);
+  // reset grid
+  for (int i = 0; i < state->grid_w ; i++) {
+    for (int j = 0 ; j < state->grid_h ; j++) {
+      state->grid[i][j] = 0;
+    }
+  }
+
+  current = state->rooms;
+  while (current != NULL) {
+    // place rooms on grid
+    printf("room: %d - %d - %d - %d\n", current->room.x, current->room.y, current->room.w, current->room.h);
+    for (int i = current->room.x ; i < current->room.x + current->room.w ; i++) {
+      for (int j = current->room.y ; j < current->room.y + current->room.h ; j++) {
+        if (state->grid[i][j] != 0)
+          continue;
+        if (is_room_wall(current->room, i, j) == 0) {
+          state->grid[i][j] = 1; // wall
+        } else {
+          state->grid[i][j] = 2; // floor
+        }
+      }
+    }
+
+    // place doors on grid
+    door = current->doors;
+    while (door != NULL) {
+      printf("door src: %d - %d | door dst: %d - %d\n", door->coord_src.x, door->coord_src.y, door->coord_dst.x, door->coord_dst.y);
+      state->grid[door->coord_src.x][door->coord_src.y] = 3;
+      state->grid[door->coord_dst.x][door->coord_dst.y] = 3;
+      door = door->next;
+    }
+
+    // place corridors on grid
+    current = current->next;
+  }
 
   // for (int i = 0; i < state->grid_w ; i++) {
   //   for (int j = 0 ; j < state->grid_h ; j++) {
-  //     rect.x = i * state->scale;
-  //     rect.y = j * state->scale;
-  //     rect.w = state->scale;
-  //     rect.h = state->scale;
-
-  //     SDL_SetRenderDrawColor(state->renderer, state->grid[i][j], state->grid[i][j], state->grid[i][j], 255);
-  //     SDL_RenderFillRect(state->renderer, &rect);
+  //     printf("%d", state->grid[i][j]);
   //   }
+  //   printf("\n");
   // }
-
-  coord_t center1,center2;
-  SDL_Rect room;
-  
-  while (current != NULL) {
-    // draw room
-    room.x = current->room.x * state->scale;
-    room.y = current->room.y * state->scale;
-    room.w = current->room.w * state->scale;
-    room.h = current->room.h * state->scale;
-    if (current->id == 0) {
-      SDL_SetRenderDrawColor(state->renderer, 0, 255, 0, 255);
-    } else if (current->id == state->num_rooms - 1) {
-      SDL_SetRenderDrawColor(state->renderer, 255, 0, 0, 255);
-    } else {
-      SDL_SetRenderDrawColor(state->renderer, 255, 255, 0, 255);
-    }
-    SDL_RenderDrawRect(state->renderer, &room);
-
-    // draw centers and closests
-    center1.x = current->center.x * state->scale;
-    center1.y = current->center.y * state->scale;
-    SDL_SetRenderDrawColor(state->renderer, 255, 255, 255, 255);
-    rect.x = center1.x;
-    rect.y = center1.y;
-    rect.w = state->scale;
-    rect.h = state->scale;
-    SDL_RenderDrawRect(state->renderer, &rect);
-
-    if (current->doors != NULL) {
-      tmp_door = current->doors;
-      while (tmp_door != NULL) {
-        center2.x = tmp_door->room->center.x * state->scale;
-        center2.y = tmp_door->room->center.y * state->scale;
-        SDL_SetRenderDrawColor(state->renderer, 0, 0, 255, 255);
-        SDL_RenderDrawLine(state->renderer, center1.x, center1.y, center2.x, center2.y);
-        tmp_door = tmp_door->next;
-      }
-    }
-    current = current->next;
-  }
 }

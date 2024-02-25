@@ -1,6 +1,6 @@
 #include "includes/common.h"
 
-SDL_Rect    g_rect(int grid_w, int grid_h, int w, int h) {
+SDL_Rect      g_rect(int grid_w, int grid_h, int w, int h) {
   SDL_Rect rect;
 
   int width, height;
@@ -21,7 +21,17 @@ SDL_Rect    g_rect(int grid_w, int grid_h, int w, int h) {
   return rect;
 }
 
-coord_t room_center(SDL_Rect room) {
+int           is_room_wall(SDL_Rect room, int i, int j) {
+  // Check if (i, j) lies on the perimeter of the rectangle
+  if (i == room.x || i == room.x + room.w - 1 || 
+    j == room.y || j == room.y + room.h - 1) {
+    return 0; // Coordinate is on the side of the room rectangle
+  } else {
+    return 1; // Coordinate is not on the side of the room rectangle
+  }
+}
+
+coord_t       room_center(SDL_Rect room) {
   coord_t center;
 
   center.x = room.w / 2 + room.x;
@@ -49,12 +59,15 @@ SDL_Rect        place_new_room(state_t *state, int max_rect_side) {
     }
   }
 
-  // TODO: draw later on the grid ; from ll_rooms.
-  int color = 127;
 
+
+  // TODO: draw later on the grid ; from ll_rooms.
+  // int color = 127;
+
+  // place random int != 0 in grid during rectangle/rooms generation
   for(int i = rect.x ; i < rect.x + rect.w ; i++) {
     for (int j = rect.y ; j < rect.y + rect.h ; j++) {
-      state->grid[i][j] = color;
+      state->grid[i][j] = 1;
     }
   }
   return rect;

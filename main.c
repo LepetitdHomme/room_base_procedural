@@ -34,8 +34,8 @@ int main(int argc, char *argv[]) {
   state.renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
   state.grid = NULL;
   state.rooms = NULL;
-  init_texture(&state, "assets/tileset.bmp", 32, 71);
-  init_level(&state, 3); 
+  init_texture(&state, "assets/dungeon_tileset.bmp", 6, 17);
+  init_level(&state, 5); 
   level_into_grid(&state);
   // through_list(&state);
 

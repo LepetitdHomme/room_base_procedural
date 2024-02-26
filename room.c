@@ -38,6 +38,30 @@ int is_room_wall(SDL_Rect room, int x, int y) {
   }
 }
 
+enum Type wall_type(SDL_Rect room, int x, int y) {
+  enum Type type;
+
+  if (y == room.y) {
+    if (x == room.x)
+      return CORNER_TOP_LEFT;
+    if (x == room.x + room.w - 1)
+      return CORNER_TOP_RIGHT;
+    return WALL_UP;
+  }
+  if (y == room.y + room.h - 1) {
+    if (x == room.x)
+      return CORNER_BOT_LEFT;
+    if (x == room.x + room.w - 1)
+      return CORNER_BOT_RIGHT;
+    return WALL_DOWN;
+  }
+  if (x == room.x)
+    return WALL_LEFT;
+  if (x == room.x + room.w - 1)
+    return WALL_RIGHT;
+  return EMPTY;
+}
+
 
 coord_t       room_center(SDL_Rect room) {
   coord_t center;

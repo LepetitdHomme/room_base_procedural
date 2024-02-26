@@ -12,18 +12,29 @@
 #define SIGN(x) ((x > 0) - (x < 0))
 #define DEBUG_MSG(message) printf("Debug: %s, File %s, Line %d\n", message, __FILE__, __LINE__)
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
+#define WINDOW_WIDTH 1200
+#define WINDOW_HEIGHT 800
 
 #define MIN_ROOM_SIZE 5
 #define MAX_ROOM_SIZE 10
-#define BASE_ROOM_NUMBER 5
+#define BASE_ROOM_NUMBER 10
 #define SCREEN_TILE BASE_ROOM_NUMBER * 2
 
 enum Type {
   EMPTY,
-  WALL,
+  WALL_UP,
+  WALL_DOWN,
+  WALL_LEFT,
+  WALL_RIGHT,
+  CORNER_TOP_LEFT,
+  CORNER_TOP_RIGHT,
+  CORNER_BOT_LEFT,
+  CORNER_BOT_RIGHT,
   FLOOR,
+  DOOR_UP,
+  DOOR_DOWN,
+  DOOR_LEFT,
+  DOOR_RIGHT,
   DOOR_SRC,
   DOOR_DST
 };
@@ -110,6 +121,7 @@ void                    free_level(state_t *state);
 
 /*                      room */
 int                     is_room_wall(SDL_Rect room, int i, int j);
+enum Type               wall_type(SDL_Rect room, int x, int y);
 SDL_Rect                place_new_room(state_t *state, int max_rect_side);
 coord_t                 room_center(SDL_Rect room);
 SDL_Rect                g_rect(int grid_w, int grid_h, int w, int h);

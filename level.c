@@ -85,7 +85,7 @@ void    level_into_grid(state_t *state) {
         if (state->grid[i][j] != 0)
           continue;
         if (is_room_wall(current->room, i, j) == 0) {
-          state->grid[i][j] = WALL; // wall
+          state->grid[i][j] = wall_type(current->room, i, j);
         } else {
           state->grid[i][j] = FLOOR; // floor
         }

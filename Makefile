@@ -18,7 +18,7 @@ LDFLAGS=
 LIBS=
 
 DEPS = common.h
-OBJ = main.o grid.o room.o tools.o level.o ll_rooms.o kruskal.o
+OBJ = main.o grid.o room.o tools.o level.o ll_rooms.o kruskal.o player.o textures.o
 
 # macOS configuration
 ifeq ($(UNAME_S),Darwin)

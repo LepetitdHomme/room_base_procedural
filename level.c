@@ -32,6 +32,7 @@ void      init_level(state_t *state, int complexity) {
 
   }
   apply_kruskal(state);
+  init_player(state);
 }
 
 void     free_level(state_t *state) {

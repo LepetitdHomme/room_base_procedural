@@ -14,6 +14,7 @@
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+#define CELL 16
 
 #define MIN_ROOM_SIZE 5
 #define MAX_ROOM_SIZE 10
@@ -27,9 +28,15 @@ enum Type {
   DOOR_DST
 };
 
+enum Dir {
+  UP,
+  DOWN,
+  LEFT,
+  RIGHT
+};
+
 typedef struct {
-  int     x;
-  int     y;
+  int     x,y;
 } coord_t;
 
 typedef struct {
@@ -38,11 +45,11 @@ typedef struct {
 } edge_t;
 
 typedef struct {
-  int parent;
-  int rank;
+  int parent,rank;
 } subset_t;
 
 struct door_node;
+struct player_struct;
 
 typedef struct room_node {
   int                   id;
@@ -54,20 +61,41 @@ typedef struct room_node {
 
 typedef struct door_node {
   room_t            *room;
-  coord_t           coord_src;
-  coord_t           coord_dst;
+  coord_t           coord_src,coord_dst;
   struct door_node  *next;
 } door_t;
 
 typedef struct {
-  SDL_Renderer  *renderer;
-  int           grid_w;
-  int           grid_h;
-  int           scale;
-  int           num_rooms;
-  int           **grid;
-  room_t        *rooms;
+  SDL_Texture       *texture;
+  int               tile_w,tile_h;
+  int               num_tiles_x,num_tiles_y;
+} texture_t;
+
+typedef struct {
+  SDL_Renderer          *renderer;
+  texture_t             *level_texture;
+  int                   grid_w,grid_h;
+  int                   scale;
+  coord_t               scroll;
+  // int                   scroll_w, scroll_h;
+  SDL_Rect              limit_scroll;
+  int                   num_rooms;
+  int                   **grid;
+  room_t                *rooms;
+  struct player_struct  *player;
 } state_t;
+
+typedef struct player_struct {
+  coord_t       pos;
+  room_t        *room;
+  enum Dir      direction;
+} player_t;
+
+/*          textures */
+void        init_texture(state_t *state, const char *path, int num_x, int num_y);
+
+/*          player */
+void        init_player(state_t *state);
 
 /*          tools */
 int         random_int(int lower, int upper);
@@ -102,5 +130,6 @@ void        min_spanning_tree(state_t *state);
 void        init_grid(state_t *state, int complexity);
 void        free_grid(state_t *state);
 void        draw_grid(state_t *state);
+void        new_draw_grid(state_t *state);
 
 #endif

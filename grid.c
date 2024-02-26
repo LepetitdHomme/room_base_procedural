@@ -169,29 +169,38 @@ void      new_draw_grid(state_t *state) {
   SDL_SetRenderDrawColor(state->renderer, 255, 255, 255, 255);
 
   int minx, maxx, miny, maxy;
+
   // update_scroll(state);
 
-  minx = state->player->pos.x->room.x;
-  maxx = state->player->room->room.x + state->player->room->room.w;
-  miny = state->player->room->room.y;
-  maxy = state->player->room->room.y + state->player->room->room.h;
+  minx = state->player->pos.x - SCREEN_TILE;
+  maxx = state->player->pos.x + SCREEN_TILE;
+  miny = state->player->pos.y - SCREEN_TILE;
+  maxy = state->player->pos.y + SCREEN_TILE;
+
+  room_t *room = state->player->room;
+  int x,y = 0;
+  int grid_cell_to_screen_w = WINDOW_WIDTH / (2 * SCREEN_TILE);
+  int grid_cell_to_screen_h = WINDOW_HEIGHT / (2 * SCREEN_TILE);
 
   printf("trucs: %d - %d - %d - %d\n", minx, miny, maxx, maxy);
 
   for (int i = minx; i < maxx ; i++) {
     for (int j = miny ; j < maxy ; j++) {
-      if (i < 0 || i >= state->grid_w || j < 0 || j >= state->grid_h) {
-        src = grid_value_to_tileset_rect(state, 0);
+      // if (i < 0 || i >= state->grid_w || j < 0 || j >= state->grid_h) {
+      if (i < room->room.x || i >= room->room.x + room->room.w || j < room->room.y || j >= room->room.y + room->room.h) {
+        src = grid_value_to_tileset_rect(state, EMPTY);
       } else {
         src = grid_value_to_tileset_rect(state, state->grid[i][j]);
       }
 
-      dst.x = i * state->level_texture->tile_w;
-      dst.y = j * state->level_texture->tile_h;
-      dst.w = state->level_texture->tile_w;
-      dst.h = state->level_texture->tile_h;
+      dst.x = (i - minx) * grid_cell_to_screen_w;
+      dst.y = (j - miny) * grid_cell_to_screen_h;
+      dst.w = grid_cell_to_screen_w;
+      dst.h = grid_cell_to_screen_h;
       SDL_RenderCopy(state->renderer, state->level_texture->texture, &src, &dst);
+      y++;
     }
+    x++;
   }
 }
 

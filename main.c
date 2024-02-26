@@ -56,21 +56,7 @@ int main(int argc, char *argv[]) {
 
     // draw_grid(&state);
     new_draw_grid(&state);
-
-    SDL_Rect p;
-    p.x = state.player->pos.x * state.level_texture->tile_w;
-    p.y = state.player->pos.y * state.level_texture->tile_h;
-    p.w = state.level_texture->tile_w;
-    p.h = state.level_texture->tile_h;
-    printf("scroll: %d - %d\n", state.scroll.x, state.scroll.y);
-    printf("%d - %d\n", state.player->pos.x, state.player->pos.y);
-    printf("%d - %d\n", p.x, p.y);
-    // SDL_SetRenderDrawColor(state.renderer, 255, 0, 0, 255);
-    // SDL_RenderFillRect(state.renderer, &p);
-    // SDL_RenderDrawLine(state.renderer, state.player->pos.x, state.player->pos.y, state.scale, state.scale);
-    
     // draw_connections(&state);
-
 
     SDL_RenderPresent(state.renderer);
 

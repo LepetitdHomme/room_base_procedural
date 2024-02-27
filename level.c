@@ -49,7 +49,6 @@ void          level_into_grid(state_t *state) {
   room_t *current = NULL;
   door_t *door = NULL;
   
-  // printf("grid: %d - %d\n", state->grid_w, state->grid_h);
   // reset grid
   for (int i = 0; i < state->grid_w ; i++) {
     for (int j = 0 ; j < state->grid_h ; j++) {
@@ -60,7 +59,6 @@ void          level_into_grid(state_t *state) {
   current = state->rooms;
   while (current != NULL) {
     // place rooms on grid
-    // printf("room center: %d - %d\n", current->center.x, current->center.y);
     for (int i = current->room.x ; i < current->room.x + current->room.w ; i++) {
       for (int j = current->room.y ; j < current->room.y + current->room.h ; j++) {
         if (state->grid[i][j] != 0)
@@ -76,7 +74,6 @@ void          level_into_grid(state_t *state) {
     // place doors on grid
     door = current->doors;
     while (door != NULL) {
-      // printf("door src: %d - %d | door dst: %d - %d\n", door->coord_src.x, door->coord_src.y, door->coord_dst.x, door->coord_dst.y);
       state->grid[door->coord_src.x][door->coord_src.y] = DOOR_SRC;
       state->grid[door->coord_dst.x][door->coord_dst.y] = DOOR_DST;
       door = door->next;
@@ -85,11 +82,4 @@ void          level_into_grid(state_t *state) {
     // place corridors on grid
     current = current->next;
   }
-
-  // for (int i = 0; i < state->grid_w ; i++) {
-  //   for (int j = 0 ; j < state->grid_h ; j++) {
-  //     printf("%d", state->grid[i][j]);
-  //   }
-  //   printf("\n");
-  // }
 }

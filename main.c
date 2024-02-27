@@ -62,7 +62,6 @@ int main(int argc, char *argv[]) {
     }
 
     SDL_RenderPresent(state.renderer);
-
     SDL_Delay(60);
   }
 

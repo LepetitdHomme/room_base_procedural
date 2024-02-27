@@ -1,13 +1,10 @@
 #include "includes/common.h"
 
-/* 1 <= complexity <= 7 */
-void  init_grid(state_t *state, int complexity) {
-  state->scale = 13 - complexity;
-  if (state->scale <= 4) {
-    state->scale = 4;
-  }
-  state->grid_w = WINDOW_WIDTH / state->scale;
-  state->grid_h = WINDOW_HEIGHT / state->scale;
+void          init_grid(state_t *state, int complexity) {
+  state->scale = SCALE;
+
+  state->grid_w = state->scale * complexity;
+  state->grid_h = state->scale * complexity;
   state->grid = (int **)malloc(sizeof(int *) * state->grid_w);
 
   for (int i = 0 ; i < state->grid_w ; i++) {
@@ -21,7 +18,7 @@ void  init_grid(state_t *state, int complexity) {
   }
 }
 
-void free_grid(state_t *state) {
+void          free_grid(state_t *state) {
   for(int i = 0; i < state->grid_w ; i++) {
     free(state->grid[i]);
     state->grid[i] = NULL;
@@ -30,7 +27,7 @@ void free_grid(state_t *state) {
   state->grid = NULL;
 }
 
-SDL_Color pick_color(state_t *state, int i, int j) {
+SDL_Color     pick_color(state_t *state, int i, int j) {
   SDL_Color color;
 
   switch (state->grid[i][j]) {
@@ -77,18 +74,46 @@ SDL_Color pick_color(state_t *state, int i, int j) {
   return color;
 }  
 
-void      draw_grid(state_t *state) {
+void          draw_connections(state_t *state) {
+  room_t *tmp = state->rooms;
+  door_t *tmp_d = NULL;
+
+  int scale_x,scale_y;
+  scale_x = WINDOW_WIDTH / state->grid_w;
+  scale_y = WINDOW_HEIGHT / state->grid_h;
+
+  while (tmp) {
+    tmp_d = tmp->doors;
+    while (tmp_d) {
+      coord_t a,b;
+      a.x = tmp->center.x * scale_x;
+      a.y = tmp->center.y * scale_y;
+      b.x = tmp_d->room->center.x * scale_x;
+      b.y = tmp_d->room->center.y * scale_y;
+      SDL_SetRenderDrawColor(state->renderer, 255, 0, 0, 255);
+      SDL_RenderDrawLine(state->renderer, a.x, a.y, b.x, b.y);
+      tmp_d = tmp_d->next;
+    }
+    tmp = tmp->next;
+  }
+}
+
+void          draw_level(state_t *state) {
   SDL_Rect rect;
   SDL_Color color;
 
   SDL_SetRenderDrawColor(state->renderer, 255, 255, 255, 255);
 
+  int scale_x,scale_y;
+  scale_x = WINDOW_WIDTH / state->grid_w;
+  scale_y = WINDOW_HEIGHT / state->grid_h;
+
   for (int i = 0; i < state->grid_w ; i++) {
     for (int j = 0 ; j < state->grid_h ; j++) {
-      rect.x = i * state->scale;
-      rect.y = j * state->scale;
-      rect.w = state->scale;
-      rect.h = state->scale;
+      rect.x = i * scale_x;
+      rect.y = j * scale_y;
+      rect.w = scale_x;
+      rect.h = scale_y;
 
       color = pick_color(state, i, j);
       SDL_SetRenderDrawColor(state->renderer, color.r, color.g, color.b, color.a);
@@ -96,86 +121,8 @@ void      draw_grid(state_t *state) {
     }
   }
 }
-void  clamp_scroll(state_t *state) {
-  if (state->scroll.x < 0)
-    state->scroll.x = 0;
-  if (state->scroll.y < 0)
-    state->scroll.y = 0;
-  if (state->scroll.x > state->grid_w * state->level_texture->tile_w - WINDOW_WIDTH - 1)
-    state->scroll.x = state->level_texture->tile_w * state->level_texture->tile_w - WINDOW_WIDTH - 1;
-  if (state->scroll.y > state->grid_h * state->level_texture->tile_h - WINDOW_HEIGHT - 1)
-    state->scroll.y = state->grid_h * state->level_texture->tile_h - WINDOW_HEIGHT - 1;
-}
 
-void  update_scroll(state_t *state) {
-  int limit_x_min, limit_y_min, limit_x_max, limit_y_max;
-
-  state->scroll.x = (state->rooms->center.x - 8) * state->level_texture->tile_w;
-  state->scroll.y = (state->rooms->center.y - 8) * state->level_texture->tile_h;
-
-  limit_x_min = state->scroll.x + state->limit_scroll.x;
-  limit_x_max = limit_x_min + state->limit_scroll.w;
-
-  limit_y_min = state->scroll.y + state->limit_scroll.y;
-  limit_y_max = limit_y_min + state->limit_scroll.h;
-
-  if (state->player->pos.x < limit_x_min)
-    state->scroll.x -= (limit_x_min - state->player->pos.x);
-  if (state->player->pos.y < limit_y_min)
-    state->scroll.y -= (limit_y_min - state->player->pos.y);
-  if (state->player->pos.x > limit_x_max)
-    state->scroll.x += (state->player->pos.x - limit_x_max);
-  if (state->player->pos.y > limit_y_max)
-    state->scroll.y += (state->player->pos.y - limit_y_max);
-  clamp_scroll(state);
-}
-
-
-// BRUT VALUES
-SDL_Rect  grid_value_to_tileset_rect(state_t *state, int x) {
-  SDL_Rect src;
-
-  switch (x) {
-    case EMPTY:
-      src.x = 5 * state->level_texture->tile_w;
-      src.y = 0;
-      break;
-    case WALL_UP:
-    case WALL_DOWN:
-    case WALL_LEFT:
-    case WALL_RIGHT:
-      src.x = 1 * state->level_texture->tile_w;
-      src.y = 0;
-      break;
-    case CORNER_TOP_LEFT:
-    case CORNER_TOP_RIGHT:
-    case CORNER_BOT_LEFT:
-    case CORNER_BOT_RIGHT:
-      src.x = 0;
-      src.y = 0;
-      break;
-    case FLOOR:
-      src.x = 1 * state->level_texture->tile_w;
-      src.y = 1 * state->level_texture->tile_h;
-      break;
-    case DOOR_SRC:
-      src.x = 5 * state->level_texture->tile_w;
-      src.y = 0;
-      break;
-    case DOOR_DST:
-      src.x = 5 * state->level_texture->tile_w;
-      src.y = 0;
-      break;
-    default:
-      src.x = 5 * state->level_texture->tile_w;
-      src.y = 0;
-  }
-  src.w = state->level_texture->tile_w;
-  src.h = state->level_texture->tile_h;
-  return src;
-}
-
-double    angle_from_type(enum Type type) {
+double        angle_from_type(enum Type type) {
   double angle;
 
   switch (type) {
@@ -209,35 +156,27 @@ double    angle_from_type(enum Type type) {
     default:
       angle = 0.0;
   }
+  return angle;
 }
 
-void      new_draw_grid(state_t *state) {
-  SDL_Rect src,dst;
-  SDL_Color color;
-  enum Type tile_type;
-  SDL_RendererFlip flip = SDL_FLIP_NONE;
+void          draw_grid(state_t *state) {
+  SDL_Rect          src,dst;
+  SDL_Color         color;
+  enum Type         tile_type;
+  SDL_RendererFlip  flip = SDL_FLIP_NONE;
+  room_t            *room = state->player->room;
+  //                WINDOW RATIO should ensure cell_h maintains aspect ratio;
+  //                + 2 is for around the room;
+  float             cell_size_float = (float)WINDOW_WIDTH / (room->room.w + 2);
+  int               cell_size = (int)cell_size_float;
+  SDL_Point         center = {cell_size / 2, cell_size / 2};
 
   SDL_SetRenderDrawColor(state->renderer, 255, 255, 255, 255);
 
-  int minx, maxx, miny, maxy;
+  for (int i = room->room.x - 1; i < room->room.x + room->room.w + 1; i++) {
+    for (int j = room->room.y - 1 ; j < room->room.y + room->room.h + 1; j++) {
 
-  // update_scroll(state);
-
-  minx = state->player->pos.x - SCREEN_TILE;
-  maxx = state->player->pos.x + SCREEN_TILE;
-  miny = state->player->pos.y - SCREEN_TILE;
-  maxy = state->player->pos.y + SCREEN_TILE;
-
-  room_t *room = state->player->room;
-  int num_cells = SCREEN_TILE * 2;
-  int grid_cell_size = (WINDOW_WIDTH > WINDOW_HEIGHT) ? WINDOW_WIDTH / num_cells : WINDOW_HEIGHT / num_cells;
-  SDL_Point center = {grid_cell_size / 2, grid_cell_size / 2};
-
-  // printf("trucs: %d - %d - %d - %d\n", minx, miny, maxx, maxy);
-
-  for (int i = minx; i < maxx ; i++) {
-    for (int j = miny ; j < maxy ; j++) {
-      if (i < room->room.x || i > room->room.x + room->room.w - 1 || j < room->room.y || j > room->room.y + room->room.h - 1) {
+      if (i < room->room.x || i >= room->room.x + room->room.w || j < room->room.y || j >= room->room.y + room->room.h) {
         src = grid_value_to_tileset_rect(state, EMPTY);
         tile_type = EMPTY;
       } else {
@@ -245,12 +184,10 @@ void      new_draw_grid(state_t *state) {
         tile_type = state->grid[i][j];
       }
 
-
-      dst.x = (i - minx) * grid_cell_size;
-      dst.y = (j - miny) * grid_cell_size;
-      dst.w = grid_cell_size;
-      dst.h = grid_cell_size;
-      // SDL_RenderCopy(state->renderer, state->level_texture->texture, &src, &dst);
+      dst.x = (i - (room->room.x - 1)) * cell_size_float;
+      dst.y = (j - (room->room.y - 1)) * cell_size_float;
+      dst.w = cell_size;
+      dst.h = cell_size;
       SDL_RenderCopyEx(state->renderer, state->level_texture->texture, &src, &dst, angle_from_type(tile_type), &center, flip);
     }
   }

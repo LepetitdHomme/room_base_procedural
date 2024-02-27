@@ -1,6 +1,6 @@
 #include "includes/common.h"
 
-int       max_rect_side(int x, int y, int n) {
+int           max_rect_side(int x, int y, int n) {
   // Calculate the maximum side length of rectangles
   double px = ceil(sqrt(n * x / y));
   double py = ceil(sqrt(n * y / x));
@@ -10,13 +10,14 @@ int       max_rect_side(int x, int y, int n) {
   return((int)max_rect_side + 1);
 }
 
-void      init_level(state_t *state, int complexity) {
-  int rooms_number,max_rect;
+void          init_level(state_t *state, int complexity) {
+  int rooms_number,max_rect,clamped_complexity;
   SDL_Rect room;
 
   free_level(state);
-  init_grid(state, complexity);
-  state->num_rooms = BASE_ROOM_NUMBER * complexity;
+  clamped_complexity = clamp(complexity, MIN_COMPLEXITY, MAX_COMPLEXITY);
+  init_grid(state, clamped_complexity);
+  state->num_rooms = BASE_ROOM_NUMBER * clamped_complexity;
   max_rect = max_rect_side(state->grid_w, state->grid_h, state->num_rooms);
 
   rooms_number = 0;
@@ -35,7 +36,7 @@ void      init_level(state_t *state, int complexity) {
   init_player(state);
 }
 
-void     free_level(state_t *state) {
+void          free_level(state_t *state) {
   if (state->grid != NULL) {
     free_grid(state);
   }
@@ -44,27 +45,7 @@ void     free_level(state_t *state) {
   }
 }
 
-void    draw_connections(state_t *state) {
-  room_t *tmp = state->rooms;
-  door_t *tmp_d = NULL;
-
-  while (tmp) {
-    tmp_d = tmp->doors;
-    while (tmp_d) {
-      coord_t a,b;
-      a.x = tmp->center.x * state->scale;
-      a.y = tmp->center.y * state->scale;
-      b.x = tmp_d->room->center.x * state->scale;
-      b.y = tmp_d->room->center.y * state->scale;
-      SDL_SetRenderDrawColor(state->renderer, 255, 0, 0, 255);
-      SDL_RenderDrawLine(state->renderer, a.x, a.y, b.x, b.y);
-      tmp_d = tmp_d->next;
-    }
-    tmp = tmp->next;
-  }
-}
-
-void    level_into_grid(state_t *state) {
+void          level_into_grid(state_t *state) {
   room_t *current = NULL;
   door_t *door = NULL;
   

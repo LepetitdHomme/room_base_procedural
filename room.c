@@ -3,20 +3,11 @@
 SDL_Rect      g_rect(int grid_w, int grid_h, int w, int h) {
   SDL_Rect rect;
 
-  int width, height;
-  if (w == -1 || h == -1) {
-    width = random_int(MIN_ROOM_SIZE, MAX_ROOM_SIZE);
-    height = random_int(MIN_ROOM_SIZE, MAX_ROOM_SIZE);
-  } else {
-    width = w;
-    height = h;
-  }
-
   // printf("room: %d - %d\n", width, height);
-  rect.x = random_int(1, grid_w - 1 - width);
-  rect.y = random_int(1, grid_h - 1 - height);
-  rect.w = width;
-  rect.h = height;
+  rect.x = random_int(1, grid_w - 1 - w);
+  rect.y = random_int(1, grid_h - 1 - h);
+  rect.w = w;
+  rect.h = h;
 
   return rect;
 }
@@ -28,7 +19,7 @@ int           is_corner_wall(SDL_Rect room, int i, int j) {
   return 1;
 }
 
-int is_room_wall(SDL_Rect room, int x, int y) {
+int           is_room_wall(SDL_Rect room, int x, int y) {
   // Check if (x, y) lies on any of the four edges of the rectangle
   if ((x == room.x || x == room.x + room.w - 1) && (y >= room.y && y < room.y + room.h) ||
     (y == room.y || y == room.y + room.h - 1) && (x >= room.x && x < room.x + room.w)) {
@@ -38,7 +29,7 @@ int is_room_wall(SDL_Rect room, int x, int y) {
   }
 }
 
-enum Type wall_type(SDL_Rect room, int x, int y) {
+enum Type     wall_type(SDL_Rect room, int x, int y) {
   enum Type type;
 
   if (y == room.y) {
@@ -62,7 +53,6 @@ enum Type wall_type(SDL_Rect room, int x, int y) {
   return EMPTY;
 }
 
-
 coord_t       room_center(SDL_Rect room) {
   coord_t center;
 
@@ -72,14 +62,15 @@ coord_t       room_center(SDL_Rect room) {
   return center;
 }
 
-SDL_Rect        place_new_room(state_t *state, int max_rect_side) {
+SDL_Rect      place_new_room(state_t *state, int max_rect_side) {
   if (max_rect_side <= 5) {
     printf("error when placing room\n");
     exit(EXIT_FAILURE);
   }
   SDL_Rect rect;
 
-  rect = g_rect(state->grid_w, state->grid_h, random_int(5, max_rect_side), random_int(5, max_rect_side));
+  // rect = g_rect(state->grid_w, state->grid_h, random_int(5, max_rect_side), random_int(5, max_rect_side));
+  rect = g_rect(state->grid_w, state->grid_h, max_rect_side, (max_rect_side * RATIO_HEIGHT) / RATIO_WIDTH);
   // printf("%d - %d - %d - %d\n", rect.x, rect.y, rect.w, rect.h);
 
   for (int i = rect.x - 1 ; i < rect.x + rect.w + 1 ; i++) {
@@ -90,11 +81,6 @@ SDL_Rect        place_new_room(state_t *state, int max_rect_side) {
       }
     }
   }
-
-
-
-  // TODO: draw later on the grid ; from ll_rooms.
-  // int color = 127;
 
   // place random int != 0 in grid during rectangle/rooms generation
   for(int i = rect.x ; i < rect.x + rect.w ; i++) {

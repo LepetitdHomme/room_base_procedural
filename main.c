@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
   state.grid = NULL;
   state.rooms = NULL;
   init_texture(&state, "assets/dungeon_tileset.bmp", 6, 17);
-  init_level(&state, 5); 
+  init_level(&state, 1); 
   level_into_grid(&state);
   // through_list(&state);
 
@@ -54,9 +54,12 @@ int main(int argc, char *argv[]) {
     SDL_RenderClear(state.renderer);
     /* Draw your graphics here (currently an empty black window) */
 
-    // draw_grid(&state);
-    new_draw_grid(&state);
-    // draw_connections(&state);
+    if (DEBUG == 1) {
+      draw_level(&state);
+      draw_connections(&state);
+    } else {
+      draw_grid(&state);
+    }
 
     SDL_RenderPresent(state.renderer);
 

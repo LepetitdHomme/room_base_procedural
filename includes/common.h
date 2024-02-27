@@ -12,8 +12,16 @@
 #define SIGN(x) ((x > 0) - (x < 0))
 #define DEBUG_MSG(message) printf("Debug: %s, File %s, Line %d\n", message, __FILE__, __LINE__)
 
+#define DEBUG 1
+
 #define WINDOW_WIDTH 1200
-#define WINDOW_HEIGHT 800
+#define RATIO_WIDTH 16
+#define RATIO_HEIGHT 9
+#define WINDOW_HEIGHT (WINDOW_WIDTH * RATIO_HEIGHT) / RATIO_WIDTH
+
+#define SCALE 100
+#define MIN_COMPLEXITY 1
+#define MAX_COMPLEXITY 10
 
 #define MIN_ROOM_SIZE 5
 #define MAX_ROOM_SIZE 10
@@ -105,16 +113,17 @@ typedef struct player_struct {
 
 /*                      textures */
 void                    init_texture(state_t *state, const char *path, int num_x, int num_y);
+SDL_Rect                grid_value_to_tileset_rect(state_t *state, int x);
 
 /*                      player */
 void                    init_player(state_t *state);
 
 /*                      tools */
+int                     clamp(int value, int min, int max);
 int                     random_int(int lower, int upper);
 double                  distance_between_coords(coord_t center_1, coord_t center_2);
 
 /*                      level */
-void                    draw_connections(state_t *state);
 void                    init_level(state_t *state, int complexity);
 void                    level_into_grid(state_t *state);
 void                    free_level(state_t *state);
@@ -142,7 +151,8 @@ void                    min_spanning_tree(state_t *state);
 /*                      grid */
 void                    init_grid(state_t *state, int complexity);
 void                    free_grid(state_t *state);
+void                    draw_level(state_t *state);
+void                    draw_connections(state_t *state);
 void                    draw_grid(state_t *state);
-void                    new_draw_grid(state_t *state);
 
 #endif

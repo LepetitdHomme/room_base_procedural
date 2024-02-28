@@ -99,86 +99,12 @@ void          from_dst_room_to_door(door_t *door, room_t *room1, room_t *room2) 
   }   
 }
 
-void          next_coord_with_step(coord_t src, enum Dir dir, coord_t *dst) {
-  dst->x = src.x;
-  dst->y = src.y;
-
-  switch (dir) {
-    case UP:
-      dst->y -= 1;
-      break;
-    case DOWN:
-      dst->y += 1;
-      break;
-    case LEFT:
-      dst->x -= 1;
-      break;
-    default:
-      dst->x += 1;
-  }
-}
-
-void          door_to_door(door_t *door) {
-  coord_t           head,tail;
-  enum Orientation  ori;
-  int               dist_x, dist_y;
-  corridor_t        *current_corridor;
-
-  door->corridors = (corridor_t *)malloc(sizeof(corridor_t));
-  if (door->corridors == NULL) {
-    DEBUG_MSG("Malloc error");
-    exit(EXIT_FAILURE);
-  }
-  door->corridors->next = NULL;
-
-  ori = (door->door_src_dir == UP || door->door_src_dir == DOWN) ? VERTICAL : HORIZONTAL;
-  next_coord_with_step(door->coord_src, door->door_src_dir, &head);
-  next_coord_with_step(door->coord_dst, door->door_dst_dir, &tail);
-  door->corridors->floor = head;
-  next_coord_with_step(head, (ori == VERTICAL) ? UP : LEFT, &door->corridors->wall_left);
-  door->corridors->wall_left_type = (ori == VERTICAL) ? WALL_UP : WALL_LEFT;
-  next_coord_with_step(head, (ori == VERTICAL) ? DOWN : RIGHT, &door->corridors->wall_right);
-  door->corridors->wall_right_type = (ori == VERTICAL) ? WALL_DOWN : WALL_RIGHT;
-
-  // while (head.x != tail.x || head.y != tail.y) {
-  //   dist_x = abs(tail.x - head.x);
-  //   dist_y = abs(tail.x - head.y);
-
-  //   if (dist_x > dist_y) {
-  //     if (head.x < tail.x) {
-  //       head.x += 1;
-  //     } else if (head.x > tail.x) {
-  //       head.x -= 1;
-  //     }
-  //   } else {
-  //     if (head.y < tail.y) {
-  //       head.y += 1;
-  //     } else if (head.y > tail.y) {
-  //       head.y -= 1;
-  //     }
-  //   }
-
-  //   // if (is_room_wall(room2->room, head.x, head.y) == 0) {
-  //   //   door->coord_dst.x = head.x;
-  //   //   door->coord_dst.y = head.y;
-  //   //   break;
-  //   // }
-  //   // if (is_room_wall(room1->room, head.x, head.y) == 0) {
-  //   //   break;
-  //   // }
-  // } 
-
-  door->corridors->next = (corridor_t *)malloc(sizeof(corridor_t));
-  //check
-  door->corridors->next->floor = tail;
-  door->corridors->next->next = NULL;
-}
-
 void          determine_door_coordinates(door_t *door, room_t *room1, room_t *room2) {
   // printf("doors for room: %d - %d\n", room1->center.x, room1->center.y);
   from_src_room_to_door(door, room1, room2);
   from_dst_room_to_door(door, room1, room2);
-  door_to_door(door);
+  dig_corridor(door, room1, room2);
+  // door_to_door(door, room1, room2);
 }
 
 void          doors_append(state_t *state, room_t *src, room_t *dst) {

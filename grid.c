@@ -52,6 +52,12 @@ SDL_Color     pick_color(state_t *state, int i, int j) {
       color.b = 255;
       color.a = 255;
       break;
+    case CORRIDOR:
+      color.r = 0;
+      color.g = 50;
+      color.b = 255;
+      color.a = 255;
+      break;
     case DOOR_SRC://door
       color.r = 0;
       color.g = 255;
@@ -78,18 +84,18 @@ void          draw_connections(state_t *state) {
   room_t *tmp = state->rooms;
   door_t *tmp_d = NULL;
 
-  int scale_x,scale_y;
-  scale_x = WINDOW_WIDTH / state->grid_w;
-  scale_y = WINDOW_HEIGHT / state->grid_h;
+  int start_x = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_WIDTH - WINDOW_HEIGHT) / 2 : 0;
+  int start_y = (WINDOW_HEIGHT > WINDOW_WIDTH) ? (WINDOW_HEIGHT - WINDOW_WIDTH) / 2 : 0;
+  int tile_final_size = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_HEIGHT / state->grid_w) : (WINDOW_WIDTH / state->grid_w);
 
   while (tmp) {
     tmp_d = tmp->doors;
     while (tmp_d) {
       coord_t a,b;
-      a.x = tmp->center.x * scale_x;
-      a.y = tmp->center.y * scale_y;
-      b.x = tmp_d->room->center.x * scale_x;
-      b.y = tmp_d->room->center.y * scale_y;
+      a.x = tmp->center.x * tile_final_size + start_x;
+      a.y = tmp->center.y * tile_final_size + start_y;
+      b.x = tmp_d->room->center.x * tile_final_size + start_x;
+      b.y = tmp_d->room->center.y * tile_final_size + start_y;
       SDL_SetRenderDrawColor(state->renderer, 255, 0, 0, 255);
       SDL_RenderDrawLine(state->renderer, a.x, a.y, b.x, b.y);
       tmp_d = tmp_d->next;
@@ -104,15 +110,9 @@ void          draw_level(state_t *state) {
 
   SDL_SetRenderDrawColor(state->renderer, 255, 255, 255, 255);
 
-  int scale_x,scale_y;
-
   int start_x = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_WIDTH - WINDOW_HEIGHT) / 2 : 0;
   int start_y = (WINDOW_HEIGHT > WINDOW_WIDTH) ? (WINDOW_HEIGHT - WINDOW_WIDTH) / 2 : 0;
   int tile_final_size = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_HEIGHT / state->grid_w) : (WINDOW_WIDTH / state->grid_w);
-
-  scale_x = state->level_texture->tile_w;
-  scale_x = WINDOW_WIDTH / state->grid_w;
-  scale_y = WINDOW_HEIGHT / state->grid_h;
 
   for (int i = 0; i < state->grid_w ; i++) {
     for (int j = 0 ; j < state->grid_h ; j++) {

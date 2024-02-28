@@ -96,6 +96,7 @@ typedef struct door_node {
 
 typedef struct corridor_node {
   coord_t               floor,wall_left,wall_right;
+  SDL_Rect              rect;
   enum Type             wall_left_type,wall_right_type;
   struct corridor_node  *next;
 } corridor_t;
@@ -151,6 +152,10 @@ enum Type               wall_type(SDL_Rect room, int x, int y);
 SDL_Rect                place_new_room(state_t *state, int max_rect_side);
 coord_t                 room_center(SDL_Rect room);
 SDL_Rect                g_rect(int grid_w, int grid_h, int w, int h);
+
+/*                      corridors */
+void                    door_to_door(door_t *door, room_t *room1, room_t *room2);
+void                    dig_corridor(door_t *door, room_t *room1, room_t *room2);
 
 /*                      ll_rooms */
 void                    free_doors(room_t *room);

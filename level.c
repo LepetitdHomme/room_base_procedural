@@ -81,9 +81,12 @@ void          level_into_grid(state_t *state) {
       // place corridors on grid
       corridor = door->corridors;
       while (corridor != NULL) {
-        state->grid[corridor->floor.x][corridor->floor.y] = CORRIDOR;
-        // state->grid[corridor->wall_left.x][corridor->wall_left.y] = corridor->wall_left_type;
-        // state->grid[corridor->wall_right.x][corridor->wall_right.y] = corridor->wall_right_type;
+        for (int i = corridor->rect.x ; i < corridor->rect.x + corridor->rect.w ; i++) {
+          for (int j = corridor->rect.y ; j < corridor->rect.y + corridor->rect.h ; j++) {
+            state->grid[i][j] = CORRIDOR;
+          }
+        }
+        DEBUG_MSG("");
         corridor = corridor->next;
       }
       door = door->next;

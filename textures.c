@@ -1,6 +1,6 @@
 #include "includes/common.h"
 
-void    init_texture(state_t *state, const char *path, int num_x, int num_y) {
+void          init_texture(state_t *state, const char *path, int num_x, int num_y) {
   SDL_Surface *tmp = NULL;
   SDL_Rect rect;
 
@@ -66,6 +66,7 @@ SDL_Rect      grid_value_to_tileset_rect(state_t *state, int x) {
       src.y = 0;
       break;
     case FLOOR:
+    case CORRIDOR:
       src.x = 1 * state->level_texture->tile_w;
       src.y = 1 * state->level_texture->tile_h;
       break;

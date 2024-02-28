@@ -63,7 +63,6 @@ void print_edges(edge_t edges[], int edge_count) {
 }
 
 // Function to apply Kruskal's algorithm
-// failing on 1708807462
 void apply_kruskal(state_t *state) {
   room_t *current_room = state->rooms;
   room_t *other_room = NULL;

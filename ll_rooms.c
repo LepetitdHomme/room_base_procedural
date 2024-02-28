@@ -1,6 +1,6 @@
 #include "includes/common.h"
 
-void    free_doors(room_t *room) {
+void          free_doors(room_t *room) {
   door_t *current = room->doors;
   door_t *next = NULL;
 
@@ -13,7 +13,7 @@ void    free_doors(room_t *room) {
   room->doors = NULL;
 }
 
-void 		free_rooms(state_t *state) {
+void 		      free_rooms(state_t *state) {
 	room_t *current = state->rooms;
 	room_t *next = NULL;
 
@@ -27,7 +27,7 @@ void 		free_rooms(state_t *state) {
 	state->rooms = NULL;
 }
 
-void      from_src_room_to_door(door_t *door, room_t *room1, room_t *room2) {
+void          from_src_room_to_door(door_t *door, room_t *room1, room_t *room2) {
   int current_x = room1->center.x;
   int current_y = room1->center.y;
 
@@ -52,6 +52,7 @@ void      from_src_room_to_door(door_t *door, room_t *room1, room_t *room2) {
     }
 
     if (is_room_wall(room1->room, current_x, current_y) == 0) {
+      door->door_src_dir = door_dir(room1->room, current_x, current_y);
       door->coord_src.x = current_x;
       door->coord_src.y = current_y;
       break;
@@ -62,7 +63,7 @@ void      from_src_room_to_door(door_t *door, room_t *room1, room_t *room2) {
   }
 }
 
-void       from_dst_room_to_door(door_t *door, room_t *room1, room_t *room2) {
+void          from_dst_room_to_door(door_t *door, room_t *room1, room_t *room2) {
   int current_x = room2->center.x;
   int current_y = room2->center.y;
 
@@ -87,6 +88,7 @@ void       from_dst_room_to_door(door_t *door, room_t *room1, room_t *room2) {
     }
 
     if (is_room_wall(room2->room, current_x, current_y) == 0) {
+      door->door_dst_dir = door_dir(room2->room, current_x, current_y);
       door->coord_dst.x = current_x;
       door->coord_dst.y = current_y;
       break;
@@ -97,13 +99,89 @@ void       from_dst_room_to_door(door_t *door, room_t *room1, room_t *room2) {
   }   
 }
 
-void      determine_door_coordinates(door_t *door, room_t *room1, room_t *room2) {
+void          next_coord_with_step(coord_t src, enum Dir dir, coord_t *dst) {
+  dst->x = src.x;
+  dst->y = src.y;
+
+  switch (dir) {
+    case UP:
+      dst->y -= 1;
+      break;
+    case DOWN:
+      dst->y += 1;
+      break;
+    case LEFT:
+      dst->x -= 1;
+      break;
+    default:
+      dst->x += 1;
+  }
+}
+
+void          door_to_door(door_t *door) {
+  coord_t           head,tail;
+  enum Orientation  ori;
+  int               dist_x, dist_y;
+  corridor_t        *current_corridor;
+
+  door->corridors = (corridor_t *)malloc(sizeof(corridor_t));
+  if (door->corridors == NULL) {
+    DEBUG_MSG("Malloc error");
+    exit(EXIT_FAILURE);
+  }
+  door->corridors->next = NULL;
+
+  ori = (door->door_src_dir == UP || door->door_src_dir == DOWN) ? VERTICAL : HORIZONTAL;
+  next_coord_with_step(door->coord_src, door->door_src_dir, &head);
+  next_coord_with_step(door->coord_dst, door->door_dst_dir, &tail);
+  door->corridors->floor = head;
+  next_coord_with_step(head, (ori == VERTICAL) ? UP : LEFT, &door->corridors->wall_left);
+  door->corridors->wall_left_type = (ori == VERTICAL) ? WALL_UP : WALL_LEFT;
+  next_coord_with_step(head, (ori == VERTICAL) ? DOWN : RIGHT, &door->corridors->wall_right);
+  door->corridors->wall_right_type = (ori == VERTICAL) ? WALL_DOWN : WALL_RIGHT;
+
+  // while (head.x != tail.x || head.y != tail.y) {
+  //   dist_x = abs(tail.x - head.x);
+  //   dist_y = abs(tail.x - head.y);
+
+  //   if (dist_x > dist_y) {
+  //     if (head.x < tail.x) {
+  //       head.x += 1;
+  //     } else if (head.x > tail.x) {
+  //       head.x -= 1;
+  //     }
+  //   } else {
+  //     if (head.y < tail.y) {
+  //       head.y += 1;
+  //     } else if (head.y > tail.y) {
+  //       head.y -= 1;
+  //     }
+  //   }
+
+  //   // if (is_room_wall(room2->room, head.x, head.y) == 0) {
+  //   //   door->coord_dst.x = head.x;
+  //   //   door->coord_dst.y = head.y;
+  //   //   break;
+  //   // }
+  //   // if (is_room_wall(room1->room, head.x, head.y) == 0) {
+  //   //   break;
+  //   // }
+  // } 
+
+  door->corridors->next = (corridor_t *)malloc(sizeof(corridor_t));
+  //check
+  door->corridors->next->floor = tail;
+  door->corridors->next->next = NULL;
+}
+
+void          determine_door_coordinates(door_t *door, room_t *room1, room_t *room2) {
   // printf("doors for room: %d - %d\n", room1->center.x, room1->center.y);
   from_src_room_to_door(door, room1, room2);
   from_dst_room_to_door(door, room1, room2);
+  door_to_door(door);
 }
 
-void    doors_append(state_t *state, room_t *src, room_t *dst) {
+void          doors_append(state_t *state, room_t *src, room_t *dst) {
   if (src == NULL || dst == NULL) {
     return;
   }
@@ -112,6 +190,7 @@ void    doors_append(state_t *state, room_t *src, room_t *dst) {
   if (tmp == NULL) {
     src->doors = (door_t *)malloc(sizeof(door_t));
     src->doors->room = dst;
+    src->doors->corridors = NULL;
     src->doors->next = NULL;
     determine_door_coordinates(src->doors, src, dst);
     return;
@@ -123,11 +202,12 @@ void    doors_append(state_t *state, room_t *src, room_t *dst) {
 
   tmp->next = (door_t *)malloc(sizeof(door_t));
   tmp->next->room = dst;
+  tmp->next->corridors = NULL;
   tmp->next->next = NULL;
   determine_door_coordinates(tmp->next, src, dst);
 }
 
-void 		rooms_append(state_t *state, SDL_Rect room, int id) {
+void          rooms_append(state_t *state, SDL_Rect room, int id) {
 	room_t *current = state->rooms;
 	room_t *last_room = NULL;
 
@@ -164,7 +244,7 @@ void 		rooms_append(state_t *state, SDL_Rect room, int id) {
 	last_room->next->next = NULL;
 }
 
-void 		through_list(state_t *state) {
+void          through_list(state_t *state) {
 	room_t *tmp = state->rooms;
   door_t *tmp2 = NULL;
 

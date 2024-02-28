@@ -105,15 +105,21 @@ void          draw_level(state_t *state) {
   SDL_SetRenderDrawColor(state->renderer, 255, 255, 255, 255);
 
   int scale_x,scale_y;
+
+  int start_x = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_WIDTH - WINDOW_HEIGHT) / 2 : 0;
+  int start_y = (WINDOW_HEIGHT > WINDOW_WIDTH) ? (WINDOW_HEIGHT - WINDOW_WIDTH) / 2 : 0;
+  int tile_final_size = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_HEIGHT / state->grid_w) : (WINDOW_WIDTH / state->grid_w);
+
+  scale_x = state->level_texture->tile_w;
   scale_x = WINDOW_WIDTH / state->grid_w;
   scale_y = WINDOW_HEIGHT / state->grid_h;
 
   for (int i = 0; i < state->grid_w ; i++) {
     for (int j = 0 ; j < state->grid_h ; j++) {
-      rect.x = i * scale_x;
-      rect.y = j * scale_y;
-      rect.w = scale_x;
-      rect.h = scale_y;
+      rect.x = i * tile_final_size + start_x;
+      rect.y = j * tile_final_size + start_y;
+      rect.w = tile_final_size;
+      rect.h = tile_final_size;
 
       color = pick_color(state, i, j);
       SDL_SetRenderDrawColor(state->renderer, color.r, color.g, color.b, color.a);

@@ -46,8 +46,9 @@ void          free_level(state_t *state) {
 }
 
 void          level_into_grid(state_t *state) {
-  room_t *current = NULL;
-  door_t *door = NULL;
+  room_t      *current = NULL;
+  door_t      *door = NULL;
+  corridor_t  *corridor = NULL;
   
   // reset grid
   for (int i = 0; i < state->grid_w ; i++) {
@@ -76,6 +77,15 @@ void          level_into_grid(state_t *state) {
     while (door != NULL) {
       state->grid[door->coord_src.x][door->coord_src.y] = DOOR_SRC;
       state->grid[door->coord_dst.x][door->coord_dst.y] = DOOR_DST;
+
+      // place corridors on grid
+      corridor = door->corridors;
+      while (corridor != NULL) {
+        state->grid[corridor->floor.x][corridor->floor.y] = CORRIDOR;
+        // state->grid[corridor->wall_left.x][corridor->wall_left.y] = corridor->wall_left_type;
+        // state->grid[corridor->wall_right.x][corridor->wall_right.y] = corridor->wall_right_type;
+        corridor = corridor->next;
+      }
       door = door->next;
     }
 

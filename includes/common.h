@@ -12,7 +12,7 @@
 #define SIGN(x) ((x > 0) - (x < 0))
 #define DEBUG_MSG(message) printf("Debug: %s, File %s, Line %d\n", message, __FILE__, __LINE__)
 
-#define DEBUG 0
+#define DEBUG 1
 
 #define WINDOW_WIDTH 1200
 #define RATIO_WIDTH 16
@@ -25,6 +25,7 @@
 
 #define MIN_ROOM_SIZE 5
 #define MAX_ROOM_SIZE 10
+#define DISTANCE_BETWEEN_ROOMS 3
 #define BASE_ROOM_NUMBER 10
 #define SCREEN_TILE BASE_ROOM_NUMBER * 2
 
@@ -44,7 +45,8 @@ enum Type {
   DOOR_LEFT,
   DOOR_RIGHT,
   DOOR_SRC,
-  DOOR_DST
+  DOOR_DST,
+  CORRIDOR
 };
 
 enum Dir {
@@ -54,8 +56,14 @@ enum Dir {
   RIGHT
 };
 
+enum Orientation {
+  VERTICAL,
+  HORIZONTAL
+};
+
 struct door_node;
 struct player_struct;
+struct corridor_node;
 
 typedef struct {
   int                   x,y;
@@ -81,8 +89,16 @@ typedef struct room_node {
 typedef struct door_node {
   room_t                *room;
   coord_t               coord_src,coord_dst;
+  enum Dir              door_src_dir,door_dst_dir;
+  struct corridor_node  *corridors;
   struct door_node      *next;
 } door_t;
+
+typedef struct corridor_node {
+  coord_t               floor,wall_left,wall_right;
+  enum Type             wall_left_type,wall_right_type;
+  struct corridor_node  *next;
+} corridor_t;
 
 typedef struct {
   SDL_Texture           *texture;
@@ -130,6 +146,7 @@ void                    free_level(state_t *state);
 
 /*                      room */
 int                     is_room_wall(SDL_Rect room, int i, int j);
+enum Dir                door_dir(SDL_Rect room, int x, int y);
 enum Type               wall_type(SDL_Rect room, int x, int y);
 SDL_Rect                place_new_room(state_t *state, int max_rect_side);
 coord_t                 room_center(SDL_Rect room);

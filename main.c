@@ -34,11 +34,8 @@ int main(int argc, char *argv[]) {
   state.renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
   state.grid = NULL;
   state.rooms = NULL;
-  init_texture(&state, "assets/dungeon_tileset.bmp", 6, 17);
-  init_level(&state, 1); 
-  level_into_grid(&state);
   // through_list(&state);
-
+  int complexity = 1;
   /* Event loop */
   SDL_Event event;
   int quit = 0;
@@ -49,19 +46,24 @@ int main(int argc, char *argv[]) {
             quit = 1;
         }
     }
-
+    if (complexity > 6)
+      complexity = 1;
     SDL_SetRenderDrawColor(state.renderer, 0, 0, 0, 255);
     SDL_RenderClear(state.renderer);
     /* Draw your graphics here (currently an empty black window) */
 
+    init_texture(&state, "assets/dungeon_tileset.bmp", 6, 17);
+    init_level(&state, complexity);
+    level_into_grid(&state);
     if (DEBUG == 1) {
       draw_level(&state);
       draw_connections(&state);
     } else {
       draw_grid(&state);
     }
-
+    complexity++;
     SDL_RenderPresent(state.renderer);
+    sleep(1);
     SDL_Delay(60);
   }
 

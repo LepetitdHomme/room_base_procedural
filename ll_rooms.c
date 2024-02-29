@@ -6,6 +6,7 @@ void          free_doors(room_t *room) {
 
   while (current) {
     next = current->next;
+    free_corridors(current);
     free(current);
     current = next;
   }

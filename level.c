@@ -43,6 +43,9 @@ void          free_level(state_t *state) {
   if (state->rooms != NULL) {
     free_rooms(state);
   }
+  if (state->level_texture->texture != NULL) {
+    SDL_DestroyTexture(state->level_texture->texture);
+  }
 }
 
 void          level_into_grid(state_t *state) {
@@ -86,7 +89,6 @@ void          level_into_grid(state_t *state) {
             state->grid[i][j] = CORRIDOR;
           }
         }
-        DEBUG_MSG("");
         corridor = corridor->next;
       }
       door = door->next;

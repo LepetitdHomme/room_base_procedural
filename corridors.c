@@ -1,5 +1,18 @@
 #include "includes/common.h"
 
+void          free_corridors(door_t *door) {
+  corridor_t *current = door->corridors;
+  corridor_t *next = NULL;
+
+  while (current) {
+    next = current->next;
+    free(current);
+    current = next;
+  }
+
+  door->corridors = NULL;
+}
+
 void          next_coord_with_step(coord_t src, enum Dir dir, coord_t *dst) {
   dst->x = src.x;
   dst->y = src.y;
@@ -20,7 +33,10 @@ void          next_coord_with_step(coord_t src, enum Dir dir, coord_t *dst) {
 }
 
 /*            performs inversion of x,y imposed by SDL DRAW */
-/* 1709163157 */
+/* 1709163157 => y1 == y2 ? => teleportation ? :) */
+/* 1709163835 => double corridor => when 'into_grid' => floor can erase floor, wall can erase wall, wall cannot erase floor, floor->wall ? */
+/* insert corridors into rooms ? */
+/* reverse doors ? from dst to src */
 SDL_Rect      rect_from_doors(coord_t a, enum Dir dir_a, coord_t b, enum Dir dir_b) {
   SDL_Rect  rect;
 
@@ -123,74 +139,6 @@ void          dig_corridor(door_t *door, room_t *room1, room_t *room2) {
     DEBUG_MSG("Malloc error");
     exit(EXIT_FAILURE);    
   }
-  // next_coord_with_step(door->coord_src, door->door_src_dir, &head);
-  // next_coord_with_step(door->coord_dst, door->door_dst_dir, &tail);
   door->corridors->rect = rect_from_doors(door->coord_src, door->door_src_dir, door->coord_dst, door->door_dst_dir);
   door->corridors->next = NULL;
 }
-
-// void          door_to_door(door_t *door, room_t *room1, room_t *room2) {
-//   coord_t           head,tail;
-//   enum Orientation  orientation;
-//   int               dist_x, dist_y;
-//   corridor_t        *current_corridor;
-
-//   door->corridors = (corridor_t *)malloc(sizeof(corridor_t));
-//   if (door->corridors == NULL) {
-//     DEBUG_MSG("Malloc error");
-//     exit(EXIT_FAILURE);
-//   }
-//   door->corridors->next = NULL;
-
-//   orientation = (door->door_src_dir == UP || door->door_src_dir == DOWN) ? VERTICAL : HORIZONTAL;
-//   next_coord_with_step(door->coord_src, door->door_src_dir, &head);
-//   next_coord_with_step(door->coord_dst, door->door_dst_dir, &tail);
-//   door->corridors->floor = head;
-//   next_coord_with_step(head, (orientation == VERTICAL) ? LEFT : UP, &door->corridors->wall_left);
-//   door->corridors->wall_left_type = (orientation == VERTICAL) ? WALL_LEFT : WALL_UP;
-//   next_coord_with_step(head, (orientation == VERTICAL) ? RIGHT : DOWN, &door->corridors->wall_right);
-//   door->corridors->wall_right_type = (orientation == VERTICAL) ? WALL_RIGHT : WALL_DOWN;
-
-//   while (head.x != tail.x || head.y != tail.y) {
-//     dist_x = abs(tail.x - head.x);
-//     dist_y = abs(tail.x - head.y);
-
-//     if (dist_x > dist_y) {
-//       if (head.x < tail.x) {
-//         head.x += 1;
-//       } else if (head.x > tail.x) {
-//         head.x -= 1;
-//       }
-//     } else {
-//       if (head.y < tail.y) {
-//         head.y += 1;
-//       } else if (head.y > tail.y) {
-//         head.y -= 1;
-//       }
-//     }
-
-//     // if (is_room_wall(room2->room, head.x, head.y) == 0) {
-//     //   door->coord_dst.x = head.x;
-//     //   door->coord_dst.y = head.y;
-//     //   break;
-//     // }
-//     // if (is_room_wall(room1->room, head.x, head.y) == 0) {
-//     //   break;
-//     // }
-//   } 
-
-//   door->corridors->next = (corridor_t *)malloc(sizeof(corridor_t));
-//   if (door->corridors->next == NULL) {
-//     DEBUG_MSG("Malloc error");
-//     exit(EXIT_FAILURE);
-//   }
-//   door->corridors->next->floor = tail;
-//   orientation = (door->door_dst_dir == UP || door->door_dst_dir == DOWN) ? VERTICAL : HORIZONTAL;
-//   next_coord_with_step(tail, (orientation == VERTICAL) ? LEFT : UP, &door->corridors->next->wall_left);
-//   door->corridors->next->wall_left_type = (orientation == VERTICAL) ? WALL_LEFT : WALL_UP;
-  
-//   next_coord_with_step(tail, (orientation == VERTICAL) ? RIGHT : DOWN, &door->corridors->next->wall_right);
-//   door->corridors->next->wall_right_type = (orientation == VERTICAL) ? WALL_RIGHT : WALL_DOWN;
-  
-//   door->corridors->next->next = NULL;
-// }

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <unistd.h>
 #include <time.h>
 #include <math.h>
 #include <SDL2/SDL.h>
@@ -95,9 +96,7 @@ typedef struct door_node {
 } door_t;
 
 typedef struct corridor_node {
-  coord_t               floor,wall_left,wall_right;
   SDL_Rect              rect;
-  enum Type             wall_left_type,wall_right_type;
   struct corridor_node  *next;
 } corridor_t;
 
@@ -154,6 +153,7 @@ coord_t                 room_center(SDL_Rect room);
 SDL_Rect                g_rect(int grid_w, int grid_h, int w, int h);
 
 /*                      corridors */
+void                    free_corridors(door_t *door);
 void                    door_to_door(door_t *door, room_t *room1, room_t *room2);
 void                    dig_corridor(door_t *door, room_t *room1, room_t *room2);
 

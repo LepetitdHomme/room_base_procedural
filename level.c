@@ -33,7 +33,7 @@ void          init_level(state_t *state, int complexity) {
 
   }
   apply_kruskal(state);
-  init_player(state);
+  // init_player(state); // => to free
 }
 
 void          free_level(state_t *state) {
@@ -42,9 +42,6 @@ void          free_level(state_t *state) {
   }
   if (state->rooms != NULL) {
     free_rooms(state);
-  }
-  if (state->level_texture->texture != NULL) {
-    SDL_DestroyTexture(state->level_texture->texture);
   }
 }
 

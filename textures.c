@@ -1,5 +1,13 @@
 #include "includes/common.h"
 
+void          free_texture(state_t *state) {
+  if (state->level_texture->texture != NULL) {
+    SDL_DestroyTexture(state->level_texture->texture);
+  }
+  free(state->level_texture);
+  state->level_texture = NULL;
+}
+
 void          init_texture(state_t *state, const char *path, int num_x, int num_y) {
   SDL_Surface *tmp = NULL;
   SDL_Rect rect;

@@ -128,6 +128,7 @@ typedef struct player_struct {
 
 
 /*                      textures */
+void                    free_texture(state_t *state);
 void                    init_texture(state_t *state, const char *path, int num_x, int num_y);
 SDL_Rect                grid_value_to_tileset_rect(state_t *state, int x);
 

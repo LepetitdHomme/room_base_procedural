@@ -70,6 +70,7 @@ int main(int argc, char *argv[]) {
   free_level(&state);
 
   /* Clean up */
+  free_texture(&state);
   SDL_DestroyRenderer(state.renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();

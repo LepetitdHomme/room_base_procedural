@@ -170,31 +170,47 @@ void          draw_grid(state_t *state) {
   SDL_Color         color;
   enum Type         tile_type;
   SDL_RendererFlip  flip = SDL_FLIP_NONE;
-  room_t            *room = state->player->room;
+  // room_t            *room = state->player->room;
   //                WINDOW RATIO should ensure cell_h maintains aspect ratio;
   //                + 2 is for around the room;
-  float             cell_size_float = (float)WINDOW_WIDTH / (room->room.w + 2);
-  int               cell_size = (int)cell_size_float;
-  SDL_Point         center = {cell_size / 2, cell_size / 2};
+  // float             cell_size_float = (float)WINDOW_WIDTH / (room->room.w + 2);
+  // int               cell_size = (int)cell_size_float;
 
   SDL_SetRenderDrawColor(state->renderer, 255, 255, 255, 255);
+  int start_x = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_WIDTH - WINDOW_HEIGHT) / 2 : 0;
+  int start_y = (WINDOW_HEIGHT > WINDOW_WIDTH) ? (WINDOW_HEIGHT - WINDOW_WIDTH) / 2 : 0;
+  int tile_final_size = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_HEIGHT / state->grid_w) : (WINDOW_WIDTH / state->grid_w);
+  SDL_Point         center = {tile_final_size / 2, tile_final_size / 2};
 
-  for (int i = room->room.x - 1; i < room->room.x + room->room.w + 1; i++) {
-    for (int j = room->room.y - 1 ; j < room->room.y + room->room.h + 1; j++) {
-
-      if (i < room->room.x || i >= room->room.x + room->room.w || j < room->room.y || j >= room->room.y + room->room.h) {
-        src = grid_value_to_tileset_rect(state, EMPTY);
-        tile_type = EMPTY;
-      } else {
-        src = grid_value_to_tileset_rect(state, state->grid[i][j]);
-        tile_type = state->grid[i][j];
-      }
-
-      dst.x = (i - (room->room.x - 1)) * cell_size_float;
-      dst.y = (j - (room->room.y - 1)) * cell_size_float;
-      dst.w = cell_size;
-      dst.h = cell_size;
+  for (int i = 0; i < state->grid_w ; i++) {
+    for (int j = 0 ; j < state->grid_h ; j++) {
+      dst.x = i * tile_final_size + start_x;
+      dst.y = j * tile_final_size + start_y;
+      dst.w = tile_final_size;
+      dst.h = tile_final_size;
+      tile_type = state->grid[i][j];
+      src = grid_value_to_tileset_rect(state, tile_type);
+      // SDL_RenderCopy(state->renderer, state->level_texture->texture, &src, &dst);
       SDL_RenderCopyEx(state->renderer, state->level_texture->texture, &src, &dst, angle_from_type(tile_type), &center, flip);
     }
   }
+
+  // for (int i = room->room.x - 1; i < room->room.x + room->room.w + 1; i++) {
+  //   for (int j = room->room.y - 1 ; j < room->room.y + room->room.h + 1; j++) {
+
+  //     if (i < room->room.x || i >= room->room.x + room->room.w || j < room->room.y || j >= room->room.y + room->room.h) {
+  //       src = grid_value_to_tileset_rect(state, EMPTY);
+  //       tile_type = EMPTY;
+  //     } else {
+  //       src = grid_value_to_tileset_rect(state, state->grid[i][j]);
+  //       tile_type = state->grid[i][j];
+  //     }
+
+  //     dst.x = (i - (room->room.x - 1)) * cell_size_float;
+  //     dst.y = (j - (room->room.y - 1)) * cell_size_float;
+  //     dst.w = cell_size;
+  //     dst.h = cell_size;
+    //   SDL_RenderCopyEx(state->renderer, state->level_texture->texture, &src, &dst, angle_from_type(tile_type), &center, flip);
+    // }
+  // }
 }

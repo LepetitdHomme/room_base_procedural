@@ -13,7 +13,7 @@
 #define SIGN(x) ((x > 0) - (x < 0))
 #define DEBUG_MSG(message) printf("Debug: %s, File %s, Line %d\n", message, __FILE__, __LINE__)
 
-#define DEBUG 1
+#define DEBUG 0
 
 #define WINDOW_WIDTH 1200
 #define RATIO_WIDTH 16

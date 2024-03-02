@@ -1,31 +1,33 @@
 #include "includes/common.h"
 
-void          free_doors(room_t *room) {
-  door_t *current = room->doors;
-  door_t *next = NULL;
+void          doors_append(state_t *state, room_t *src, room_t *dst) {
+  door_t      *tmp = src->doors;
 
-  while (current) {
-    next = current->next;
-    free_corridors(current);
-    free(current);
-    current = next;
+  if (tmp == NULL) {
+    src->doors = (door_t *)malloc(sizeof(door_t));
+    if (src->doors == NULL) {
+      DEBUG_MSG("Error during doors_append#malloc");
+      exit(EXIT_FAILURE);
+    }
+    tmp = src->doors;
+  } else {
+    while (tmp->next) {
+      tmp = tmp->next;
+    }    
+    tmp->next = (door_t *)malloc(sizeof(door_t));
+    if (tmp->next == NULL) {
+      DEBUG_MSG("Error during doors_append#malloc");
+      exit(EXIT_FAILURE);
+    }
+
+    tmp = tmp->next;
   }
 
-  room->doors = NULL;
-}
-
-void 		      free_rooms(state_t *state) {
-	room_t *current = state->rooms;
-	room_t *next = NULL;
-
-	while (current) {
-		next = current->next;
-    free_doors(current);
-		free(current);
-		current = next;
-	}
-
-	state->rooms = NULL;
+  tmp->room = dst;
+  tmp->corridors = NULL;
+  tmp->next = NULL;
+  door_coordinates(tmp, src, dst);
+  corridors_append(tmp, src, dst);
 }
 
 void          door_coordinates(door_t *door, room_t *room1, room_t *room2) {
@@ -102,53 +104,32 @@ void          door_coordinates(door_t *door, room_t *room1, room_t *room2) {
   }
 }
 
-/* TODO: check mallocs */
-void          doors_append(state_t *state, room_t *src, room_t *dst) {
-  door_t      *tmp = src->doors;
+void          free_doors(room_t *room) {
+  door_t *current = room->doors;
+  door_t *next = NULL;
 
-  if (tmp == NULL) {
-    src->doors = (door_t *)malloc(sizeof(door_t));
-    tmp = src->doors;
-  } else {
-    while (tmp->next) {
-      tmp = tmp->next;
-    }    
-    tmp->next = (door_t *)malloc(sizeof(door_t));
-    tmp = tmp->next;
+  while (current) {
+    next = current->next;
+    free_corridors(current);
+    free(current);
+    current = next;
   }
 
-  tmp->room = dst;
-  tmp->corridors = NULL;
-  tmp->next = NULL;
-  door_coordinates(tmp, src, dst);
-  dig_corridor(tmp, src, dst);
+  room->doors = NULL;
 }
 
-void          rooms_append(state_t *state, SDL_Rect room, int id) {
-	room_t       *tmp = state->rooms;
+enum Dir      door_dir(SDL_Rect room, int x, int y) {
+  enum Dir dir;
 
-	if (tmp == NULL) {
-		state->rooms = (room_t *)malloc(sizeof(room_t));
-    if (state->rooms == NULL) {
-      DEBUG_MSG("Error during rooms_append#malloc");
-      exit(EXIT_FAILURE);
-    }
-    tmp = state->rooms;
-	} else {
-    while (tmp->next) {
-      tmp = tmp->next;
-    }
-    tmp->next = (room_t *)malloc(sizeof(room_t));
-    if (tmp->next == NULL) {
-      DEBUG_MSG("Error during rooms_append#malloc");
-      exit(EXIT_FAILURE);
-    }
-    tmp = tmp->next;
+  if (y == room.y) {
+    return UP;
   }
-
-	tmp->id = id;
-	tmp->room = room;
-	tmp->doors = NULL;
-	tmp->center = room_center(room);
-	tmp->next = NULL;
+  if (y == room.y + room.h - 1) {
+    return DOWN;
+  }
+  if (x == room.x)
+    return LEFT;
+  if (x == room.x + room.w - 1)
+    return RIGHT;
+  return UP;
 }

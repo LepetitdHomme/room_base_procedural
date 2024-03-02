@@ -125,7 +125,7 @@ SDL_Rect      rect_from_doors(coord_t a, enum Dir dir_a, coord_t b, enum Dir dir
   return rect;
 }
 
-void          dig_corridor(door_t *door, room_t *room1, room_t *room2) {
+void          corridors_append(door_t *door, room_t *room1, room_t *room2) {
   corridor_t  *corridor = door->corridors;
   coord_t     head,tail;
 

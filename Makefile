@@ -20,14 +20,14 @@ LIBS=
 DEPS = common.h
 OBJ = main.o \
 			grid.o \
-			room.o \
-			tools.o \
 			level.o \
-			ll_rooms.o \
+			room.o \
+			door.o \
+			corridors.o \
+			tools.o \
 			kruskal.o \
 			player.o \
 			textures.o \
-			corridors.o \
 			type.o
 
 # macOS configuration

@@ -114,16 +114,23 @@ void                    free_level(state_t *state);
 
 /*                      room */
 int                     is_room_wall(SDL_Rect room, int i, int j);
-enum Dir                door_dir(SDL_Rect room, int x, int y);
 enum Type               wall_type(SDL_Rect room, int x, int y);
 SDL_Rect                place_new_room(state_t *state, int max_rect_side);
 coord_t                 room_center(SDL_Rect room);
 SDL_Rect                g_rect(int grid_w, int grid_h, int w, int h);
+void                    free_rooms(state_t *state);
+void                    rooms_append(state_t *state, SDL_Rect room, int id);
+
+/*                      door */
+void                    doors_append(state_t *state, room_t *src, room_t *dst);
+void                    free_doors(room_t *room);
+enum Dir                door_dir(SDL_Rect room, int x, int y);
+void                    door_coordinates(door_t *door, room_t *room1, room_t *room2);
 
 /*                      corridors */
 void                    free_corridors(door_t *door);
 void                    door_to_door(door_t *door, room_t *room1, room_t *room2);
-void                    dig_corridor(door_t *door, room_t *room1, room_t *room2);
+void                    corridors_append(door_t *door, room_t *room1, room_t *room2);
 
 /*                      player */
 void                    init_player(state_t *state);
@@ -137,12 +144,6 @@ SDL_Rect                grid_value_to_tileset_rect(state_t *state, int x);
 int                     clamp(int value, int min, int max);
 int                     random_int(int lower, int upper);
 double                  distance_between_coords(coord_t center_1, coord_t center_2);
-
-/*                      ll_rooms */
-void                    free_doors(room_t *room);
-void                    free_rooms(state_t *state);
-void                    rooms_append(state_t *state, SDL_Rect room, int id);
-void                    doors_append(state_t *state, room_t *src, room_t *dst);
 
 /*                      kruskal */
 void                    apply_kruskal(state_t *state);

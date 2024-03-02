@@ -44,22 +44,6 @@ int           is_room_wall(SDL_Rect room, int x, int y) {
   return 1;
 }
 
-enum Dir      door_dir(SDL_Rect room, int x, int y) {
-  enum Dir dir;
-
-  if (y == room.y) {
-    return UP;
-  }
-  if (y == room.y + room.h - 1) {
-    return DOWN;
-  }
-  if (x == room.x)
-    return LEFT;
-  if (x == room.x + room.w - 1)
-    return RIGHT;
-  return UP;
-}
-
 coord_t       room_center(SDL_Rect room) {
   coord_t center;
 
@@ -97,3 +81,47 @@ SDL_Rect      place_new_room(state_t *state, int max_rect_side) {
   }
   return rect;
 }
+
+void          free_rooms(state_t *state) {
+  room_t *current = state->rooms;
+  room_t *next = NULL;
+
+  while (current) {
+    next = current->next;
+    free_doors(current);
+    free(current);
+    current = next;
+  }
+
+  state->rooms = NULL;
+}
+
+void          rooms_append(state_t *state, SDL_Rect room, int id) {
+  room_t       *tmp = state->rooms;
+
+  if (tmp == NULL) {
+    state->rooms = (room_t *)malloc(sizeof(room_t));
+    if (state->rooms == NULL) {
+      DEBUG_MSG("Error during rooms_append#malloc");
+      exit(EXIT_FAILURE);
+    }
+    tmp = state->rooms;
+  } else {
+    while (tmp->next) {
+      tmp = tmp->next;
+    }
+    tmp->next = (room_t *)malloc(sizeof(room_t));
+    if (tmp->next == NULL) {
+      DEBUG_MSG("Error during rooms_append#malloc");
+      exit(EXIT_FAILURE);
+    }
+    tmp = tmp->next;
+  }
+
+  tmp->id = id;
+  tmp->room = room;
+  tmp->doors = NULL;
+  tmp->center = room_center(room);
+  tmp->next = NULL;
+}
+

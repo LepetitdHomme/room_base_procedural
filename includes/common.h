@@ -4,63 +4,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <unistd.h>
+#include <unistd.h>// ?
 #include <time.h>
 #include <math.h>
 #include <SDL2/SDL.h>
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
-#define SIGN(x) ((x > 0) - (x < 0))
 #define DEBUG_MSG(message) printf("Debug: %s, File %s, Line %d\n", message, __FILE__, __LINE__)
 
 #define DEBUG 0
 
+/* WINDOW/SCREEN */
 #define WINDOW_WIDTH 1200
 #define RATIO_WIDTH 16
 #define RATIO_HEIGHT 9
 #define WINDOW_HEIGHT (WINDOW_WIDTH * RATIO_HEIGHT) / RATIO_WIDTH
 
+/* GRID GENERATION */
 #define SCALE 100
 #define MIN_COMPLEXITY 1
 #define MAX_COMPLEXITY 10
 
+/* ROOM GENERATION */
 #define MIN_ROOM_SIZE 5
 #define MAX_ROOM_SIZE 10
 #define DISTANCE_BETWEEN_ROOMS 3
 #define BASE_ROOM_NUMBER 10
-#define SCREEN_TILE BASE_ROOM_NUMBER * 2
 
-enum Type {
-  EMPTY,
-  WALL_UP,
-  WALL_DOWN,
-  WALL_LEFT,
-  WALL_RIGHT,
-  CORNER_TOP_LEFT,
-  CORNER_TOP_RIGHT,
-  CORNER_BOT_LEFT,
-  CORNER_BOT_RIGHT,
-  FLOOR,
-  DOOR_UP,
-  DOOR_DOWN,
-  DOOR_LEFT,
-  DOOR_RIGHT,
-  DOOR_SRC,
-  DOOR_DST,
-  CORRIDOR
-};
+enum Type { EMPTY, WALL_UP, WALL_DOWN, WALL_LEFT, WALL_RIGHT, CORNER_TOP_LEFT, CORNER_TOP_RIGHT, CORNER_BOT_LEFT, CORNER_BOT_RIGHT, FLOOR, DOOR_UP, DOOR_DOWN, DOOR_LEFT, DOOR_RIGHT, DOOR_SRC, DOOR_DST, CORRIDOR };
 
-enum Dir {
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT
-};
+enum Dir { UP, DOWN, LEFT, RIGHT };
 
-enum Orientation {
-  VERTICAL,
-  HORIZONTAL
-};
+enum Orientation { VERTICAL, HORIZONTAL };
 
 struct door_node;
 struct player_struct;
@@ -107,17 +82,15 @@ typedef struct {
 } texture_t;
 
 typedef struct {
+  unsigned int          seed;
   SDL_Renderer          *renderer;
   texture_t             *level_texture;
-  int                   grid_w,grid_h;
-  int                   scale;
-  coord_t               scroll;
-  // int                   scroll_w, scroll_h;
-  SDL_Rect              limit_scroll;
-  int                   num_rooms;
   int                   **grid;
   room_t                *rooms;
   struct player_struct  *player;
+  int                   grid_w,grid_h;
+  int                   scale;
+  int                   num_rooms;
 } state_t;
 
 typedef struct player_struct {
@@ -127,18 +100,12 @@ typedef struct player_struct {
 } player_t;
 
 
-/*                      textures */
-void                    free_texture(state_t *state);
-void                    init_texture(state_t *state, const char *path, int num_x, int num_y);
-SDL_Rect                grid_value_to_tileset_rect(state_t *state, int x);
-
-/*                      player */
-void                    init_player(state_t *state);
-
-/*                      tools */
-int                     clamp(int value, int min, int max);
-int                     random_int(int lower, int upper);
-double                  distance_between_coords(coord_t center_1, coord_t center_2);
+/*                      grid */
+void                    init_grid(state_t *state, int complexity);
+void                    free_grid(state_t *state);
+void                    draw_level(state_t *state);
+void                    draw_connections(state_t *state);
+void                    draw_grid(state_t *state);
 
 /*                      level */
 void                    init_level(state_t *state, int complexity);
@@ -158,24 +125,31 @@ void                    free_corridors(door_t *door);
 void                    door_to_door(door_t *door, room_t *room1, room_t *room2);
 void                    dig_corridor(door_t *door, room_t *room1, room_t *room2);
 
+/*                      player */
+void                    init_player(state_t *state);
+
+/*                      textures */
+void                    init_texture(state_t *state, const char *path, int num_x, int num_y);
+void                    free_texture(state_t *state);
+SDL_Rect                grid_value_to_tileset_rect(state_t *state, int x);
+
+/*                      tools */
+int                     clamp(int value, int min, int max);
+int                     random_int(int lower, int upper);
+double                  distance_between_coords(coord_t center_1, coord_t center_2);
+
 /*                      ll_rooms */
 void                    free_doors(room_t *room);
 void                    free_rooms(state_t *state);
 void                    rooms_append(state_t *state, SDL_Rect room, int id);
 void                    doors_append(state_t *state, room_t *src, room_t *dst);
-void                    through_list(state_t *state);
 
 /*                      kruskal */
 void                    apply_kruskal(state_t *state);
 
-/*                      spanning_tree */
-void                    min_spanning_tree(state_t *state);
-
-/*                      grid */
-void                    init_grid(state_t *state, int complexity);
-void                    free_grid(state_t *state);
-void                    draw_level(state_t *state);
-void                    draw_connections(state_t *state);
-void                    draw_grid(state_t *state);
+/*                      type */
+SDL_Color               pick_color(state_t *state, int i, int j);
+double                  angle_from_type(enum Type type);
+enum Type               wall_type(SDL_Rect room, int x, int y);
 
 #endif

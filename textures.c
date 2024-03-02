@@ -1,13 +1,5 @@
 #include "includes/common.h"
 
-void          free_texture(state_t *state) {
-  if (state->level_texture->texture != NULL) {
-    SDL_DestroyTexture(state->level_texture->texture);
-  }
-  free(state->level_texture);
-  state->level_texture = NULL;
-}
-
 void          init_texture(state_t *state, const char *path, int num_x, int num_y) {
   SDL_Surface *tmp = NULL;
   SDL_Rect rect;
@@ -41,16 +33,17 @@ void          init_texture(state_t *state, const char *path, int num_x, int num_
   SDL_QueryTexture(state->level_texture->texture, NULL, NULL, &rect.w, &rect.h);
   state->level_texture->tile_w = rect.w / num_x;
   state->level_texture->tile_h = rect.h / num_y;
-  state->scroll.x = 0;
-  state->scroll.y = 0;//8 * state->TILE_HEIGHT;
-  // define limit scrolling
-  state->limit_scroll.x = 100;
-  state->limit_scroll.y = 100;
-  state->limit_scroll.w = 100;
-  state->limit_scroll.h = 100;
 }
 
-// BRUT VALUES
+void          free_texture(state_t *state) {
+  if (state->level_texture->texture != NULL) {
+    SDL_DestroyTexture(state->level_texture->texture);
+  }
+  free(state->level_texture);
+  state->level_texture = NULL;
+}
+
+/*            TODO: BRUT VALUES */
 SDL_Rect      grid_value_to_tileset_rect(state_t *state, int x) {
   SDL_Rect src;
 

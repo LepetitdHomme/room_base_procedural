@@ -1,6 +1,8 @@
 #include "includes/common.h"
 
-void      init_player(state_t *state) {
+/* MAIN FUNCTION */
+
+void          init_player(state_t *state) {
   state->player = (player_t *)malloc(sizeof(player_t));
   if (state->player == NULL) {
     DEBUG_MSG("Failed to malloc player");
@@ -41,6 +43,8 @@ void      init_player(state_t *state) {
   // state->player->elements = NULL;
   // state->player->weapons = NULL;
 }
+
+/***************************************************************/
 
 // void player_update_direction(player_struct *player)
 // {

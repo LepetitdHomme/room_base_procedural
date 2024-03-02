@@ -1,9 +1,8 @@
 #include "includes/common.h"
 
 SDL_Rect      g_rect(int grid_w, int grid_h, int w, int h) {
-  SDL_Rect rect;
+  SDL_Rect    rect;
 
-  /* TODO: should this -1 be DISTANCE_BETWEEN_ROOMS ? think not, as path should not be found on sides of dungeon */
   rect.x = random_int(DISTANCE_BETWEEN_ROOMS, grid_w - DISTANCE_BETWEEN_ROOMS - w);
   rect.y = random_int(DISTANCE_BETWEEN_ROOMS, grid_h - DISTANCE_BETWEEN_ROOMS - h);
   rect.w = w;
@@ -13,20 +12,36 @@ SDL_Rect      g_rect(int grid_w, int grid_h, int w, int h) {
 }
 
 int           is_corner_wall(SDL_Rect room, int i, int j) {
-  if (i == room.x && j == room.y || i == room.x + room.w && j == room.y || i == room.x && j == room.y + room.h || i == room.x + room.w && j == room.y + room.h) {
+  if (i == room.x && j == room.y) {
     return 0;
   }
+  if (i == room.x + room.w && j == room.y) {
+    return 0;
+  }
+  if (i == room.x && j == room.y + room.h) {
+    return 0;
+  }
+  if (i == room.x + room.w && j == room.y + room.h) {
+    return 0;
+  }
+
   return 1;
 }
 
+/*            Checks if (x, y) lies on any of the four edges of the rectangle */
 int           is_room_wall(SDL_Rect room, int x, int y) {
-  // Check if (x, y) lies on any of the four edges of the rectangle
-  if ((x == room.x || x == room.x + room.w - 1) && (y >= room.y && y < room.y + room.h) ||
-    (y == room.y || y == room.y + room.h - 1) && (x >= room.x && x < room.x + room.w)) {
-    return 0; // Coordinate is on the wall of the room rectangle
-  } else {
-    return 1; // Coordinate is not on the wall of the room rectangle
+  if (x == room.x || x == room.x + room.w - 1) {
+    if (y >= room.y && y < room.y + room.h) {
+      return 0;
+    }
   }
+  if (y == room.y || y == room.y + room.h - 1) {
+    if (x >= room.x && x < room.x + room.w) {
+      return 0;
+    }
+  }
+
+  return 1;
 }
 
 enum Dir      door_dir(SDL_Rect room, int x, int y) {
@@ -43,30 +58,6 @@ enum Dir      door_dir(SDL_Rect room, int x, int y) {
   if (x == room.x + room.w - 1)
     return RIGHT;
   return UP;
-}
-
-enum Type     wall_type(SDL_Rect room, int x, int y) {
-  enum Type type;
-
-  if (y == room.y) {
-    if (x == room.x)
-      return CORNER_TOP_LEFT;
-    if (x == room.x + room.w - 1)
-      return CORNER_TOP_RIGHT;
-    return WALL_UP;
-  }
-  if (y == room.y + room.h - 1) {
-    if (x == room.x)
-      return CORNER_BOT_LEFT;
-    if (x == room.x + room.w - 1)
-      return CORNER_BOT_RIGHT;
-    return WALL_DOWN;
-  }
-  if (x == room.x)
-    return WALL_LEFT;
-  if (x == room.x + room.w - 1)
-    return WALL_RIGHT;
-  return EMPTY;
 }
 
 coord_t       room_center(SDL_Rect room) {

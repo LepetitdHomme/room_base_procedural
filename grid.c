@@ -25,60 +25,7 @@ void          free_grid(state_t *state) {
   }
   free(state->grid);
   state->grid = NULL;
-}
-
-SDL_Color     pick_color(state_t *state, int i, int j) {
-  SDL_Color color;
-
-  switch (state->grid[i][j]) {
-    case EMPTY://empty
-      color.r = 0;
-      color.g = 0;
-      color.b = 0;
-      color.a = 255;
-      break;
-    case WALL_UP:
-    case WALL_DOWN:
-    case WALL_LEFT:
-    case WALL_RIGHT:
-      color.r = 127;
-      color.g = 127;
-      color.b = 127;
-      color.a = 127;
-      break;
-    case FLOOR://floor
-      color.r = 255;
-      color.g = 255;
-      color.b = 255;
-      color.a = 255;
-      break;
-    case CORRIDOR:
-      color.r = 0;
-      color.g = 50;
-      color.b = 255;
-      color.a = 255;
-      break;
-    case DOOR_SRC://door
-      color.r = 0;
-      color.g = 255;
-      color.b = 0;
-      color.a = 255;
-      break;
-    case DOOR_DST:
-      color.r = 255;
-      color.g = 0;
-      color.b = 0;
-      color.a = 255;
-      break;
-    default:
-      color.r = 255;
-      color.g = 255;
-      color.b = 255;
-      color.a = 255;
-  }
-
-  return color;
-}  
+} 
 
 void          draw_connections(state_t *state) {
   room_t *tmp = state->rooms;
@@ -128,59 +75,21 @@ void          draw_level(state_t *state) {
   }
 }
 
-double        angle_from_type(enum Type type) {
-  double angle;
-
-  switch (type) {
-    case EMPTY:
-      angle = 0.0;
-      break;
-    case WALL_UP:
-      angle = 0.0;
-      break;
-    case WALL_DOWN:
-      angle = 180.0;
-      break;
-    case WALL_LEFT:
-      angle = -90.0;
-      break;
-    case WALL_RIGHT:
-      angle = 90.0;
-      break;
-    case CORNER_TOP_LEFT:
-      angle = 0.0;
-      break;
-    case CORNER_TOP_RIGHT:
-      angle = 90.0;
-      break;
-    case CORNER_BOT_LEFT:
-      angle = -90.0;
-      break;
-    case CORNER_BOT_RIGHT:
-      angle = 180.0;// -180.0;
-      break;
-    default:
-      angle = 0.0;
-  }
-  return angle;
-}
-
 void          draw_grid(state_t *state) {
   SDL_Rect          src,dst;
   SDL_Color         color;
+  SDL_Point         center;
+  SDL_RendererFlip  flip;
   enum Type         tile_type;
-  SDL_RendererFlip  flip = SDL_FLIP_NONE;
-  // room_t            *room = state->player->room;
-  //                WINDOW RATIO should ensure cell_h maintains aspect ratio;
-  //                + 2 is for around the room;
-  // float             cell_size_float = (float)WINDOW_WIDTH / (room->room.w + 2);
-  // int               cell_size = (int)cell_size_float;
+  int               start_x, start_y, tile_final_size;
 
   SDL_SetRenderDrawColor(state->renderer, 255, 255, 255, 255);
-  int start_x = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_WIDTH - WINDOW_HEIGHT) / 2 : 0;
-  int start_y = (WINDOW_HEIGHT > WINDOW_WIDTH) ? (WINDOW_HEIGHT - WINDOW_WIDTH) / 2 : 0;
-  int tile_final_size = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_HEIGHT / state->grid_w) : (WINDOW_WIDTH / state->grid_w);
-  SDL_Point         center = {tile_final_size / 2, tile_final_size / 2};
+  flip = SDL_FLIP_NONE;
+  start_x = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_WIDTH - WINDOW_HEIGHT) / 2 : 0;
+  start_y = (WINDOW_HEIGHT > WINDOW_WIDTH) ? (WINDOW_HEIGHT - WINDOW_WIDTH) / 2 : 0;
+  tile_final_size = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_HEIGHT / state->grid_w) : (WINDOW_WIDTH / state->grid_w);
+  center.x = tile_final_size / 2;
+  center.y = tile_final_size / 2;
 
   for (int i = 0; i < state->grid_w ; i++) {
     for (int j = 0 ; j < state->grid_h ; j++) {

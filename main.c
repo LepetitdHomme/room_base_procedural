@@ -1,6 +1,72 @@
 #include "includes/common.h"
 
-int main(int argc, char *argv[]) {
+SDL_Window    *init_sdl();
+unsigned int  set_seed(int argc, char *argv[]);
+void          clean(state_t *state, SDL_Window *window);
+
+int           main(int argc, char *argv[]) {
+  SDL_Window  *window;
+  state_t     state;
+  SDL_Event   event;
+  int         quit;
+
+  window = init_sdl();
+  state.seed = set_seed(argc, argv);
+  state.renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+  state.grid = NULL;
+  state.rooms = NULL;
+  init_texture(&state, "assets/Sprite-0002.bmp", 5, 1);
+  init_level(&state, 1);
+  level_into_grid(&state);
+  quit = 0;  
+
+  while (!quit) {
+    while (SDL_PollEvent(&event)) {
+      if (event.type == SDL_QUIT) {
+        quit = 1;
+      }
+    }
+    SDL_SetRenderDrawColor(state.renderer, 0, 0, 0, 255);
+    SDL_RenderClear(state.renderer);
+
+    /* Draw your graphics */
+
+    if (DEBUG == 1) {
+      draw_level(&state);
+      draw_connections(&state);
+    } else {
+      draw_grid(&state);
+    }
+    
+    /**********************/
+
+    SDL_RenderPresent(state.renderer);
+    SDL_Delay(16);
+  }
+
+  clean(&state, window);
+  return 0;
+}
+
+SDL_Window    *init_sdl() {
+  SDL_Window  *window;
+
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    printf("SDL initialization failed: %s\n", SDL_GetError());
+    exit(EXIT_FAILURE);
+  }
+
+  window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+
+  if (window == NULL) {
+    printf("Window creation failed: %s\n", SDL_GetError());
+    exit(EXIT_FAILURE);
+  }
+
+  return window;
+}
+
+unsigned int  set_seed(int argc, char *argv[]) {
   // Seed for the random number generator
   unsigned int seed;
 
@@ -15,63 +81,13 @@ int main(int argc, char *argv[]) {
   }
   // Seed the random number generator
   srand(seed);
+  return seed;
+}
 
-  printf("Starting SDL2 application\n");
-  /* Initialize SDL */
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-      printf("SDL initialization failed: %s\n", SDL_GetError());
-      return 1;
-  }
-
-  /* Create a window */
-  SDL_Window *window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
-  if (window == NULL) {
-      printf("Window creation failed: %s\n", SDL_GetError());
-      return 1;
-  }
-
-  int complexity = 1;
-  state_t state;
-  state.renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-  state.grid = NULL;
-  state.rooms = NULL;
-  init_texture(&state, "assets/Sprite-0002.bmp", 5, 1);
-  init_level(&state, complexity);
-  level_into_grid(&state);
-  // through_list(&state);
-  /* Event loop */
-  SDL_Event event;
-
-  int quit = 0;
-  while (!quit) {
-    /* Handle events */
-    while (SDL_PollEvent(&event)) {
-      if (event.type == SDL_QUIT) {
-        quit = 1;
-      }
-    }
-    SDL_SetRenderDrawColor(state.renderer, 0, 0, 0, 255);
-    SDL_RenderClear(state.renderer);
-    /* Draw your graphics here (currently an empty black window) */
-
-    if (DEBUG == 1) {
-      draw_level(&state);
-      draw_connections(&state);
-    } else {
-      draw_grid(&state);
-    }
-    SDL_RenderPresent(state.renderer);
-    sleep(1);
-    SDL_Delay(60);
-  }
-
-  free_level(&state);
-
-  /* Clean up */
-  free_texture(&state);
-  SDL_DestroyRenderer(state.renderer);
+void          clean(state_t *state, SDL_Window *window) {
+  free_level(state);
+  free_texture(state);
+  SDL_DestroyRenderer(state->renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();
-
-  return 0;
 }

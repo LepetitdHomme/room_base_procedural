@@ -1,18 +1,10 @@
 #include "includes/common.h"
 
-int           max_rect_side(int x, int y, int n) {
-  // Calculate the maximum side length of rectangles
-  double px = ceil(sqrt(n * x / y));
-  double py = ceil(sqrt(n * y / x));
-  double sx = (floor(px * y / x) * px < n) ? (y / ceil(px * y / x)) : (x / px);
-  double sy = (floor(py * x / y) * py < n) ? (x / ceil(py * x / y)) : (y / py);
-  double max_rect_side = MAX(sx, sy);
-  return((int)max_rect_side + 1);
-}
+int           max_rect_side(int x, int y, int n);
 
 void          init_level(state_t *state, int complexity) {
-  int rooms_number,max_rect,clamped_complexity;
-  SDL_Rect room;
+  int         rooms_number,max_rect,clamped_complexity;
+  SDL_Rect    room;
 
   free_level(state);
   clamped_complexity = clamp(complexity, MIN_COMPLEXITY, MAX_COMPLEXITY);
@@ -34,6 +26,16 @@ void          init_level(state_t *state, int complexity) {
   }
   apply_kruskal(state);
   // init_player(state); // => to free
+}
+
+int           max_rect_side(int x, int y, int n) {
+  double      px = ceil(sqrt(n * x / y));
+  double      py = ceil(sqrt(n * y / x));
+  double      sx = (floor(px * y / x) * px < n) ? (y / ceil(px * y / x)) : (x / px);
+  double      sy = (floor(py * x / y) * py < n) ? (x / ceil(py * x / y)) : (y / py);
+  double      max_rect_side = MAX(sx, sy);
+
+  return((int)max_rect_side + 1);
 }
 
 void          free_level(state_t *state) {

@@ -32,11 +32,6 @@ void          next_coord_with_step(coord_t src, enum Dir dir, coord_t *dst) {
   }
 }
 
-/*            performs inversion of x,y imposed by SDL DRAW */
-/* 1709163157 => y1 == y2 ? => teleportation ? :) */
-/* 1709163835 => double corridor => when 'into_grid' => floor can erase floor, wall can erase wall, wall cannot erase floor, floor->wall ? */
-/* insert corridors into rooms ? */
-/* reverse doors ? from dst to src */
 SDL_Rect      rect_from_doors(coord_t a, enum Dir dir_a, coord_t b, enum Dir dir_b) {
   SDL_Rect  rect;
 
@@ -131,7 +126,6 @@ SDL_Rect      rect_from_doors(coord_t a, enum Dir dir_a, coord_t b, enum Dir dir
 }
 
 void          dig_corridor(door_t *door, room_t *room1, room_t *room2) {
-  // orientation = (door->door_src_dir == UP || door->door_src_dir == DOWN) ? VERTICAL : HORIZONTAL;
   corridor_t  *corridor = door->corridors;
   coord_t     head,tail;
 

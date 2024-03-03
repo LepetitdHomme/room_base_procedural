@@ -13,7 +13,7 @@
 #define SGN(X) (((X)==0)?(0):(((X)<0)?(-1):(1)))
 #define DEBUG_MSG(message) printf("Debug: %s, File %s, Line %d\n", message, __FILE__, __LINE__)
 
-#define DEBUG 0
+#define DEBUG 1
 
 /* WINDOW/SCREEN */
 #define WINDOW_WIDTH 1200

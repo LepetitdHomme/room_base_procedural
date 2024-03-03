@@ -61,13 +61,15 @@ int           update_scroll(state_t *state) {
     state->scroll.x += (center_p_x - limit_x_max);
   if (center_p_y > limit_y_max)
     state->scroll.y += (center_p_y - limit_y_max);
-  clamp_scroll(state);
+  // clamp_scroll(state);
 }
 
 /* must be done after level/player init */
 void          compute_screen_sizes(state_t *state) {
   // take specific distance rect before and after player = ZOOM
-  state->zoom.x = 10;
+  if (state->zoom.x == -1) {
+    state->zoom.x = 15; // clamped in inputs
+  }
   // compute the final tile size based on WINDOW WIDTH and ZOOM
   state->tile_screen_size = WINDOW_WIDTH / (state->zoom.x * 2);
   // compute the number of y tiles we want to display based on tile screen size
@@ -85,10 +87,20 @@ void          compute_screen_sizes(state_t *state) {
   // TODO: BRUT values
   state->scroll.x = state->player->dst_screen.x - (state->zoom.x * state->tile_screen_size);
   state->scroll.y = state->player->dst_screen.y - (state->zoom.y * state->tile_screen_size);
-  state->scroll_limit_x = 300;
-  state->scroll_limit_y = 300;
-  state->scroll_limit_w = WINDOW_WIDTH - 600;
-  state->scroll_limit_h = WINDOW_HEIGHT - 400;
+  state->scroll_limit_x = WINDOW_WIDTH / 6;
+  state->scroll_limit_y = WINDOW_HEIGHT / 6;
+  state->scroll_limit_w = WINDOW_WIDTH - (2 * state->scroll_limit_x);
+  state->scroll_limit_h = WINDOW_HEIGHT - (2 * state->scroll_limit_y);
+}
+
+void          draw_scrolling_window(state_t *state) {
+  SDL_Rect scroll_display;
+  scroll_display.x = state->scroll_limit_x;
+  scroll_display.y = state->scroll_limit_y;
+  scroll_display.w = state->scroll_limit_w;
+  scroll_display.h = state->scroll_limit_h;
+  SDL_SetRenderDrawColor(state->renderer, 0, 255, 0, 255);
+  SDL_RenderDrawRect(state->renderer, &scroll_display);  
 }
 
 void          draw_entities(state_t *state) {
@@ -104,6 +116,7 @@ void          draw_entities(state_t *state) {
   SDL_RenderDrawRect(state->renderer, &player);
 }
 
+// remember that there are 3 levels of coords: grid, world, window
 void          draw_node(state_t *state) {
   graph_t           *node = state->player->current_node;
   SDL_Rect          dst_screen;
@@ -137,5 +150,8 @@ void          draw_node(state_t *state) {
       dst_screen.h = state->tile_screen_size;
       SDL_RenderCopyEx(state->renderer, state->level_texture->texture, &src_texture, &dst_screen, angle_from_type(tile_type), &state->center_tile, state->flip);
     }
+  }
+  if (DEBUG == 1) {
+    draw_scrolling_window(state);
   }
 }

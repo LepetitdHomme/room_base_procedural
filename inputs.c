@@ -63,7 +63,19 @@ void 					inputs_keyup(state_t *state, SDL_Event *event, int *inputs_state) {
 	}
 }
 
-void inputs_handle(state_t *state, int *quit, SDL_Event *event, int *inputs_state) {
+void          inputs_wheel(state_t *state, SDL_Event *event) {
+  if (event->type == SDL_MOUSEWHEEL) {
+    if (event->wheel.y > 0) {
+      state->zoom.x = clamp(state->zoom.x - 2, 10, 20);
+      compute_screen_sizes(state);
+    } else if (event->wheel.y < 0) {
+      state->zoom.x = clamp(state->zoom.x + 2, 10, 20);
+      compute_screen_sizes(state);
+    }
+  }
+}
+
+void          inputs_handle(state_t *state, int *quit, SDL_Event *event, int *inputs_state) {
 	while (SDL_PollEvent(event)) {
 		if (event->type == SDL_KEYDOWN && event->key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
 			*quit = 1;
@@ -81,6 +93,8 @@ void inputs_handle(state_t *state, int *quit, SDL_Event *event, int *inputs_stat
 			case SDL_KEYUP:
 				inputs_keyup(state, event, inputs_state);
 				break;
+      case SDL_MOUSEWHEEL:
+        inputs_wheel(state, event);
 			default:
 				break;
 		}

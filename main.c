@@ -18,6 +18,7 @@ int           main(int argc, char *argv[]) {
   state.connections = NULL;
   state.num_connections = 0;
   state.graph = NULL;
+  state.zoom.x = -1;
   init_texture(&state, "assets/Sprite-0003.bmp", 5, 1);
   init_level(&state, 1);
   level_to_grid(&state);

@@ -7,6 +7,7 @@ TODO:
 	- tileprops (enum type + rect texture + angle) to avoid recomputation
 	- adjustment elevation (display only current node)
 	- BRUT values
+	- player stuck on wall when zooming => because recomputation of dst_screen takes grid pos, which considers x.y as top left, where foot should be considered
 
 IDEAS:
 	- eyes opening in the dark when opening door

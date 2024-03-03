@@ -52,57 +52,90 @@ void          free_level(state_t *state) {
   }
 }
 
-void          level_into_grid(state_t *state) {
-  room_t      *current = NULL;
-  door_t      *door = NULL;
-  corridor_t  *corridor = NULL;
-  
-  // reset grid
-  for (int i = 0; i < state->grid_w ; i++) {
-    for (int j = 0 ; j < state->grid_h ; j++) {
-      state->grid[i][j] = EMPTY;
+void          node_to_grid(state_t *state, graph_t *node) {
+  for (int i = node->rect.x ; i < node->rect.x + node->rect.w ; i++) {
+    for (int j = node->rect.y ; j < node->rect.y + node->rect.h ; j++) {
+      if (state->grid[i][j] != 0)
+        continue;
+      if (is_room_wall(node->rect, i, j) == 0) {
+        state->grid[i][j] = wall_type(node->rect, i, j);
+      } else {
+        state->grid[i][j] = FLOOR; // floor
+      }
+      if (node->id == 0) {
+        state->grid[node->center.x][node->center.y] = EMPTY;
+      }
     }
   }
 
-  current = state->rooms;
-  while (current != NULL) {
-    // place rooms on grid
-    for (int i = current->room.x ; i < current->room.x + current->room.w ; i++) {
-      for (int j = current->room.y ; j < current->room.y + current->room.h ; j++) {
-        if (state->grid[i][j] != 0)
-          continue;
-        if (is_room_wall(current->room, i, j) == 0) {
-          state->grid[i][j] = wall_type(current->room, i, j);
-        } else {
-          state->grid[i][j] = FLOOR; // floor
-        }
-        if (current->id == 0) {
-          state->grid[current->center.x][current->center.y] = EMPTY;
-        }
-      }
-    }
+  for (int i = 0 ; i < node->num_doors ; i++) {
+    state->grid[node->doors[i].coord.x][node->doors[i].coord.y] = DOOR_DST;
+  }
 
-    // place doors on grid
-    door = current->doors;
-    while (door != NULL) {
-      printf("room  %d | door => room  %d\n", current->id, door->room->id);
-      state->grid[door->coord_src.x][door->coord_src.y] = DOOR_SRC;
-      state->grid[door->coord_dst.x][door->coord_dst.y] = DOOR_DST;
-
-      // place corridors on grid
-      corridor = door->corridors;
-      while (corridor != NULL) {
-        for (int i = corridor->rect.x ; i < corridor->rect.x + corridor->rect.w ; i++) {
-          for (int j = corridor->rect.y ; j < corridor->rect.y + corridor->rect.h ; j++) {
-            state->grid[i][j] = CORRIDOR;
-          }
-        }
-        corridor = corridor->next;
-      }
-      door = door->next;
-    }
-
-    // place corridors on grid
-    current = current->next;
+  for (int i = 0 ; i < node->num_children ; i++) {
+    node_to_grid(state, node->children[i]);
   }
 }
+
+void          level_to_grid(state_t *state) {
+  door_t      *door = NULL;
+  graph_t     *node = NULL;
+
+  reset_grid(state);
+  node_to_grid(state, state->graph);
+}
+
+// void          level_into_grid(state_t *state) {
+//   room_t      *current = NULL;
+//   door_t      *door = NULL;
+//   corridor_t  *corridor = NULL;
+  
+//   // reset grid
+//   for (int i = 0; i < state->grid_w ; i++) {
+//     for (int j = 0 ; j < state->grid_h ; j++) {
+//       state->grid[i][j] = EMPTY;
+//     }
+//   }
+
+//   current = state->rooms;
+//   while (current != NULL) {
+//     // place rooms on grid
+//     for (int i = current->room.x ; i < current->room.x + current->room.w ; i++) {
+//       for (int j = current->room.y ; j < current->room.y + current->room.h ; j++) {
+//         if (state->grid[i][j] != 0)
+//           continue;
+//         if (is_room_wall(current->room, i, j) == 0) {
+//           state->grid[i][j] = wall_type(current->room, i, j);
+//         } else {
+//           state->grid[i][j] = FLOOR; // floor
+//         }
+//         if (current->id == 0) {
+//           state->grid[current->center.x][current->center.y] = EMPTY;
+//         }
+//       }
+//     }
+
+//     // place doors on grid
+//     door = current->doors;
+//     while (door != NULL) {
+//       // printf("room  %d | door => room  %d\n", current->id, door->room->id);
+//       state->grid[door->coord_src.x][door->coord_src.y] = DOOR_SRC;
+//       state->grid[door->coord_dst.x][door->coord_dst.y] = DOOR_DST;
+
+//       // place corridors on grid
+//       corridor = door->corridors;
+//       while (corridor != NULL) {
+//         for (int i = corridor->rect.x ; i < corridor->rect.x + corridor->rect.w ; i++) {
+//           for (int j = corridor->rect.y ; j < corridor->rect.y + corridor->rect.h ; j++) {
+//             state->grid[i][j] = CORRIDOR;
+//           }
+//         }
+//         corridor = corridor->next;
+//       }
+//       door = door->next;
+//     }
+
+//     // place corridors on grid
+//     current = current->next;
+//   }
+// }

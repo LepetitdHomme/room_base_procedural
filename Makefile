@@ -23,7 +23,6 @@ OBJ = main.o \
 			level.o \
 			room.o \
 			door.o \
-			corridors.o \
 			tools.o \
 			kruskal.o \
 			player.o \

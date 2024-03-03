@@ -18,6 +18,14 @@ void          init_grid(state_t *state, int complexity) {
   }
 }
 
+void          reset_grid(state_t *state) {
+  for (int i = 0; i < state->grid_w ; i++) {
+    for (int j = 0 ; j < state->grid_h ; j++) {
+      state->grid[i][j] = EMPTY;
+    }
+  }  
+}
+
 void          free_grid(state_t *state) {
   for(int i = 0; i < state->grid_w ; i++) {
     free(state->grid[i]);
@@ -25,30 +33,6 @@ void          free_grid(state_t *state) {
   }
   free(state->grid);
   state->grid = NULL;
-} 
-
-void          draw_connections(state_t *state) {
-  room_t *tmp = state->rooms;
-  door_t *tmp_d = NULL;
-
-  int start_x = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_WIDTH - WINDOW_HEIGHT) / 2 : 0;
-  int start_y = (WINDOW_HEIGHT > WINDOW_WIDTH) ? (WINDOW_HEIGHT - WINDOW_WIDTH) / 2 : 0;
-  int tile_final_size = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_HEIGHT / state->grid_w) : (WINDOW_WIDTH / state->grid_w);
-
-  while (tmp) {
-    tmp_d = tmp->doors;
-    while (tmp_d) {
-      coord_t a,b;
-      a.x = tmp->center.x * tile_final_size + start_x;
-      a.y = tmp->center.y * tile_final_size + start_y;
-      b.x = tmp_d->room->center.x * tile_final_size + start_x;
-      b.y = tmp_d->room->center.y * tile_final_size + start_y;
-      SDL_SetRenderDrawColor(state->renderer, 255, 0, 0, 255);
-      SDL_RenderDrawLine(state->renderer, a.x, a.y, b.x, b.y);
-      tmp_d = tmp_d->next;
-    }
-    tmp = tmp->next;
-  }
 }
 
 void          draw_level(state_t *state) {

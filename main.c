@@ -20,7 +20,7 @@ int           main(int argc, char *argv[]) {
   state.graph = NULL;
   init_texture(&state, "assets/Sprite-0002.bmp", 5, 1);
   init_level(&state, 1);
-  level_into_grid(&state);
+  level_to_grid(&state);
   quit = 0;
 
   while (!quit) {
@@ -36,7 +36,7 @@ int           main(int argc, char *argv[]) {
 
     if (DEBUG == 1) {
       draw_level(&state);
-      draw_connections(&state);
+      // draw_connections(&state);
     } else {
       draw_grid(&state);
     }

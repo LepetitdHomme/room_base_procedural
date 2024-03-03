@@ -6,6 +6,7 @@ TODO:
 	- free_graph
 	- remove doors/corridos
 	- free rooms after graph ?
+	- tileprops (enum type + rect texture + angle) to avoid recomputation
 
 IDEAS:
 	- eyes opening in the dark when opening door

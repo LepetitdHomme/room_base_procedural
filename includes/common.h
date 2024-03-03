@@ -40,6 +40,7 @@ enum Orientation { VERTICAL, HORIZONTAL };
 struct door_node;
 struct player_struct;
 struct corridor_node;
+struct graph_node;
 
 typedef struct {
   int                   x,y;
@@ -67,18 +68,15 @@ typedef struct room_node {
 } room_t;
 
 typedef struct door_node {
-  room_t                *room;
-  coord_t               coord_src,coord_dst;
-  enum Dir              door_src_dir,door_dst_dir;
-  struct corridor_node  *corridors;
-  struct door_node      *next;
+  coord_t               coord;
+  enum Dir              dir;
 } door_t;
 
-typedef struct corridor_node {
-  SDL_Rect              rect;
-  coord_t               center;
-  struct corridor_node  *next;
-} corridor_t;
+// typedef struct corridor_node {
+//   SDL_Rect              rect;
+//   coord_t               center;
+//   struct corridor_node  *next;
+// } corridor_t;
 
 typedef struct graph_node {
   struct graph_node     *parent;
@@ -86,6 +84,8 @@ typedef struct graph_node {
   int                   num_children;
   SDL_Rect              rect;
   coord_t               center;
+  door_t                *doors;
+  int                   num_doors;
   int                   is_corridor;
   int                   id;
 } graph_t;
@@ -121,14 +121,17 @@ typedef struct player_struct {
 /*                      grid */
 void                    init_grid(state_t *state, int complexity);
 void                    free_grid(state_t *state);
+void                    reset_grid(state_t *state);
 void                    draw_level(state_t *state);
-void                    draw_connections(state_t *state);
+// void                    draw_connections(state_t *state);
 void                    draw_grid(state_t *state);
 
 /*                      level */
 void                    init_level(state_t *state, int complexity);
-void                    level_into_grid(state_t *state);
+// void                    level_into_grid(state_t *state);
 void                    free_level(state_t *state);
+void                    node_to_grid(state_t *state, graph_t *node);
+void                    level_to_grid(state_t *state);
 
 /*                      room */
 int                     is_room_wall(SDL_Rect room, int i, int j);
@@ -146,19 +149,21 @@ void                    free_connections(state_t *state);
 void                    connections_print(state_t *state);
 
 /*                      door */
-void                    doors_append(state_t *state, room_t *src, room_t *dst);
-void                    free_doors(room_t *room);
+void                    doors_append(graph_t *src_node, door_t door_node);
+void                    free_doors(graph_t *node);
 enum Dir                door_dir(SDL_Rect room, int x, int y);
-void                    door_coordinates(door_t *door, room_t *room1, room_t *room2);
+door_t                  door_coordinates(graph_t *src, graph_t *dst);
+SDL_Rect                rect_from_doors(door_t src, door_t dst);
 
 /*                      corridors */
-void                    free_corridors(door_t *door);
-void                    door_to_door(door_t *door, room_t *room1, room_t *room2);
-void                    corridors_append(door_t *door, room_t *room1, room_t *room2);
+// void                    free_corridors(door_t *door);
+// void                    door_to_door(door_t *door, room_t *room1, room_t *room2);
+// void                    corridors_append(door_t *door, room_t *room1, room_t *room2);
 
 /*                      graph */
 void                    graph_create(state_t *state);
 graph_t                 *graph_create_node(SDL_Rect rect, coord_t center, int is_corridor, int id);
+graph_t                 *graph_create_node_from_connection(state_t *state, graph_t *parent_node, graph_t *child_node);
 graph_t                 *graph_create_node_from_room(state_t *state, con_t *connections, int num_connections, room_t *room);
 void                    graph_add_child(graph_t *parent, graph_t *child);
 void                    free_graph(state_t *state);

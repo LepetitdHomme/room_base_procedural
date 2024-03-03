@@ -101,7 +101,7 @@ void          free_rooms(state_t *state) {
 
   while (current) {
     next = current->next;
-    free_doors(current);
+    // free_doors(current);
     free(current);
     current = next;
   }

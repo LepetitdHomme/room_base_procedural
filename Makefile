@@ -29,7 +29,9 @@ OBJ = main.o \
 			textures.o \
 			type.o \
 			graph.o \
-			connections.o
+			connections.o \
+			entities.o \
+			draw.o
 
 # macOS configuration
 ifeq ($(UNAME_S),Darwin)

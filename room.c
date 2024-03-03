@@ -66,6 +66,22 @@ coord_t       room_center(SDL_Rect room) {
   return center;
 }
 
+int           room_is_valid(state_t *state, SDL_Rect room, int spacing, int min_size) {
+  if (room.w < min_size || room.h < min_size) {
+    return 2;
+  }
+
+  for (int i = room.x - spacing ; i < room.x + room.w + spacing ; i++) {
+    for (int j = room.y - spacing; j < room.y + room.h + spacing ; j++) {
+      if (state->grid[i][j] != 0) {
+        return 1;
+      }
+    }
+  }
+
+  return 0;
+}
+
 SDL_Rect      place_new_room(state_t *state, int max_rect_side) {
   if (max_rect_side <= 5) {
     printf("error when placing room\n");
@@ -74,19 +90,15 @@ SDL_Rect      place_new_room(state_t *state, int max_rect_side) {
   SDL_Rect rect;
 
   rect = g_rect(state->grid_w, state->grid_h, random_int(5, max_rect_side), random_int(5, max_rect_side));
-  // rect = g_rect(state->grid_w, state->grid_h, max_rect_side, (max_rect_side * RATIO_HEIGHT) / RATIO_WIDTH);
   // printf("%d - %d - %d - %d\n", rect.x, rect.y, rect.w, rect.h);
 
-  for (int i = rect.x - DISTANCE_BETWEEN_ROOMS ; i < rect.x + rect.w + DISTANCE_BETWEEN_ROOMS ; i++) {
-    for (int j = rect.y - DISTANCE_BETWEEN_ROOMS; j < rect.y + rect.h + DISTANCE_BETWEEN_ROOMS ; j++) {
-      if (state->grid[i][j] != 0) {
-        rect.x = -1; // custom failure
-        return rect;
-      }
-    }
+  if (room_is_valid(state, rect, DISTANCE_BETWEEN_ROOMS, MIN_ROOM_SIZE) != 0) {
+    rect.x = -1; // custom failure
+    return rect;
   }
 
   // place random int != 0 in grid during rectangle/rooms generation
+  // UNTIL CORRIDORS DONE
   for(int i = rect.x ; i < rect.x + rect.w ; i++) {
     for (int j = rect.y ; j < rect.y + rect.h ; j++) {
       state->grid[i][j] = 1;

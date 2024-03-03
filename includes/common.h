@@ -26,6 +26,7 @@
 #define MAX_COMPLEXITY 10
 
 /* ROOM GENERATION */
+#define MIN_CORRIDOR_SIZE 3
 #define MIN_ROOM_SIZE 5
 #define MAX_ROOM_SIZE 10
 #define DISTANCE_BETWEEN_ROOMS 3
@@ -80,6 +81,7 @@ typedef struct graph_node {
   door_t                *doors;
   int                   num_doors;
   int                   is_corridor;
+  int                   elevation;
   int                   id;
 } graph_t;
 
@@ -106,16 +108,18 @@ typedef struct {
 
 typedef struct player_struct {
   coord_t               pos;
-  room_t                *room;
+  graph_t               *current_node;
   enum Dir              direction;
 } player_t;
 
+/*                      draw */
+void                    draw_grid(state_t *state);
+void                    draw_entities(state_t *state);
 
 /*                      grid */
 void                    init_grid(state_t *state, int complexity);
 void                    free_grid(state_t *state);
 void                    reset_grid(state_t *state);
-void                    draw_grid(state_t *state);
 
 /*                      level */
 void                    init_level(state_t *state, int complexity);
@@ -127,6 +131,7 @@ int                     is_corner_wall(SDL_Rect rect, int i, int j);
 int                     is_room_wall(SDL_Rect room, int i, int j);
 room_t                  *find_room_by_id(state_t *state, int id);
 enum Type               wall_type(SDL_Rect room, int x, int y);
+int                     room_is_valid(state_t *state, SDL_Rect room, int spacing, int min_size);
 SDL_Rect                place_new_room(state_t *state, int max_rect_side);
 coord_t                 room_center(SDL_Rect room);
 SDL_Rect                g_rect(int grid_w, int grid_h, int w, int h);
@@ -148,7 +153,7 @@ SDL_Rect                rect_from_doors(door_t src, door_t dst);
 
 /*                      graph */
 void                    graph_create(state_t *state);
-graph_t                 *graph_create_node(SDL_Rect rect, coord_t center, int is_corridor, int id);
+graph_t                 *graph_create_node(SDL_Rect rect, coord_t center, int is_corridor, int elevation, int id);
 graph_t                 *graph_create_node_from_connection(state_t *state, graph_t *parent_node, graph_t *child_node);
 graph_t                 *graph_create_node_from_room(state_t *state, con_t *connections, int num_connections, room_t *room);
 void                    graph_add_child(graph_t *parent, graph_t *child);
@@ -158,6 +163,9 @@ void                    graph_print(graph_t *node, int depth);
 
 /*                      player */
 void                    init_player(state_t *state);
+void                    free_player(state_t *state);
+
+/*                      entities */
 
 /*                      textures */
 void                    init_texture(state_t *state, const char *path, int num_x, int num_y);

@@ -31,7 +31,7 @@ door_t        door_coordinates(graph_t *src, graph_t *dst) {
     if (is_room_wall(src->rect, current_x, current_y) == 0) {
 
       if (is_corner_wall(src->rect, current_x, current_y) == 0) {
-        printf("corner door ! => e2: %d, err: %d, sx: %d, sy: %d, dx: %d, dy: %d\n", e2, err, sx, sy, dx, dy);
+        // printf("corner door ! => e2: %d, err: %d, sx: %d, sy: %d, dx: %d, dy: %d\n", e2, err, sx, sy, dx, dy);
         if (dx > dy) {
           if (sy > 0) {
             door_node.coord.x = current_x;

@@ -1,6 +1,9 @@
 #include "includes/common.h"
 
-/* MAIN FUNCTION */
+void          free_player(state_t *state) {
+  free(state->player);
+  state->player = NULL;
+}
 
 void          init_player(state_t *state) {
   state->player = (player_t *)malloc(sizeof(player_t));
@@ -25,9 +28,9 @@ void          init_player(state_t *state) {
   
   // state->player->delta_y = 0;
   // state->player->delta_x = 0;
-  state->player->room = state->rooms;
-  state->player->pos.x = state->player->room->center.x;
-  state->player->pos.y = state->player->room->center.y;
+  state->player->current_node = state->graph;
+  state->player->pos.x = state->graph->center.x;
+  state->player->pos.y = state->graph->center.y;
   state->player->direction = RIGHT;
 
   

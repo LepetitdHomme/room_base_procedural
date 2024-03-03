@@ -26,7 +26,7 @@ void          init_level(state_t *state, int complexity) {
   apply_kruskal(state);
   // connections_print(state);
   graph_create(state);
-  // init_player(state); // => to free
+  init_player(state); // => to free
 }
 
 int           max_rect_side(int x, int y, int n) {
@@ -49,9 +49,9 @@ void          node_to_grid(state_t *state, graph_t *node) {
       } else {
         state->grid[i][j] = FLOOR; // floor
       }
-      if (node->id == 0) {
-        state->grid[node->center.x][node->center.y] = EMPTY;
-      }
+      // if (node->id == 0) { //starting point
+      //   state->grid[node->center.x][node->center.y] = EMPTY;
+      // }
     }
   }
 

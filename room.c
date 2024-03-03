@@ -101,7 +101,6 @@ void          free_rooms(state_t *state) {
 
   while (current) {
     next = current->next;
-    // free_doors(current);
     free(current);
     current = next;
   }
@@ -133,7 +132,6 @@ void          rooms_append(state_t *state, SDL_Rect room, int id) {
 
   tmp->id = id;
   tmp->room = room;
-  tmp->doors = NULL;
   tmp->center = room_center(room);
   tmp->next = NULL;
 }

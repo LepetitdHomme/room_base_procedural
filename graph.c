@@ -37,6 +37,8 @@ void          graph_add_child(graph_t *parent, graph_t *child) {
 graph_t       *graph_create_node_from_connection(state_t *state, graph_t *parent_node, graph_t *child_node) {
   graph_t     *corridor_node;
   door_t      door_node_parent;
+  door_t      door_node_from_parent;
+  door_t      door_node_from_child;
   door_t      door_node_child;
   SDL_Rect    corridor_rect;
 
@@ -47,8 +49,13 @@ graph_t       *graph_create_node_from_connection(state_t *state, graph_t *parent
 
   corridor_rect = rect_from_doors(door_node_parent, door_node_child);
   corridor_node = graph_create_node(corridor_rect, room_center(corridor_rect), 1, state->num_rooms + 1);
-  doors_append(corridor_node, door_node_parent);
-  doors_append(corridor_node, door_node_child);
+  // get doors for middle room = corridor
+  door_node_from_parent.coord = next_coord_with_step(door_node_parent.coord, door_node_parent.dir);
+  door_node_from_parent.dir = invert_dir(door_node_parent.dir);
+  door_node_from_child.coord = next_coord_with_step(door_node_child.coord, door_node_child.dir);
+  door_node_from_child.dir = invert_dir(door_node_child.dir);
+  doors_append(corridor_node, door_node_from_parent);
+  doors_append(corridor_node, door_node_from_child);
 
   return corridor_node;
 }
@@ -109,15 +116,30 @@ void          graph_create(state_t *state) {
   
   /* we start with the first room, but we could start with a any random room post kruskal (state->connections) */
   state->graph = graph_create_node_from_room(state, state->connections, state->num_connections, state->rooms);
-  displayGraph(state->graph, 0);
-  // free_rooms(state);
+  // graph_print(state->graph, 0);
+  free_rooms(state);
+}
+
+void          free_node(graph_t *node) {
+  if (node == NULL) {
+    return;
+  }
+
+  for (int i = 0 ; i < node->num_children ; i++) {
+    free_node(node->children[i]);
+  }
+
+  free(node->doors);
+  node->doors = NULL;
+  free(node);
 }
 
 void          free_graph(state_t *state) {
-  return;
+  free_node(state->graph);
+  state->graph = NULL;
 }
 
-void displayGraph(graph_t *node, int depth) {
+void          graph_print(graph_t *node, int depth) {
   if (node == NULL) {
     return;
   }
@@ -138,7 +160,7 @@ void displayGraph(graph_t *node, int depth) {
 
   // Print children
   for (int i = 0; i < node->num_children; i++) {
-    displayGraph(node->children[i], depth + 1); // Recursive call with increased depth
+    graph_print(node->children[i], depth + 1); // Recursive call with increased depth
   }
 }
 

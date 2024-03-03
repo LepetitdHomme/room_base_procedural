@@ -34,12 +34,7 @@ int           main(int argc, char *argv[]) {
 
     /* Draw your graphics */
 
-    if (DEBUG == 1) {
-      draw_level(&state);
-      // draw_connections(&state);
-    } else {
-      draw_grid(&state);
-    }
+    draw_grid(&state);
     
     /**********************/
 
@@ -88,7 +83,9 @@ unsigned int  set_seed(int argc, char *argv[]) {
 }
 
 void          clean(state_t *state, SDL_Window *window) {
-  free_level(state);
+  free_grid(state);
+  free_graph(state);
+  free_connections(state);
   free_texture(state);
   SDL_DestroyRenderer(state->renderer);
   SDL_DestroyWindow(window);

@@ -76,6 +76,28 @@ enum Dir      door_dir(SDL_Rect rect, int x, int y) {
   return UP;
 }
 
+coord_t       next_coord_with_step(coord_t src, enum Dir dir) {
+  coord_t coord;
+  coord.x = src.x;
+  coord.y = src.y;
+
+  switch (dir) {
+    case UP:
+      coord.y -= 1;
+      break;
+    case DOWN:
+      coord.y += 1;
+      break;
+    case LEFT:
+      coord.x -= 1;
+      break;
+    default:
+      coord.x += 1;
+  }
+
+  return coord;
+}
+
 SDL_Rect      rect_from_doors(door_t src, door_t dst) {
   SDL_Rect  rect;
   coord_t   a = src.coord;

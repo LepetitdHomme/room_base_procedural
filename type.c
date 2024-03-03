@@ -53,6 +53,26 @@ SDL_Color     pick_color(state_t *state, int i, int j) {
   return color;
 }
 
+enum Dir      invert_dir(enum Dir dir) {
+  enum Dir  invert;
+
+  switch (dir) {
+  case UP:
+    invert = DOWN;
+    break;
+  case DOWN:
+    invert = UP;
+    break;
+  case LEFT:
+    invert = RIGHT;
+    break;
+  default:
+    invert = LEFT;
+  }
+
+  return invert;
+}
+
 double        angle_from_type(enum Type type) {
   double angle;
 

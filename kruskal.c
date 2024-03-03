@@ -31,23 +31,6 @@ int compare_edges(const void* a, const void* b) {
     return 0;
 }
 
-// void link_rooms(state_t *state, int src, int dst) {
-//   room_t *tmp = state->rooms;
-//   room_t *found_src = NULL;
-//   room_t *found_dst = NULL;
-
-//   while (tmp) { // do this in doors_append ?
-//     if (tmp->id == src) {
-//       found_src = tmp;
-//     } else if (tmp->id == dst) {
-//       found_dst = tmp;
-//     }
-
-//     tmp = tmp->next;
-//   }
-//   doors_append(state, found_src, found_dst);
-// }
-
 void printf_subsets(subset_t subsets[], int num_rooms) {
   printf("Subset information:\n");
   for (int i = 0; i < num_rooms; i++) {
@@ -74,6 +57,8 @@ void apply_kruskal(state_t *state) {
   room_t *current_room = state->rooms;
   room_t *other_room = NULL;
   int num_rooms = state->num_rooms;
+
+  free_connections(state);
 
   edge_t *edges = (edge_t*)malloc(num_rooms * (num_rooms - 1) / 2 * sizeof(edge_t));
   int edge_count = 0;
@@ -117,7 +102,6 @@ void apply_kruskal(state_t *state) {
       added[next_edge.src] = true;
       added[next_edge.dst] = true;
       union_subsets(subsets, x, y);
-      // link_rooms(state, next_edge.src, next_edge.dst);
       connections_append(state, next_edge.src, next_edge.dst);
       // printf_subsets(subsets, num_rooms);
     }

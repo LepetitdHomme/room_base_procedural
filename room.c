@@ -11,6 +11,19 @@ SDL_Rect      g_rect(int grid_w, int grid_h, int w, int h) {
   return rect;
 }
 
+room_t        *find_room_by_id(state_t *state, int id) {
+  room_t *tmp = state->rooms;
+  room_t *found_id = NULL;
+
+  while (tmp) {
+    if (tmp->id == id) {
+      return tmp;
+    }
+    tmp = tmp->next;
+  }
+  return NULL;
+}
+
 int           is_corner_wall(SDL_Rect room, int i, int j) {
   if (i == room.x && j == room.y) {
     return 0;

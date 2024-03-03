@@ -15,10 +15,12 @@ int           main(int argc, char *argv[]) {
   state.renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
   state.grid = NULL;
   state.rooms = NULL;
+  state.connections = NULL;
+  state.graph = NULL;
   init_texture(&state, "assets/Sprite-0002.bmp", 5, 1);
   init_level(&state, 1);
   level_into_grid(&state);
-  quit = 0;  
+  quit = 0;
 
   while (!quit) {
     while (SDL_PollEvent(&event)) {

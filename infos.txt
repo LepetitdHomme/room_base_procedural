@@ -3,4 +3,27 @@ TODO:
 	- diagonal step means door on corner ?: 1709163157
 	- ensure walls ok in double corridors: 1709163835
 	- corridors erasing a room: 1709381612
+	- free_graph
+	- remove doors/corridos
+	- free rooms after graph ?
+
+IDEAS:
+	- eyes opening in the dark when opening door
 	-
+
+
+before:
+	- init level
+		- place room / room append
+		- apply kruskal
+			- link room
+				- door append
+					- compute coord doors
+					- corridor append
+
+after:
+ - init level
+ 	- place room / room append
+ 	- apply kruskal
+ 		- connection appen
+ 	- create graph

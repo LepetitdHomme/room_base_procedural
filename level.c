@@ -25,6 +25,8 @@ void          init_level(state_t *state, int complexity) {
 
   }
   apply_kruskal(state);
+  connections_print(state);
+  graph_create(state); // finishes with free_rooms(state);
   // init_player(state); // => to free
 }
 
@@ -44,6 +46,9 @@ void          free_level(state_t *state) {
   }
   if (state->rooms != NULL) {
     free_rooms(state);
+  }
+  if (state->connections != NULL) {
+    free_connections(state);
   }
 }
 
@@ -71,12 +76,16 @@ void          level_into_grid(state_t *state) {
         } else {
           state->grid[i][j] = FLOOR; // floor
         }
+        if (current->id == 0) {
+          state->grid[current->center.x][current->center.y] = EMPTY;
+        }
       }
     }
 
     // place doors on grid
     door = current->doors;
     while (door != NULL) {
+      printf("room  %d | door => room  %d\n", current->id, door->room->id);
       state->grid[door->coord_src.x][door->coord_src.y] = DOOR_SRC;
       state->grid[door->coord_dst.x][door->coord_dst.y] = DOOR_DST;
 

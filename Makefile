@@ -28,7 +28,9 @@ OBJ = main.o \
 			kruskal.o \
 			player.o \
 			textures.o \
-			type.o
+			type.o \
+			graph.o \
+			connections.o
 
 # macOS configuration
 ifeq ($(UNAME_S),Darwin)

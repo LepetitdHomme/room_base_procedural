@@ -45,8 +45,13 @@ typedef struct {
   int                   x,y;
 } coord_t;
 
+typedef struct connection {
+  int                   src,dst;
+  struct connection     *next;
+} con_t;
+
 typedef struct {
-  int                   src, dest;
+  int                   src,dst;
   double                weight; // distance
 } edge_t;
 
@@ -72,8 +77,19 @@ typedef struct door_node {
 
 typedef struct corridor_node {
   SDL_Rect              rect;
+  coord_t               center;
   struct corridor_node  *next;
 } corridor_t;
+
+typedef struct graph_node {
+  struct graph_node     *parent;
+  struct graph_node     **children;
+  int                   num_children;
+  SDL_Rect              rect;
+  coord_t               center;
+  int                   is_corridor;
+  int                   id;
+} graph_t;
 
 typedef struct {
   SDL_Texture           *texture;
@@ -86,11 +102,13 @@ typedef struct {
   SDL_Renderer          *renderer;
   texture_t             *level_texture;
   int                   **grid;
+  graph_t               *graph;
   room_t                *rooms;
   struct player_struct  *player;
   int                   grid_w,grid_h;
   int                   scale;
   int                   num_rooms;
+  con_t                 *connections;
 } state_t;
 
 typedef struct player_struct {
@@ -114,12 +132,18 @@ void                    free_level(state_t *state);
 
 /*                      room */
 int                     is_room_wall(SDL_Rect room, int i, int j);
+room_t                  *find_room_by_id(state_t *state, int id);
 enum Type               wall_type(SDL_Rect room, int x, int y);
 SDL_Rect                place_new_room(state_t *state, int max_rect_side);
 coord_t                 room_center(SDL_Rect room);
 SDL_Rect                g_rect(int grid_w, int grid_h, int w, int h);
 void                    free_rooms(state_t *state);
 void                    rooms_append(state_t *state, SDL_Rect room, int id);
+
+/*                      connections */
+void                    connections_append(state_t *state, int src, int dst);
+void                    free_connections(state_t *state);
+void                    connections_print(state_t *state);
 
 /*                      door */
 void                    doors_append(state_t *state, room_t *src, room_t *dst);
@@ -131,6 +155,14 @@ void                    door_coordinates(door_t *door, room_t *room1, room_t *ro
 void                    free_corridors(door_t *door);
 void                    door_to_door(door_t *door, room_t *room1, room_t *room2);
 void                    corridors_append(door_t *door, room_t *room1, room_t *room2);
+
+/*                      graph */
+void                    graph_create(state_t *state);
+graph_t                 *graph_create_node(SDL_Rect rect, coord_t center, int is_corridor, int id);
+graph_t                 *graph_create_node_from_room(state_t *state, con_t *connections, room_t *room);
+void                    graph_add_child(graph_t *parent, graph_t *child);
+void                    free_graph(state_t *state);
+void                    displayGraph(graph_t *node, int depth);
 
 /*                      player */
 void                    init_player(state_t *state);

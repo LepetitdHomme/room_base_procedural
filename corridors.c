@@ -134,5 +134,6 @@ void          corridors_append(door_t *door, room_t *room1, room_t *room2) {
     exit(EXIT_FAILURE);    
   }
   door->corridors->rect = rect_from_doors(door->coord_src, door->door_src_dir, door->coord_dst, door->door_dst_dir);
+  door->corridors->center = room_center(door->corridors->rect);
   door->corridors->next = NULL;
 }

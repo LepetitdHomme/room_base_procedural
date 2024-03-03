@@ -47,7 +47,6 @@ typedef struct {
 
 typedef struct connection {
   int                   src,dst;
-  struct connection     *next;
 } con_t;
 
 typedef struct {
@@ -109,6 +108,7 @@ typedef struct {
   int                   scale;
   int                   num_rooms;
   con_t                 *connections;
+  int                   num_connections;
 } state_t;
 
 typedef struct player_struct {
@@ -159,7 +159,7 @@ void                    corridors_append(door_t *door, room_t *room1, room_t *ro
 /*                      graph */
 void                    graph_create(state_t *state);
 graph_t                 *graph_create_node(SDL_Rect rect, coord_t center, int is_corridor, int id);
-graph_t                 *graph_create_node_from_room(state_t *state, con_t *connections, room_t *room);
+graph_t                 *graph_create_node_from_room(state_t *state, con_t *connections, int num_connections, room_t *room);
 void                    graph_add_child(graph_t *parent, graph_t *child);
 void                    free_graph(state_t *state);
 void                    displayGraph(graph_t *node, int depth);

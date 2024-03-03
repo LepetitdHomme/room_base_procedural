@@ -16,6 +16,7 @@ int           main(int argc, char *argv[]) {
   state.grid = NULL;
   state.rooms = NULL;
   state.connections = NULL;
+  state.num_connections = 0;
   state.graph = NULL;
   init_texture(&state, "assets/Sprite-0002.bmp", 5, 1);
   init_level(&state, 1);

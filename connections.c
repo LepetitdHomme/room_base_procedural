@@ -1,38 +1,27 @@
 #include "includes/common.h"
 
 void                    connections_append(state_t *state, int src, int dst) {
-  // replacing head instead of fetching tail
-  con_t *new_node = (con_t *)malloc(sizeof(con_t));
-
-  if (new_node == NULL) {
-    DEBUG_MSG("Error during connection_append#malloc");
-    exit(EXIT_FAILURE);
+  // Increase the size of the connections array
+  state->connections = realloc(state->connections, (state->num_connections + 1) * sizeof(con_t));
+  if (state->connections == NULL) {
+      printf("Memory allocation failed!\n");
+      exit(1);
   }
 
-  new_node->src = src;
-  new_node->dst = dst;
-  new_node->next = state->connections;
-  state->connections = new_node;
+  // Add the new connection
+  state->connections[state->num_connections].src = src;
+  state->connections[state->num_connections].dst = dst;
+  state->num_connections++;
 }
 
 void                    connections_print(state_t *state) {
-  con_t *tmp = state->connections;
-
-  while (tmp) {
-    printf("connection: %d-%d\n", tmp->src, tmp->dst);
-    tmp = tmp->next;
+  for (int i = 0 ; i < state->num_connections ; i++) {
+    printf("connection %d - %d\n", state->connections[i].src, state->connections[i].dst);
   }
 }
 
 void                    free_connections(state_t *state) {
-  con_t *current = state->connections;
-  con_t *next = NULL;
-
-  while (current) {
-    next = current->next;
-    free(current);
-    current = next;
-  }
-
+  free(state->connections);
+  state->num_connections = 0;
   state->connections = NULL;
 }

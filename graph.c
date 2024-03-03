@@ -32,54 +32,55 @@ void          graph_add_child(graph_t *parent, graph_t *child) {
   child->parent = parent;
 }
 
-graph_t       *graph_create_node_from_room(state_t *state, con_t *connection, room_t *room) {
+graph_t       *graph_create_node_from_room(state_t *state, con_t *connections, int num_connections, room_t *room) {
   graph_t     *room_node;
-  con_t       *current_connection;
+  con_t       current_connection;
   room_t      *connected_room;
   graph_t     *connected_room_node;
 
   room_node = graph_create_node(room->room, room->center, 0, room->id);
-  connected_room = NULL;
-  connected_room_node = NULL;
-  current_connection = connection;
 
-  while (current_connection) {
-    if (room->id == current_connection->src) {
-      connected_room = find_room_by_id(state, current_connection->dst);
-    } else if (room->id == current_connection->dst) {
-      connected_room = find_room_by_id(state, current_connection->src);
+   for (size_t i = 0; i < num_connections; i++)  {
+    connected_room = NULL;
+    connected_room_node = NULL;
+
+    /* We create a copy of connections struct array without current index */
+    con_t *new_connections = (con_t *)malloc((num_connections - 1) * sizeof(con_t));
+    if (new_connections == NULL) {
+      printf("Memory allocation failed\n");
+      exit(EXIT_FAILURE);
+    }
+    int k = 0;
+    for (size_t j = 0; j < num_connections; j++) {
+      if (i != j) { // Exclude the current connection
+        new_connections[k] = connections[j];
+        k++;
+      }
+    }
+    /********************************************************************/
+    
+    if (room->id == connections[i].src) {
+      connected_room = find_room_by_id(state, connections[i].dst);
+
+    } else if (room->id == connections[i].dst) {
+      connected_room = find_room_by_id(state, connections[i].src);
     }
     if (connected_room != NULL) {
-      connected_room_node = graph_create_node_from_room(state, current_connection->next, connected_room);
+      connected_room_node = graph_create_node_from_room(state, new_connections, k, connected_room);
       graph_add_child(room_node, connected_room_node);
-      connected_room = NULL;
-      connected_room_node = NULL;
     }
-    current_connection = current_connection->next;
+
+    free(new_connections);
   }
 
   return room_node;
 }
 
 void          graph_create(state_t *state) {
-  graph_t     *current_node;
-  room_t      *current_room;
   free_graph(state);
   state->graph = NULL;
-  current_node = NULL;
-  current_room = state->rooms;
   
-  // while (current_room) {
-    current_node = graph_create_node_from_room(state, state->connections, state->rooms);
-
-    // if (state->graph == NULL) {
-    state->graph = current_node;
-  //   } else {
-  //     graph_add_child(state->graph, current_node);
-  //   }
-
-  //   current_room = current_room->next;
-  // }
+  state->graph = graph_create_node_from_room(state, state->connections, state->num_connections, state->rooms);
   displayGraph(state->graph, 0);
   // free_rooms(state);
 }

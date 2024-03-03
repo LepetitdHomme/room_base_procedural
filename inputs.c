@@ -25,6 +25,9 @@ void 					inputs_keydown(state_t *state, SDL_Event *event, int *inputs_state) {
 			state->player->delta_x = state->player->speed;
 		}
 	}
+  if (event->key.keysym.sym == SDLK_TAB) {
+    state->display_map = 1;
+  }
 }
 
 /* inputs_state allows for multiple key press without having to perma call SDL get keyboard state */
@@ -61,6 +64,9 @@ void 					inputs_keyup(state_t *state, SDL_Event *event, int *inputs_state) {
 			state->player->delta_x = 0;
 		}
 	}
+  if (event->key.keysym.sym == SDLK_TAB) {
+    state->display_map = 0;
+  }
 }
 
 void          inputs_wheel(state_t *state, SDL_Event *event) {

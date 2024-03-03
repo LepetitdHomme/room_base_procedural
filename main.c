@@ -19,6 +19,7 @@ int           main(int argc, char *argv[]) {
   state.num_connections = 0;
   state.graph = NULL;
   state.zoom.x = -1;
+  state.display_map = 0;
   init_texture(&state, "assets/Sprite-0003.bmp", 5, 1);
   init_level(&state, 1);
   level_to_grid(&state);
@@ -37,9 +38,11 @@ int           main(int argc, char *argv[]) {
 
     /* Draw your graphics */
 
-    // draw_grid(&state);
     draw_node(&state);
     draw_entities(&state);
+    if (state.display_map == 1) {
+      draw_grid(&state);
+    }
     
     /**********************/
 

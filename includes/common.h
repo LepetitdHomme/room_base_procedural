@@ -13,7 +13,7 @@
 #define SGN(X) (((X)==0)?(0):(((X)<0)?(-1):(1)))
 #define DEBUG_MSG(message) printf("Debug: %s, File %s, Line %d\n", message, __FILE__, __LINE__)
 
-#define DEBUG 1
+#define DEBUG 0
 
 /* WINDOW/SCREEN */
 #define WINDOW_WIDTH 1200
@@ -115,6 +115,7 @@ typedef struct {
   coord_t               scroll; // the top-left position of the scrolling window (not in SDL_Rect because of SDL_Rect limitation)
   int                   scroll_limit_x, scroll_limit_y, scroll_limit_w, scroll_limit_h; // the actual size of the scrolling window
   int                   scale;
+  int                   display_map;
 } state_t;
 
 typedef struct player_struct {

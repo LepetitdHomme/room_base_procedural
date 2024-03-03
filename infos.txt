@@ -1,4 +1,4 @@
-TODO:
+TODO DEBUG:
 	- check doors side by side
 	- diagonal step means door on corner ?: linux: 1709163157 - bsd: 1709464489
 	- corridor no floor: linux: 1709467149
@@ -11,4 +11,5 @@ TODO:
 
 IDEAS:
 	- eyes opening in the dark when opening door
-	-
+	- rooms sliding when hitting door (hit space ? or on collision ?)
+	- 

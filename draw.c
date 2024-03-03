@@ -23,9 +23,9 @@ void          draw_grid(state_t *state) {
       dst.w = tile_final_size;
       dst.h = tile_final_size;
       tile_type = state->grid[i][j];
-      src = grid_value_to_tileset_rect(state, tile_type);
-      // SDL_RenderCopy(state->renderer, state->level_texture->texture, &src, &dst);
-      SDL_RenderCopyEx(state->renderer, state->level_texture->texture, &src, &dst, angle_from_type(tile_type), &center, flip);
+      color = pick_color(state, i, j);
+      SDL_SetRenderDrawColor(state->renderer, color.r, color.g, color.b, 128);
+      SDL_RenderDrawRect(state->renderer, &dst);
     }
   }
 }

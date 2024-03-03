@@ -27,7 +27,9 @@ int 					is_colliding(state_t *state, SDL_Rect dst) {
 		for (int j = ymin ; j <= ymax ; j++) {
 			// printf("collision: %d, %d\n", i, j);
 			if (state->grid[i][j] != FLOOR) {
-				return 1;
+				if (state->grid[i][j] != DOOR_UP && state->grid[i][j] != DOOR_DOWN && state->grid[i][j] != DOOR_LEFT && state->grid[i][j] != DOOR_RIGHT) {
+					return 1;
+				}
 			}
 		}
 	}

@@ -31,7 +31,11 @@ SDL_Color     pick_color(state_t *state, int i, int j) {
       color.b = 255;
       color.a = 255;
       break;
-    case DOOR_SRC://door
+    case DOOR_SRC:
+    case DOOR_UP:
+    case DOOR_DOWN:
+    case DOOR_LEFT:
+    case DOOR_RIGHT:
       color.r = 0;
       color.g = 255;
       color.b = 0;

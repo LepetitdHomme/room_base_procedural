@@ -95,6 +95,10 @@ typedef struct {
   unsigned int          seed;
   SDL_Renderer          *renderer;
   texture_t             *level_texture;
+  SDL_Point             center_tile;
+  int                   tile_screen_size;
+  SDL_RendererFlip      flip;
+  coord_t               zoom;
   int                   **grid;
   graph_t               *graph;
   room_t                *rooms; // NULL after level graph generation
@@ -114,7 +118,9 @@ typedef struct player_struct {
 
 /*                      draw */
 void                    draw_grid(state_t *state);
+void                    draw_node(state_t *state);
 void                    draw_entities(state_t *state);
+void                    compute_screen_sizes(state_t *state);
 
 /*                      grid */
 void                    init_grid(state_t *state, int complexity);
@@ -123,7 +129,7 @@ void                    reset_grid(state_t *state);
 
 /*                      level */
 void                    init_level(state_t *state, int complexity);
-void                    node_to_grid(state_t *state, graph_t *node);
+void                    node_to_grid(state_t *state, graph_t *node, int elevation);
 void                    level_to_grid(state_t *state);
 
 /*                      room */

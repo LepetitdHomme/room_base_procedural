@@ -39,10 +39,10 @@ int           max_rect_side(int x, int y, int n) {
   return((int)max_rect_side + 1);
 }
 
-void          node_to_grid(state_t *state, graph_t *node) {
+void          node_to_grid(state_t *state, graph_t *node, int elevation) {
   for (int i = node->rect.x ; i < node->rect.x + node->rect.w ; i++) {
     for (int j = node->rect.y ; j < node->rect.y + node->rect.h ; j++) {
-      if (state->grid[i][j] != 0)
+      if (state->grid[i][j] != 0 || node->elevation != elevation)
         continue;
       if (is_room_wall(node->rect, i, j) == 0) {
         state->grid[i][j] = wall_type(node->rect, i, j);
@@ -56,18 +56,22 @@ void          node_to_grid(state_t *state, graph_t *node) {
   }
 
   for (int i = 0 ; i < node->num_doors ; i++) {
+    if (node->elevation != elevation)
+      continue;
     state->grid[node->doors[i].coord.x][node->doors[i].coord.y] = DOOR_DST;
   }
 
   for (int i = 0 ; i < node->num_children ; i++) {
-    node_to_grid(state, node->children[i]);
+    node_to_grid(state, node->children[i], elevation);
   }
 }
 
 void          level_to_grid(state_t *state) {
   door_t      *door = NULL;
   graph_t     *node = NULL;
+  int         elevation = state->player->current_node->elevation;
 
   reset_grid(state);
-  node_to_grid(state, state->graph);
+  // we only compute current elevation, this avoids corridors erasing rooms/nodes on the grid
+  node_to_grid(state, state->graph, elevation);
 }

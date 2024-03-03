@@ -1,5 +1,5 @@
 #include "includes/common.h"
 
-void          draw_entities(state_t *state) {
-  return;
-}
+// void          draw_entities(state_t *state) {
+//   return;
+// }

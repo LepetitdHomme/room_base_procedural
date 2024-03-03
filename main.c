@@ -21,6 +21,7 @@ int           main(int argc, char *argv[]) {
   init_texture(&state, "assets/Sprite-0002.bmp", 5, 1);
   init_level(&state, 1);
   level_to_grid(&state);
+  compute_screen_sizes(&state);
   quit = 0;
 
   while (!quit) {
@@ -34,7 +35,8 @@ int           main(int argc, char *argv[]) {
 
     /* Draw your graphics */
 
-    draw_grid(&state);
+    // draw_grid(&state);
+    draw_node(&state);
     draw_entities(&state);
     
     /**********************/

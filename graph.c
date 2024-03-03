@@ -54,7 +54,7 @@ graph_t       *graph_create_node_from_connection(state_t *state, graph_t *parent
   elevation = parent_node->elevation;
   corridor_rect = rect_from_doors(door_node_parent, door_node_child);
   if ((room_validation = room_is_valid(state, corridor_rect, 0, MIN_CORRIDOR_SIZE)) != 0) {
-    printf("corridor invalid: %d\n", room_validation);
+    // printf("corridor invalid: %d\n", room_validation);
     if (room_validation == 2) { // no place to walk
       if (corridor_rect.w >= corridor_rect.h) {
         corridor_rect.h += 1;
@@ -144,7 +144,7 @@ void          graph_create(state_t *state) {
   
   /* we start with the first room, but we could start with a any random room post kruskal (state->connections) */
   state->graph = graph_create_node_from_room(state, state->connections, state->num_connections, state->rooms);
-  graph_print(state->graph, 0);
+  // graph_print(state->graph, 0);
   free_rooms(state);
 }
 
@@ -177,9 +177,9 @@ void          graph_print(graph_t *node, int depth) {
     printf("  ");
   }
   if (node->is_corridor == 1) {
-    printf("Corridor: id:%d, elevation: %d\n", node->id, node->elevation);
+    printf("Corridor: id:%d, elevation: %d, num_doors: %d\n", node->id, node->elevation, node->num_doors);
   } else {
-    printf("Node: id:%d, elevation: %d\n", node->id, node->elevation);
+    printf("Node: id:%d, elevation: %d, num_doors: %d\n", node->id, node->elevation, node->num_doors);
   }
 
   // Print parent if exists

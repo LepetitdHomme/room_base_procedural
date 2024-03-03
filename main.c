@@ -18,20 +18,19 @@ int           main(int argc, char *argv[]) {
   state.connections = NULL;
   state.num_connections = 0;
   state.graph = NULL;
-  init_texture(&state, "assets/Sprite-0002.bmp", 5, 1);
+  init_texture(&state, "assets/Sprite-0003.bmp", 5, 1);
   init_level(&state, 1);
   level_to_grid(&state);
   compute_screen_sizes(&state);
   quit = 0;
+  // TODO: do something bout this
+  int inputs_state[4] = { 0, 0, 0, 0 }; // awsd :/
 
   while (!quit) {
     state.ticks = SDL_GetTicks();
 
-    while (SDL_PollEvent(&event)) {
-      if (event.type == SDL_QUIT) {
-        quit = 1;
-      }
-    }
+    inputs_handle(&state, &quit, &event, &inputs_state[0]);
+    player_move(&state, state.player->delta_x, state.player->delta_y);
     SDL_SetRenderDrawColor(state.renderer, 0, 0, 0, 255);
     SDL_RenderClear(state.renderer);
 

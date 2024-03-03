@@ -10,6 +10,7 @@
 #include <SDL2/SDL.h>
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define SGN(X) (((X)==0)?(0):(((X)<0)?(-1):(1)))
 #define DEBUG_MSG(message) printf("Debug: %s, File %s, Line %d\n", message, __FILE__, __LINE__)
 
 #define DEBUG 0
@@ -31,6 +32,9 @@
 #define MAX_ROOM_SIZE 10
 #define DISTANCE_BETWEEN_ROOMS 3
 #define BASE_ROOM_NUMBER 10
+
+/* PLAYER */
+#define PLAYER_SPEED 7
 
 enum Type { EMPTY, WALL_UP, WALL_DOWN, WALL_LEFT, WALL_RIGHT, CORNER_TOP_LEFT, CORNER_TOP_RIGHT, CORNER_BOT_LEFT, CORNER_BOT_RIGHT, FLOOR, DOOR_UP, DOOR_DOWN, DOOR_LEFT, DOOR_RIGHT, DOOR_SRC, DOOR_DST, CORRIDOR };
 
@@ -108,13 +112,19 @@ typedef struct {
   int                   num_connections;
   graph_t               *graph; // the end result of level structure
   struct player_struct  *player;
+  coord_t               scroll; // the top-left position of the scrolling window (not in SDL_Rect because of SDL_Rect limitation)
+  int                   scroll_limit_x, scroll_limit_y, scroll_limit_w, scroll_limit_h; // the actual size of the scrolling window
   int                   scale;
 } state_t;
 
 typedef struct player_struct {
-  coord_t               pos;
-  Uint32                last_update;
-  graph_t               *current_node;
+  coord_t               pos; // grid values
+  SDL_Rect              src_screen; // screen values, current pos on screen
+  SDL_Rect              dst_screen; // screen values, attempted pos on screen
+  int                   delta_x,delta_y; // these are screen values
+  int                   speed; // used to increment delta_x, based on state->tile_screen_size
+  Uint32                last_update; // last move update ticks
+  graph_t               *current_node; // current room/node on graph
   enum Dir              direction;
 } player_t;
 
@@ -172,13 +182,24 @@ void                    graph_print(graph_t *node, int depth);
 /*                      player */
 void                    init_player(state_t *state);
 void                    free_player(state_t *state);
+void                    player_update_direction(player_t *player);
+void                    player_refine_move_attempt(state_t *state, int dx, int dy);
+void                    player_move(state_t *state, int dx, int dy);
+int                     player_move_attempt(state_t *state, int dx, int dy);
 
 /*                      entities */
+
+/*                      collisions */
+int                     is_colliding(state_t *state, SDL_Rect dst);
 
 /*                      textures */
 void                    init_texture(state_t *state, const char *path, int num_x, int num_y);
 void                    free_texture(state_t *state);
 SDL_Rect                grid_value_to_tileset_rect(state_t *state, int x);
+
+/*                      inputs */
+void                    inputs_handle(state_t *state, int *quit, SDL_Event *event, int *inputs_state);
+void                    inputs_keydown(state_t *state, SDL_Event *event, int *inputs_state);
 
 /*                      tools */
 int                     clamp(int value, int min, int max);

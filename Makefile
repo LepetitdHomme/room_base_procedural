@@ -31,7 +31,9 @@ OBJ = main.o \
 			graph.o \
 			connections.o \
 			entities.o \
-			draw.o
+			draw.o \
+			collisions.o \
+			inputs.o
 
 # macOS configuration
 ifeq ($(UNAME_S),Darwin)

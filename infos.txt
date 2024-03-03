@@ -6,6 +6,7 @@ TODO:
 	- corridors erasing a room: 1709381612
 	- tileprops (enum type + rect texture + angle) to avoid recomputation
 	- adjustment elevation (display only current node)
+	- BRUT values
 
 IDEAS:
 	- eyes opening in the dark when opening door

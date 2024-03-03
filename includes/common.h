@@ -146,6 +146,7 @@ void                    node_to_grid(state_t *state, graph_t *node, int elevatio
 void                    level_to_grid(state_t *state);
 
 /*                      room */
+int                     is_in_room(coord_t point, SDL_Rect rect);
 int                     is_corner_wall(SDL_Rect rect, int i, int j);
 int                     is_room_wall(SDL_Rect room, int i, int j);
 room_t                  *find_room_by_id(state_t *state, int id);
@@ -183,6 +184,7 @@ void                    graph_print(graph_t *node, int depth);
 /*                      player */
 void                    init_player(state_t *state);
 void                    free_player(state_t *state);
+void                    player_update_node(player_t *player);
 void                    player_update_direction(player_t *player);
 void                    player_refine_move_attempt(state_t *state, int dx, int dy);
 void                    player_move(state_t *state, int dx, int dy);

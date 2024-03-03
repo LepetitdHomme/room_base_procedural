@@ -87,8 +87,8 @@ void          compute_screen_sizes(state_t *state) {
   // TODO: BRUT values
   state->scroll.x = state->player->dst_screen.x - (state->zoom.x * state->tile_screen_size);
   state->scroll.y = state->player->dst_screen.y - (state->zoom.y * state->tile_screen_size);
-  state->scroll_limit_x = WINDOW_WIDTH / 6;
-  state->scroll_limit_y = WINDOW_HEIGHT / 6;
+  state->scroll_limit_x = WINDOW_WIDTH / 4;
+  state->scroll_limit_y = WINDOW_HEIGHT / 4;
   state->scroll_limit_w = WINDOW_WIDTH - (2 * state->scroll_limit_x);
   state->scroll_limit_h = WINDOW_HEIGHT - (2 * state->scroll_limit_y);
 }
@@ -113,7 +113,7 @@ void          draw_entities(state_t *state) {
   player.h = state->tile_screen_size;
 
   SDL_SetRenderDrawColor(state->renderer, 255, 0, 0, 255);
-  SDL_RenderDrawRect(state->renderer, &player);
+  SDL_RenderFillRect(state->renderer, &player);
 }
 
 // remember that there are 3 levels of coords: grid, world, window

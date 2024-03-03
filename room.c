@@ -57,6 +57,14 @@ int           is_room_wall(SDL_Rect room, int x, int y) {
   return 1;
 }
 
+int           is_in_room(coord_t point, SDL_Rect rect) {
+  if (point.x >= rect.x && point.x < rect.x + rect.w && point.y >= rect.y && point.y < rect.y + rect.h) {
+    return 0;
+  }
+
+  return 1;
+}
+
 coord_t       room_center(SDL_Rect room) {
   coord_t center;
 

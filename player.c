@@ -59,6 +59,25 @@ void          player_update_direction(player_t *player) {
   }
 }
 
+void          player_update_node(player_t *player) {
+  if (is_in_room(player->pos, player->current_node->rect) == 0) {
+    return;
+  }
+
+  graph_t *parent = player->current_node->parent;
+  if (parent != NULL && is_in_room(player->pos, player->current_node->parent->rect) == 0) {
+    player->current_node = parent;
+    return;
+  }
+
+  for (int i = 0 ; i < player->current_node->num_children ; i++) {
+    if (is_in_room(player->pos, player->current_node->children[i]->rect) == 0) {
+      player->current_node = player->current_node->children[i];
+      return;
+    }
+  }
+}
+
 
 void          player_refine_move_attempt(state_t *state, int dx, int dy) {
   for (int i = 0 ; i < abs(dx) ; i++) {
@@ -92,6 +111,7 @@ int           player_move_attempt(state_t *state, int dx, int dy) {
     state->player->pos.x = state->player->dst_screen.x / state->tile_screen_size;
     state->player->pos.y = state->player->dst_screen.y / state->tile_screen_size;
     player_update_direction(state->player);
+    player_update_node(state->player);
     return 1;
   }
   return 0;

@@ -19,7 +19,7 @@ int           main(int argc, char *argv[]) {
   state.num_connections = 0;
   state.graph = NULL;
   init_texture(&state, "assets/Sprite-0002.bmp", 5, 1);
-  init_level(&state, 1);
+  init_level(&state, 2);
   level_to_grid(&state);
   quit = 0;
 

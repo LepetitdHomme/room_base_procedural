@@ -1,6 +1,6 @@
 TODO:
 	- check doors side by side
-	- diagonal step means door on corner ?: 1709163157 1709464489
+	- diagonal step means door on corner ?: linux: 1709163157 - bsd: 1709464489
 	- ensure walls ok in double corridors: 1709163835
 	- corridors erasing a room: 1709381612
 	- tileprops (enum type + rect texture + angle) to avoid recomputation

@@ -29,9 +29,31 @@ door_t        door_coordinates(graph_t *src, graph_t *dst) {
   while (1) {
     // Check if the current position is within the boundaries of src
     if (is_room_wall(src->rect, current_x, current_y) == 0) {
-      door_node.dir = door_dir(src->rect, current_x, current_y);
-      door_node.coord.x = current_x;
-      door_node.coord.y = current_y;
+
+      if (is_corner_wall(src->rect, current_x, current_y) == 0) {
+        printf("corner door ! => e2: %d, err: %d, sx: %d, sy: %d, dx: %d, dy: %d\n", e2, err, sx, sy, dx, dy);
+        if (dx > dy) {
+          if (sy > 0) {
+            door_node.coord.x = current_x;
+            door_node.coord.y = current_y - 1;
+          } else {
+            door_node.coord.x = current_x;
+            door_node.coord.y = current_y + 1;
+          }
+        } else {
+          if (sx > 0) {
+            door_node.coord.x = current_x - 1;
+            door_node.coord.y = current_y;
+          } else {
+            door_node.coord.x = current_x + 1;
+            door_node.coord.y = current_y;
+          }
+        }
+      } else {
+        door_node.coord.x = current_x;
+        door_node.coord.y = current_y;
+      }
+      door_node.dir = door_dir(src->rect, door_node.coord.x, door_node.coord.y);
       break;
     }
 

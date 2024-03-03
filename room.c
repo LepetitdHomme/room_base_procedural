@@ -24,17 +24,17 @@ room_t        *find_room_by_id(state_t *state, int id) {
   return NULL;
 }
 
-int           is_corner_wall(SDL_Rect room, int i, int j) {
-  if (i == room.x && j == room.y) {
+int           is_corner_wall(SDL_Rect rect, int i, int j) {
+  if (i == rect.x && j == rect.y) {
     return 0;
   }
-  if (i == room.x + room.w && j == room.y) {
+  if (i == rect.x + rect.w - 1 && j == rect.y) {
     return 0;
   }
-  if (i == room.x && j == room.y + room.h) {
+  if (i == rect.x && j == rect.y + rect.h - 1) {
     return 0;
   }
-  if (i == room.x + room.w && j == room.y + room.h) {
+  if (i == rect.x + rect.w - 1 && j == rect.y + rect.h - 1) {
     return 0;
   }
 

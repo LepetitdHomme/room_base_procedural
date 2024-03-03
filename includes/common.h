@@ -123,6 +123,7 @@ void                    node_to_grid(state_t *state, graph_t *node);
 void                    level_to_grid(state_t *state);
 
 /*                      room */
+int                     is_corner_wall(SDL_Rect rect, int i, int j);
 int                     is_room_wall(SDL_Rect room, int i, int j);
 room_t                  *find_room_by_id(state_t *state, int id);
 enum Type               wall_type(SDL_Rect room, int x, int y);

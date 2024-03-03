@@ -81,15 +81,19 @@ double        angle_from_type(enum Type type) {
       angle = 0.0;
       break;
     case WALL_UP:
+    case DOOR_UP:
       angle = 0.0;
       break;
     case WALL_DOWN:
+    case DOOR_DOWN:
       angle = 180.0;
       break;
     case WALL_LEFT:
+    case DOOR_LEFT:
       angle = -90.0;
       break;
     case WALL_RIGHT:
+    case DOOR_RIGHT:
       angle = 90.0;
       break;
     case CORNER_TOP_LEFT:
@@ -108,6 +112,22 @@ double        angle_from_type(enum Type type) {
       angle = 0.0;
   }
   return angle;
+}
+
+enum Type     door_dir_to_type(enum Dir dir) {
+  switch (dir) {
+    case UP:
+      return DOOR_UP;
+      break;
+    case DOWN:
+      return DOOR_DOWN;
+      break;
+    case LEFT:
+      return DOOR_LEFT;
+      break;
+    default:
+      return DOOR_RIGHT;
+  }
 }
 
 enum Type     wall_type(SDL_Rect room, int x, int y) {

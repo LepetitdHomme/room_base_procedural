@@ -72,6 +72,10 @@ SDL_Rect      grid_value_to_tileset_rect(state_t *state, int x) {
       src.y = 0;
       break;
     case DOOR_SRC:
+    case DOOR_UP:
+    case DOOR_DOWN:
+    case DOOR_LEFT:
+    case DOOR_RIGHT:
       src.x = 3 * state->level_texture->tile_w;
       src.y = 0;
       break;

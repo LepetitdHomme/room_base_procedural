@@ -58,7 +58,7 @@ void          node_to_grid(state_t *state, graph_t *node, int elevation) {
   for (int i = 0 ; i < node->num_doors ; i++) {
     if (node->elevation != elevation)
       continue;
-    state->grid[node->doors[i].coord.x][node->doors[i].coord.y] = DOOR_DST;
+    state->grid[node->doors[i].coord.x][node->doors[i].coord.y] = door_dir_to_type(node->doors[i].dir);
   }
 
   for (int i = 0 ; i < node->num_children ; i++) {

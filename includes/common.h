@@ -188,6 +188,7 @@ void                    apply_kruskal(state_t *state);
 
 /*                      type */
 enum Dir                invert_dir(enum Dir dir);
+enum Type               door_dir_to_type(enum Dir dir);
 SDL_Color               pick_color(state_t *state, int i, int j);
 double                  angle_from_type(enum Type type);
 enum Type               wall_type(SDL_Rect room, int x, int y);

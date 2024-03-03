@@ -94,24 +94,26 @@ typedef struct {
 typedef struct {
   unsigned int          seed;
   SDL_Renderer          *renderer;
-  texture_t             *level_texture;
-  SDL_Point             center_tile;
-  int                   tile_screen_size;
-  SDL_RendererFlip      flip;
-  coord_t               zoom;
-  int                   **grid;
-  graph_t               *graph;
-  room_t                *rooms; // NULL after level graph generation
-  struct player_struct  *player;
+  Uint32                ticks;
+  texture_t             *level_texture; // contains sdl texture from tileset
+  coord_t               zoom; // default value aerial distance from player = number of tiles displayed before and after player
+  int                   tile_screen_size; // precomputed tile size from WINDOW_WIDTH and default zoom
+  SDL_Point             center_tile; // precomputed tile size center
+  SDL_RendererFlip      flip; // basic SDL flip for rendercopyex
+  int                   **grid; // the background grid retaining level infos
   int                   grid_w,grid_h;
-  int                   scale;
+  room_t                *rooms; // the linked list of generated rooms, NULL after level graph generation
   int                   num_rooms;
-  con_t                 *connections;
+  con_t                 *connections; // the number of tuples room-room, necessary for graph
   int                   num_connections;
+  graph_t               *graph; // the end result of level structure
+  struct player_struct  *player;
+  int                   scale;
 } state_t;
 
 typedef struct player_struct {
   coord_t               pos;
+  Uint32                last_update;
   graph_t               *current_node;
   enum Dir              direction;
 } player_t;

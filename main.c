@@ -25,6 +25,8 @@ int           main(int argc, char *argv[]) {
   quit = 0;
 
   while (!quit) {
+    state.ticks = SDL_GetTicks();
+
     while (SDL_PollEvent(&event)) {
       if (event.type == SDL_QUIT) {
         quit = 1;

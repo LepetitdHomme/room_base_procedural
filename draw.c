@@ -1,14 +1,13 @@
 #include "includes/common.h"
 
 void          draw_grid(state_t *state) {
-  SDL_Rect          src,dst;
+  SDL_Rect          src,dst,player;
   SDL_Color         color;
   SDL_Point         center;
   SDL_RendererFlip  flip;
   enum Type         tile_type;
   int               start_x, start_y, tile_final_size;
 
-  SDL_SetRenderDrawColor(state->renderer, 255, 255, 255, 255);
   flip = SDL_FLIP_NONE;
   start_x = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_WIDTH - WINDOW_HEIGHT) / 2 : 0;
   start_y = (WINDOW_HEIGHT > WINDOW_WIDTH) ? (WINDOW_HEIGHT - WINDOW_WIDTH) / 2 : 0;
@@ -16,21 +15,33 @@ void          draw_grid(state_t *state) {
   center.x = tile_final_size / 2;
   center.y = tile_final_size / 2;
 
+  SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
+
   for (int i = 0; i < state->grid_w ; i++) {
     for (int j = 0 ; j < state->grid_h ; j++) {
+      if (state->grid[i][j] == EMPTY) {
+        continue;
+      }
       dst.x = i * tile_final_size + start_x;
       dst.y = j * tile_final_size + start_y;
       dst.w = tile_final_size;
       dst.h = tile_final_size;
       tile_type = state->grid[i][j];
       color = pick_color(state, i, j);
-      SDL_SetRenderDrawColor(state->renderer, color.r, color.g, color.b, 128);
-      SDL_RenderDrawRect(state->renderer, &dst);
+      SDL_SetRenderDrawColor(state->renderer, color.r, color.g, color.b, 90);
+      SDL_RenderFillRect(state->renderer, &dst);
     }
   }
+  SDL_SetRenderDrawColor(state->renderer, 255, 0, 0, 128);
+  player.x = state->player->pos.x * tile_final_size + start_x;
+  player.y = state->player->pos.y * tile_final_size + start_y;
+  player.w = tile_final_size;
+  player.h = tile_final_size;
+  SDL_RenderFillRect(state->renderer, &player);
+  SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_NONE);
 }
 
-int           clamp_scroll(state_t *state) {
+void          clamp_scroll(state_t *state) {
   if (state->scroll.x < 0)
     state->scroll.x = 0;
   if (state->scroll.y < 0)
@@ -41,7 +52,7 @@ int           clamp_scroll(state_t *state) {
     state->scroll.y = state->grid_h * state->tile_screen_size - WINDOW_HEIGHT -1;
 }
 
-int           update_scroll(state_t *state) {
+void          update_scroll(state_t *state) {
   int         center_p_x, center_p_y, limit_x_min, limit_y_min, limit_x_max, limit_y_max;
 
   center_p_x = state->player->dst_screen.x + state->player->dst_screen.w / 2;

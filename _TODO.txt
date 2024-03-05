@@ -1,7 +1,7 @@
 TODO DEBUG:
 	- check doors side by side
 	- diagonal step means door on corner ?: linux: 1709163157 - bsd: 1709464489
-	- corridor no floor: linux: 1709467149
+	- corridor on floor: linux: 1709467149
 	- ensure walls ok in double corridors: 1709163835
 	- corridors erasing a room: 1709381612
 	- tileprops (enum type + rect texture + angle) to avoid recomputation
@@ -11,5 +11,9 @@ TODO DEBUG:
 
 IDEAS:
 	- eyes opening in the dark when opening door
+	- chest thief
+	- trim rooms
+	- little creature/lizard on top of walls (corridors ?)
+	- sound/text, a dungeon master
 	- rooms sliding when hitting door (hit space ? or on collision ?)
-	- 
+	- spatial partitionning / quadtree

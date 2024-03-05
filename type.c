@@ -20,9 +20,9 @@ SDL_Color     pick_color(state_t *state, int i, int j) {
       color.a = 127;
       break;
     case FLOOR://floor
-      color.r = 255;
-      color.g = 255;
-      color.b = 255;
+      color.r = 100;
+      color.g = 0;
+      color.b = 0;
       color.a = 255;
       break;
     case CORRIDOR:

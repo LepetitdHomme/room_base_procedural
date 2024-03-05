@@ -123,7 +123,7 @@ void          player_move(state_t *state, int dx, int dy) {
   delta_player = state->ticks - state->player->last_update;
 
   /* TODO: BRUT values */
-  if (delta_player >= 20 || state->ticks == -1) {
+  if (delta_player >= 20) {
     /* used to ensure we move smoothly */
     if (abs(dx) >= state->tile_screen_size || abs(dy) >= state->tile_screen_size) {
       player_move(state, dx/2, dy/2);

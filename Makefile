@@ -13,7 +13,7 @@
 UNAME_S := $(shell uname -s)
 
 CC=gcc
-CFLAGS=-I/includes
+CFLAGS=-I/includes -Wall -Wextra -Werror
 LDFLAGS=
 LIBS=
 

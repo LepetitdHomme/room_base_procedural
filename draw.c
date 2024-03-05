@@ -1,19 +1,13 @@
 #include "includes/common.h"
 
 void          draw_grid(state_t *state) {
-  SDL_Rect          src,dst,player;
+  SDL_Rect          dst,player;
   SDL_Color         color;
-  SDL_Point         center;
-  SDL_RendererFlip  flip;
-  enum Type         tile_type;
   int               start_x, start_y, tile_final_size;
 
-  flip = SDL_FLIP_NONE;
   start_x = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_WIDTH - WINDOW_HEIGHT) / 2 : 0;
   start_y = (WINDOW_HEIGHT > WINDOW_WIDTH) ? (WINDOW_HEIGHT - WINDOW_WIDTH) / 2 : 0;
   tile_final_size = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_HEIGHT / state->grid_w) : (WINDOW_WIDTH / state->grid_w);
-  center.x = tile_final_size / 2;
-  center.y = tile_final_size / 2;
 
   SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
 
@@ -26,7 +20,6 @@ void          draw_grid(state_t *state) {
       dst.y = j * tile_final_size + start_y;
       dst.w = tile_final_size;
       dst.h = tile_final_size;
-      tile_type = state->grid[i][j];
       color = pick_color(state, i, j);
       SDL_SetRenderDrawColor(state->renderer, color.r, color.g, color.b, 90);
       SDL_RenderFillRect(state->renderer, &dst);
@@ -116,7 +109,6 @@ void          draw_scrolling_window(state_t *state) {
 
 void          draw_entities(state_t *state) {
   SDL_Rect    player;
-  coord_t     start_grid;
 
   player.x = state->player->dst_screen.x - state->scroll.x;
   player.y = state->player->dst_screen.y - state->scroll.y;

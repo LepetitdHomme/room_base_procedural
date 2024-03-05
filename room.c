@@ -13,7 +13,6 @@ SDL_Rect      g_rect(int grid_w, int grid_h, int w, int h) {
 
 room_t        *find_room_by_id(state_t *state, int id) {
   room_t *tmp = state->rooms;
-  room_t *found_id = NULL;
 
   while (tmp) {
     if (tmp->id == id) {

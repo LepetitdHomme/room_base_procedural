@@ -135,8 +135,6 @@ enum Type     door_dir_to_type(enum Dir dir) {
 }
 
 enum Type     wall_type(SDL_Rect room, int x, int y) {
-  enum Type type;
-
   if (y == room.y) {
     if (x == room.x)
       return CORNER_TOP_LEFT;

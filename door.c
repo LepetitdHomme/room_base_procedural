@@ -83,8 +83,6 @@ void          free_doors(graph_t *node) {
 }
 
 enum Dir      door_dir(SDL_Rect rect, int x, int y) {
-  enum Dir dir;
-
   if (y == rect.y) {
     return UP;
   }

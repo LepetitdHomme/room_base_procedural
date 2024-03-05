@@ -91,7 +91,6 @@ graph_t       *graph_create_node_from_connection(state_t *state, graph_t *parent
 */
 graph_t       *graph_create_node_from_room(state_t *state, con_t *connections, int num_connections, room_t *room) {
   graph_t     *room_node;
-  con_t       current_connection;
   con_t       *new_connections;
   room_t      *connected_room;
   graph_t     *connected_room_node;
@@ -100,7 +99,7 @@ graph_t       *graph_create_node_from_room(state_t *state, con_t *connections, i
   new_connections = NULL;
   room_node = graph_create_node(room->room, room->center, 0, 0, room->id);
 
-   for (size_t i = 0; i < num_connections; i++)  {
+   for (int i = 0; i < num_connections; i++)  {
     connected_room = NULL;
     connected_room_node = NULL;
     
@@ -118,7 +117,7 @@ graph_t       *graph_create_node_from_room(state_t *state, con_t *connections, i
         exit(EXIT_FAILURE);
       }
       int k = 0;
-      for (size_t j = 0; j < num_connections; j++) {
+      for (int j = 0; j < num_connections; j++) {
         if (i != j) { // Excludes the current connection !
           new_connections[k] = connections[j];
           k++;

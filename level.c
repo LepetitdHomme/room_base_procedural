@@ -67,8 +67,6 @@ void          node_to_grid(state_t *state, graph_t *node, int elevation) {
 }
 
 void          level_to_grid(state_t *state) {
-  door_t      *door = NULL;
-  graph_t     *node = NULL;
   int         elevation = state->player->current_node->elevation;
 
   reset_grid(state);

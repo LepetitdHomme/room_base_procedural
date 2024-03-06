@@ -73,10 +73,10 @@ void          inputs_wheel(state_t *state, SDL_Event *event) {
   if (event->type == SDL_MOUSEWHEEL) {
     if (event->wheel.y > 0) {
       state->zoom.x = clamp(state->zoom.x - 2, 10, 20);
-      compute_screen_sizes(state);
+      draw_compute_screen_sizes(state);
     } else if (event->wheel.y < 0) {
       state->zoom.x = clamp(state->zoom.x + 2, 10, 20);
-      compute_screen_sizes(state);
+      draw_compute_screen_sizes(state);
     }
   }
 }

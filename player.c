@@ -48,7 +48,29 @@ void          init_player(state_t *state) {
   // state->player->weapons = NULL;
 }
 
-/***************************************************************/
+void          player_reset_screen_from_grid(state_t *state) {
+  player_t    *player;
+
+  player = state->player;    
+  // compute player screen position
+  player->dst_screen.x = player->pos.x * state->tile_screen_size;
+  player->dst_screen.y = player->pos.y * state->tile_screen_size;
+  player->dst_screen.w = state->tile_screen_size;
+  player->dst_screen.h = state->tile_screen_size;
+  
+  // player speed - related to movement and tile size, since player is displayed screen-wise, not grid-wise
+  player->speed = state->tile_screen_size / 4;
+  
+  // compute scrolling window
+  // TODO: BRUT values
+  state->scroll.x = player->dst_screen.x - (state->zoom.x * state->tile_screen_size);
+  state->scroll.y = player->dst_screen.y - (state->zoom.y * state->tile_screen_size);
+  state->scroll_limit_x = WINDOW_WIDTH / 4;
+  state->scroll_limit_y = WINDOW_HEIGHT / 4;
+  state->scroll_limit_w = WINDOW_WIDTH - (2 * state->scroll_limit_x);
+  state->scroll_limit_h = WINDOW_HEIGHT - (2 * state->scroll_limit_y);
+
+}
 
 void          player_update_direction(player_t *player) {
   if (abs(player->delta_x) >= abs(player->delta_y) && player->delta_x != 0) {
@@ -59,6 +81,11 @@ void          player_update_direction(player_t *player) {
   }
 }
 
+/*
+*   if not in current node rect;
+*     checks parent and children then update node when
+*     current player rect if found
+*/
 void          player_update_node(player_t *player) {
   if (is_in_room(player->pos, player->current_node->rect) == 0) {
     return;
@@ -78,7 +105,57 @@ void          player_update_node(player_t *player) {
   }
 }
 
+/*            only for delta/attemps moves */
+void          player_move_proceed(state_t *state, SDL_Rect test) {
+  // test.x -= state->player->dst_screen.w / 2; // removing collision box
+  // test.y -= state->player->dst_screen.h / 2; // removing collision box
+  state->player->pos.x = test.x / state->tile_screen_size;
+  state->player->pos.y = test.y / state->tile_screen_size;
+  state->player->dst_screen = test;
+  // player_update_direction(state->player);
+}
 
+/*
+*   The move attempt was detected as a move towards a door
+*   current algo wants that: doors are siblings on the grid (src and dst)
+*     so we check if the current tile is already a door, then it means
+*     the move represents a node/room change
+*/
+void          player_move_to_door(state_t *state, SDL_Rect test) {
+  enum Type     current_tile;
+  graph_t       *current_node;
+  player_t      *player;
+
+  current_tile = state->grid[state->player->pos.x][state->player->pos.y];
+  player = state->player;
+  current_node = player->current_node;
+
+  if (is_door_type(current_tile) == 1) { // false
+    player_move_proceed(state, test);
+    return;
+  }
+
+  for (int i = 0 ; i < current_node->num_doors ; i++) {
+    if (player->pos.x == current_node->doors[i].coord.x && player->pos.y == current_node->doors[i].coord.y) {
+      player->pos = next_coord_with_step(current_node->doors[i].coord, current_node->doors[i].dir);
+      player->pos = next_coord_with_step(player->pos, current_node->doors[i].dir);
+      // update node
+      if (player->current_node->elevation != current_node->doors[i].dst_node->elevation) {
+        player->current_node = current_node->doors[i].dst_node;
+        level_to_grid(state, state->graph);
+      } else {
+        player->current_node = current_node->doors[i].dst_node;
+      }
+      player_reset_screen_from_grid(state);
+      break;
+    }
+  }
+}
+
+/*
+*   If player_move_attempt failed
+*   we try reducing dx/dy and retry
+*/
 void          player_refine_move_attempt(state_t *state, int dx, int dy) {
   for (int i = 0 ; i < abs(dx) ; i++) {
     if (player_move_attempt(state, SGN(dx), 0) == 0) {
@@ -95,28 +172,40 @@ void          player_refine_move_attempt(state_t *state, int dx, int dy) {
 
 }
 
+/*
+*   We check collisions with the collision box
+*   but we update/proceed with current value (not collision value)
+*/
 int           player_move_attempt(state_t *state, int dx, int dy) {
   SDL_Rect    test;
+  SDL_Rect    current_collision_box_pos;
+  int         collision;
 
-  test = state->player->dst_screen;
+  current_collision_box_pos.x = state->player->dst_screen.x;
+  current_collision_box_pos.y = state->player->dst_screen.y;
+  /* Collision box move attempt */
+  test.x = current_collision_box_pos.x + dx;
+  test.y = current_collision_box_pos.y + dy;
+  test.w = state->player->dst_screen.w;
+  test.h = state->player->dst_screen.h;
 
-  test.x += dx;
-  test.y += dy;
-  // TODO: width and height to update with player texture sizes
-  test.w = state->tile_screen_size;
-  test.h = state->tile_screen_size;
+  collision = is_colliding_with(state, test);
 
-  if (is_colliding(state, test) == 0) {
-    state->player->dst_screen = test;
-    state->player->pos.x = state->player->dst_screen.x / state->tile_screen_size;
-    state->player->pos.y = state->player->dst_screen.y / state->tile_screen_size;
-    player_update_direction(state->player);
-    player_update_node(state->player);
+  if (collision == FLOOR) {
+    player_move_proceed(state, test);
+    return 1;
+  } else if (is_door_type(collision) == 0) {
+    player_move_to_door(state, test);
     return 1;
   }
   return 0;
 }
 
+/*
+*   attemps to move player
+*   based on delta x and delta y (dx, dy)
+*   also responsible for collision check down the line
+*/
 void          player_move(state_t *state, int dx, int dy) {
   Uint32 delta_player;
 

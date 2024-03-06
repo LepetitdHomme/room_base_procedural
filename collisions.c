@@ -1,12 +1,31 @@
 #include "includes/common.h"
 
-int 					is_colliding(state_t *state, SDL_Rect dst) {
+enum Type     collisions_priority(enum Type collision1, enum Type collision2) {
+  if (collision1 == FLOOR) {
+    // if (DEBUG_COLLISIONS) DEBUG_MSG("FLOOR VS 2");
+    return collision2;
+  }
+  if (is_door_type(collision1) == 0) {
+    if (collision2 != FLOOR) {
+      if (DEBUG_COLLISIONS) DEBUG_MSG("DOOR VS NOT FLOOR");
+      return collision2;
+    } else {
+      if (DEBUG_COLLISIONS) DEBUG_MSG("DOOR VS FLOOR");
+      return collision1;
+    }
+  }
+  if (DEBUG_COLLISIONS) DEBUG_MSG("WALL");
+  return collision1;
+}
+
+enum Type     is_colliding_with(state_t *state, SDL_Rect dst) {
 	int 				xmin;
 	int 				xmax;
 	int 				ymin;
 	int 				ymax;
 	int 				screen_to_grid_x;
 	int 				screen_to_grid_y;
+  enum Type   prioritized_collision;
 
 	screen_to_grid_x = state->grid_w * state->tile_screen_size;
 	screen_to_grid_y = state->grid_h * state->tile_screen_size;
@@ -16,22 +35,20 @@ int 					is_colliding(state_t *state, SDL_Rect dst) {
 	} else if (dst.y < 0 || (dst.y + dst.h -1) >= (screen_to_grid_y)) {
 		return 1;
 	}
-
 	xmin = dst.x / state->tile_screen_size;
 	xmax = (dst.x + dst.w - 1) / state->tile_screen_size;
 
-	ymin = (dst.y + dst.h / 2) / state->tile_screen_size; // collide with feet only
+	ymin = dst.y / state->tile_screen_size;
 	ymax = (dst.y + dst.h - 1) / state->tile_screen_size;
 
+  prioritized_collision = FLOOR;
+
+  /* remember, we are checking the move ATTEMPT = destination, here. */
 	for (int i = xmin ; i <= xmax ; i++) {
 		for (int j = ymin ; j <= ymax ; j++) {
-			// printf("collision: %d, %d\n", i, j);
-			if (state->grid[i][j] != FLOOR) {
-				if (state->grid[i][j] != DOOR_UP && state->grid[i][j] != DOOR_DOWN && state->grid[i][j] != DOOR_LEFT && state->grid[i][j] != DOOR_RIGHT) {
-					return 1;
-				}
-			}
+      prioritized_collision = collisions_priority(prioritized_collision, state->grid[i][j]);
 		}
 	}
-	return 0;
+  if (DEBUG_COLLISIONS) printf("collision prioritized = %d\n", prioritized_collision);
+	return prioritized_collision;
 }

@@ -11,6 +11,7 @@ void          doors_append(graph_t *src_node, door_t door_node) {
   src_node->doors[src_node->num_doors - 1] = door_node;
 }
 
+/* returns door for src */
 door_t        door_coordinates(graph_t *src, graph_t *dst) {
   int         x1 = src->center.x;
   int         y1 = src->center.y;
@@ -74,6 +75,7 @@ door_t        door_coordinates(graph_t *src, graph_t *dst) {
       current_y += sy;
     }
   }
+  door_node.dst_node = NULL;
   return door_node;
 }
 

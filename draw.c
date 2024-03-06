@@ -1,5 +1,9 @@
 #include "includes/common.h"
 
+/*
+*   For now, used to display the whole grid
+*     (the one computed by level_to_grid)
+*/
 void          draw_grid(state_t *state) {
   SDL_Rect          dst,player;
   SDL_Color         color;
@@ -13,15 +17,15 @@ void          draw_grid(state_t *state) {
 
   for (int i = 0; i < state->grid_w ; i++) {
     for (int j = 0 ; j < state->grid_h ; j++) {
-      if (state->grid[i][j] == EMPTY) {
+      if (state->grid[i][j] == EMPTY || is_door_type(state->grid[i][j]) == 0) {
         continue;
       }
       dst.x = i * tile_final_size + start_x;
       dst.y = j * tile_final_size + start_y;
       dst.w = tile_final_size;
       dst.h = tile_final_size;
-      color = pick_color(state, i, j);
-      SDL_SetRenderDrawColor(state->renderer, color.r, color.g, color.b, 90);
+      color = type_to_map_color(state->grid[i][j]);
+      SDL_SetRenderDrawColor(state->renderer, color.r, color.g, color.b, 70);
       SDL_RenderFillRect(state->renderer, &dst);
     }
   }
@@ -34,7 +38,7 @@ void          draw_grid(state_t *state) {
   SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_NONE);
 }
 
-void          clamp_scroll(state_t *state) {
+void          draw_clamp_scroll(state_t *state) {
   if (state->scroll.x < 0)
     state->scroll.x = 0;
   if (state->scroll.y < 0)
@@ -45,7 +49,7 @@ void          clamp_scroll(state_t *state) {
     state->scroll.y = state->grid_h * state->tile_screen_size - WINDOW_HEIGHT -1;
 }
 
-void          update_scroll(state_t *state) {
+void          draw_update_scroll(state_t *state) {
   int         center_p_x, center_p_y, limit_x_min, limit_y_min, limit_x_max, limit_y_max;
 
   center_p_x = state->player->dst_screen.x + state->player->dst_screen.w / 2;
@@ -65,11 +69,11 @@ void          update_scroll(state_t *state) {
     state->scroll.x += (center_p_x - limit_x_max);
   if (center_p_y > limit_y_max)
     state->scroll.y += (center_p_y - limit_y_max);
-  // clamp_scroll(state);
+  // draw_clamp_scroll(state);
 }
 
 /* must be done after level/player init */
-void          compute_screen_sizes(state_t *state) {
+void          draw_compute_screen_sizes(state_t *state) {
   // take specific distance rect before and after player = ZOOM
   if (state->zoom.x == -1) {
     state->zoom.x = 15; // clamped in inputs
@@ -82,19 +86,7 @@ void          compute_screen_sizes(state_t *state) {
   state->center_tile.x = state->tile_screen_size / 2;
   state->center_tile.y = state->tile_screen_size / 2;
   state->flip = SDL_FLIP_NONE;
-  // compute player screen position
-  state->player->dst_screen.x = state->player->pos.x * state->tile_screen_size;
-  state->player->dst_screen.y = state->player->pos.y * state->tile_screen_size;
-  // player speed - related to movement and tile size, since player is displayed screen-wise, not grid-wise
-  state->player->speed = state->tile_screen_size / 4;
-  // compute scrolling window
-  // TODO: BRUT values
-  state->scroll.x = state->player->dst_screen.x - (state->zoom.x * state->tile_screen_size);
-  state->scroll.y = state->player->dst_screen.y - (state->zoom.y * state->tile_screen_size);
-  state->scroll_limit_x = WINDOW_WIDTH / 4;
-  state->scroll_limit_y = WINDOW_HEIGHT / 4;
-  state->scroll_limit_w = WINDOW_WIDTH - (2 * state->scroll_limit_x);
-  state->scroll_limit_h = WINDOW_HEIGHT - (2 * state->scroll_limit_y);
+  player_reset_screen_from_grid(state);  
 }
 
 void          draw_scrolling_window(state_t *state) {
@@ -110,13 +102,28 @@ void          draw_scrolling_window(state_t *state) {
 void          draw_entities(state_t *state) {
   SDL_Rect    player;
 
+  // test = state->player->dst_screen;
+  // player.x = (state->player->dst_screen.x + (state->player->dst_screen.w / 2)) - state->scroll.x;
+  // player.y = (state->player->dst_screen.y + (state->player->dst_screen.h / 2)) - state->scroll.y;
+  // player.w = state->tile_screen_size;
+  // player.h = state->tile_screen_size;
+
   player.x = state->player->dst_screen.x - state->scroll.x;
   player.y = state->player->dst_screen.y - state->scroll.y;
-  player.w = state->tile_screen_size / 2;
-  player.h = state->tile_screen_size;
+  player.w = state->player->dst_screen.w;
+  player.h = state->player->dst_screen.h;
 
-  SDL_SetRenderDrawColor(state->renderer, 255, 0, 0, 255);
+  SDL_SetRenderDrawColor(state->renderer, 0, 0, 255, 255);
   SDL_RenderFillRect(state->renderer, &player);
+
+  if (DEBUG_COLLISIONS) {
+    SDL_SetRenderDrawColor(state->renderer, 255, 0, 0, 255);
+    player.x = (state->player->dst_screen.x) - state->scroll.x; // center of width
+    player.y = (state->player->dst_screen.y) - state->scroll.y; // feet
+    player.w = state->tile_screen_size;
+    player.h = state->tile_screen_size;
+    SDL_RenderDrawRect(state->renderer, &player);
+  }
 }
 
 // remember that there are 3 levels of coords: grid, world, window
@@ -127,7 +134,7 @@ void          draw_node(state_t *state) {
   enum Type         tile_type;
   int               minx, maxx, miny, maxy;
 
-  update_scroll(state);
+  draw_update_scroll(state);
 
   minx = state->scroll.x / state->tile_screen_size - 1;
   miny = state->scroll.y / state->tile_screen_size - 1;
@@ -154,7 +161,5 @@ void          draw_node(state_t *state) {
       SDL_RenderCopyEx(state->renderer, state->level_texture->texture, &src_texture, &dst_screen, angle_from_type(tile_type), &state->center_tile, state->flip);
     }
   }
-  if (DEBUG == 1) {
-    draw_scrolling_window(state);
-  }
+  if (DEBUG_SCREEN) draw_scrolling_window(state);
 }

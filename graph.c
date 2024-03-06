@@ -82,6 +82,11 @@ graph_t       *graph_create_node_from_connection(state_t *state, graph_t *parent
   doors_append(corridor_node, door_node_from_parent);
   doors_append(corridor_node, door_node_from_child);
 
+  // set graph dst node on doors:
+  parent_node->doors[parent_node->num_doors - 1].dst_node = corridor_node;
+  corridor_node->doors[corridor_node->num_doors - 2].dst_node = parent_node;
+  corridor_node->doors[corridor_node->num_doors - 1].dst_node = child_node;
+  child_node->doors[child_node->num_doors - 1].dst_node = corridor_node;
   return corridor_node;
 }
 
@@ -143,7 +148,9 @@ void          graph_create(state_t *state) {
   
   /* we start with the first room, but we could start with a any random room post kruskal (state->connections) */
   state->graph = graph_create_node_from_room(state, state->connections, state->num_connections, state->rooms);
-  // graph_print(state->graph, 0);
+  if (DEBUG_GRAPH == 1) {
+    graph_print(state->graph, 0);
+  }
   free_rooms(state);
 }
 

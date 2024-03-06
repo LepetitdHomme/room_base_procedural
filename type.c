@@ -1,5 +1,44 @@
 #include "includes/common.h"
 
+SDL_Color     type_to_map_color(enum Type type) {
+  SDL_Color color;
+
+  switch (type) {
+    case EMPTY:
+      color.r = 0;
+      color.g = 0;
+      color.b = 0;
+      color.a = 255;
+      break;
+    case FLOOR:
+      color.r = 100;
+      color.g = 0;
+      color.b = 0;
+      color.a = 255;
+      break;
+    case WALL_UP:
+    case WALL_DOWN:
+    case WALL_LEFT:
+    case WALL_RIGHT:
+    case CORNER_TOP_LEFT:
+    case CORNER_TOP_RIGHT:
+    case CORNER_BOT_LEFT:
+    case CORNER_BOT_RIGHT:
+      color.r = 150;
+      color.g = 0;
+      color.b = 0;
+      color.a = 255;
+      break;
+    default:
+      color.r = 255;
+      color.g = 255;
+      color.b = 255;
+      color.a = 255;
+  }
+
+  return color;  
+}
+
 SDL_Color     pick_color(state_t *state, int i, int j) {
   SDL_Color color;
 
@@ -25,7 +64,7 @@ SDL_Color     pick_color(state_t *state, int i, int j) {
       color.b = 0;
       color.a = 255;
       break;
-    case CORRIDOR:
+    case CORRIDOR: // should not be used anymore => corridors become floor(room)
       color.r = 0;
       color.g = 50;
       color.b = 255;
@@ -116,6 +155,13 @@ double        angle_from_type(enum Type type) {
       angle = 0.0;
   }
   return angle;
+}
+
+int           is_door_type(enum Type type) {
+  if (type == DOOR_UP || type == DOOR_DOWN || type == DOOR_LEFT || type == DOOR_RIGHT) {
+    return 0;
+  }
+  return 1;
 }
 
 enum Type     door_dir_to_type(enum Dir dir) {

@@ -17,3 +17,5 @@ IDEAS:
 	- sound/text, a dungeon master
 	- rooms sliding when hitting door (hit space ? or on collision ?)
 	- spatial partitionning / quadtree
+	- music => attente d'un pattern dans la music pour reafficher/start nouvelle room apres porte
+	-

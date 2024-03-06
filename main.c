@@ -22,8 +22,8 @@ int           main(int argc, char *argv[]) {
   state.display_map = 0;
   init_texture(&state, "assets/Sprite-0003.bmp", 5, 1);
   init_level(&state, 1);
-  level_to_grid(&state);
-  compute_screen_sizes(&state);
+  level_to_grid(&state, state.graph);
+  draw_compute_screen_sizes(&state);
   quit = 0;
   // TODO: do something bout this
   int inputs_state[4] = { 0, 0, 0, 0 }; // awsd :/
@@ -40,9 +40,7 @@ int           main(int argc, char *argv[]) {
 
     draw_node(&state);
     draw_entities(&state);
-    if (state.display_map == 1) {
-      draw_grid(&state);
-    }
+    if (state.display_map == 1) draw_grid(&state);
     
     /**********************/
 

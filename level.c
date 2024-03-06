@@ -39,37 +39,45 @@ int           max_rect_side(int x, int y, int n) {
   return((int)max_rect_side + 1);
 }
 
-void          node_to_grid(state_t *state, graph_t *node, int elevation) {
+void          node_to_grid(state_t *state, graph_t *node, int with_parent, int with_children, int elevation) {
+  int         diff_elevation = abs(node->elevation - elevation);
+
   for (int i = node->rect.x ; i < node->rect.x + node->rect.w ; i++) {
     for (int j = node->rect.y ; j < node->rect.y + node->rect.h ; j++) {
-      if (state->grid[i][j] != 0 || node->elevation != elevation)
+      if (state->grid[i][j] != 0 || diff_elevation != 0)
         continue;
       if (is_room_wall(node->rect, i, j) == 0) {
         state->grid[i][j] = wall_type(node->rect, i, j);
       } else {
         state->grid[i][j] = FLOOR; // floor
       }
-      // if (node->id == 0) { //starting point
-      //   state->grid[node->center.x][node->center.y] = EMPTY;
-      // }
     }
   }
 
   for (int i = 0 ; i < node->num_doors ; i++) {
-    if (node->elevation != elevation)
-      continue;
+    if (diff_elevation > 1) continue; // ensures next room doors are rdy for collision !
     state->grid[node->doors[i].coord.x][node->doors[i].coord.y] = door_dir_to_type(node->doors[i].dir);
   }
 
-  for (int i = 0 ; i < node->num_children ; i++) {
-    node_to_grid(state, node->children[i], elevation);
+  if (with_children == 1) {
+    for (int i = 0 ; i < node->num_children ; i++) {
+      node_to_grid(state, node->children[i], 0, 1, elevation);
+    }
+  }
+
+  if (with_parent == 1 && node->parent != NULL) {
+    node_to_grid(state, node->parent, 0, 0, elevation);
   }
 }
 
-void          level_to_grid(state_t *state) {
+/*
+*   Starts putting node into grid
+*     only diff is that it resets the grid first
+*/
+void          level_to_grid(state_t *state, graph_t *node) {
   int         elevation = state->player->current_node->elevation;
 
   reset_grid(state);
   // we only compute current elevation, this avoids corridors erasing rooms/nodes on the grid
-  node_to_grid(state, state->graph, elevation);
+  node_to_grid(state, node, 1, 1, elevation);
 }

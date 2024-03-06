@@ -14,6 +14,9 @@
 #define DEBUG_MSG(message) printf("Debug: %s, File %s, Line %d\n", message, __FILE__, __LINE__)
 
 #define DEBUG 0
+#define DEBUG_GRAPH 0
+#define DEBUG_SCREEN 0
+#define DEBUG_COLLISIONS 0
 
 /* WINDOW/SCREEN */
 #define WINDOW_WIDTH 1200
@@ -36,7 +39,25 @@
 /* PLAYER */
 #define PLAYER_SPEED 7
 
-enum Type { EMPTY, WALL_UP, WALL_DOWN, WALL_LEFT, WALL_RIGHT, CORNER_TOP_LEFT, CORNER_TOP_RIGHT, CORNER_BOT_LEFT, CORNER_BOT_RIGHT, FLOOR, DOOR_UP, DOOR_DOWN, DOOR_LEFT, DOOR_RIGHT, DOOR_SRC, DOOR_DST, CORRIDOR };
+enum Type {
+  EMPTY,// 0
+  WALL_UP,// 1
+  WALL_DOWN,// 2
+  WALL_LEFT,// 3
+  WALL_RIGHT,// 4
+  CORNER_TOP_LEFT,// 5
+  CORNER_TOP_RIGHT,// 6
+  CORNER_BOT_LEFT,// 7
+  CORNER_BOT_RIGHT,// 8
+  FLOOR,// 9
+  DOOR_UP,// 10
+  DOOR_DOWN,// 11
+  DOOR_LEFT,// 12
+  DOOR_RIGHT,// 13
+  DOOR_SRC,// 14
+  DOOR_DST,// 15
+  CORRIDOR// 16
+};
 
 enum Dir { UP, DOWN, LEFT, RIGHT };
 
@@ -74,6 +95,7 @@ typedef struct room_node {
 typedef struct door_node {
   coord_t               coord;
   enum Dir              dir;
+  struct graph_node     *dst_node;
 } door_t;
 
 typedef struct graph_node {
@@ -133,7 +155,9 @@ typedef struct player_struct {
 void                    draw_grid(state_t *state);
 void                    draw_node(state_t *state);
 void                    draw_entities(state_t *state);
-void                    compute_screen_sizes(state_t *state);
+void                    draw_clamp_scroll(state_t *state);
+void                    draw_update_scroll(state_t *state);
+void                    draw_compute_screen_sizes(state_t *state);
 
 /*                      grid */
 void                    init_grid(state_t *state, int complexity);
@@ -142,8 +166,8 @@ void                    reset_grid(state_t *state);
 
 /*                      level */
 void                    init_level(state_t *state, int complexity);
-void                    node_to_grid(state_t *state, graph_t *node, int elevation);
-void                    level_to_grid(state_t *state);
+void                    node_to_grid(state_t *state, graph_t *node, int with_parent, int with_children, int elevation);
+void                    level_to_grid(state_t *state, graph_t *node);
 
 /*                      room */
 int                     is_in_room(coord_t point, SDL_Rect rect);
@@ -184,8 +208,11 @@ void                    graph_print(graph_t *node, int depth);
 /*                      player */
 void                    init_player(state_t *state);
 void                    free_player(state_t *state);
+void                    player_reset_screen_from_grid(state_t *state);
 void                    player_update_node(player_t *player);
 void                    player_update_direction(player_t *player);
+void                    player_move_proceed(state_t *state, SDL_Rect test);
+void                    player_move_to_door(state_t *state, SDL_Rect test);
 void                    player_refine_move_attempt(state_t *state, int dx, int dy);
 void                    player_move(state_t *state, int dx, int dy);
 int                     player_move_attempt(state_t *state, int dx, int dy);
@@ -193,7 +220,7 @@ int                     player_move_attempt(state_t *state, int dx, int dy);
 /*                      entities */
 
 /*                      collisions */
-int                     is_colliding(state_t *state, SDL_Rect dst);
+enum Type               is_colliding_with(state_t *state, SDL_Rect dst);
 
 /*                      textures */
 void                    init_texture(state_t *state, const char *path, int num_x, int num_y);
@@ -213,6 +240,8 @@ double                  distance_between_coords(coord_t center_1, coord_t center
 void                    apply_kruskal(state_t *state);
 
 /*                      type */
+SDL_Color               type_to_map_color(enum Type type);
+int                     is_door_type(enum Type type);
 enum Dir                invert_dir(enum Dir dir);
 enum Type               door_dir_to_type(enum Dir dir);
 SDL_Color               pick_color(state_t *state, int i, int j);

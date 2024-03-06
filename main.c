@@ -40,7 +40,13 @@ int           main(int argc, char *argv[]) {
 
     draw_node(&state);
     draw_entities(&state);
-    if (state.display_map == 1) draw_grid(&state);
+    if (state.display_map == 1) {
+      if (DEBUG_GRID) {
+        draw_grid(&state);
+      } else {
+        draw_map_grid(&state);
+      }
+    }
     
     /**********************/
 

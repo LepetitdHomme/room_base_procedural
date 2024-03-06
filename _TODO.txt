@@ -25,3 +25,8 @@ IDEAS:
 	- music => attente d'un pattern dans la music pour reafficher/start nouvelle room apres porte
 	- visited graph_t attr => unlock all bonus
 	-
+
+
+SEEDS:
+ - mac: 1709764409 map 
+ - 

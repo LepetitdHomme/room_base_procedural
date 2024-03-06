@@ -14,6 +14,7 @@
 #define DEBUG_MSG(message) printf("Debug: %s, File %s, Line %d\n", message, __FILE__, __LINE__)
 
 #define DEBUG 0
+#define DEBUG_GRID 1
 #define DEBUG_GRAPH 0
 #define DEBUG_SCREEN 0
 #define DEBUG_COLLISIONS 0
@@ -154,6 +155,7 @@ typedef struct player_struct {
 
 /*                      draw */
 void                    draw_grid(state_t *state);
+void                    draw_map_grid(state_t *state);
 void                    draw_node(state_t *state);
 void                    draw_entities(state_t *state);
 void                    draw_clamp_scroll(state_t *state);

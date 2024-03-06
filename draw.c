@@ -1,5 +1,43 @@
 #include "includes/common.h"
 
+/*
+*   For now, used to display the whole grid
+*     (the one computed by level_to_grid)
+*/
+void          draw_grid(state_t *state) {
+  SDL_Rect          dst,player;
+  SDL_Color         color;
+  int               start_x, start_y, tile_final_size;
+
+  start_x = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_WIDTH - WINDOW_HEIGHT) / 2 : 0;
+  start_y = (WINDOW_HEIGHT > WINDOW_WIDTH) ? (WINDOW_HEIGHT - WINDOW_WIDTH) / 2 : 0;
+  tile_final_size = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_HEIGHT / state->grid_w) : (WINDOW_WIDTH / state->grid_w);
+
+  SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
+
+  for (int i = 0; i < state->grid_w ; i++) {
+    for (int j = 0 ; j < state->grid_h ; j++) {
+      if (state->grid[i][j] == EMPTY || is_door_type(state->grid[i][j]) == 0) {
+        continue;
+      }
+      dst.x = i * tile_final_size + start_x;
+      dst.y = j * tile_final_size + start_y;
+      dst.w = tile_final_size;
+      dst.h = tile_final_size;
+      color = type_to_map_color(state->grid[i][j]);
+      SDL_SetRenderDrawColor(state->renderer, color.r, color.g, color.b, 70);
+      SDL_RenderFillRect(state->renderer, &dst);
+    }
+  }
+  SDL_SetRenderDrawColor(state->renderer, 255, 0, 0, 128);
+  player.x = state->player->pos.x * tile_final_size + start_x;
+  player.y = state->player->pos.y * tile_final_size + start_y;
+  player.w = tile_final_size;
+  player.h = tile_final_size;
+  SDL_RenderFillRect(state->renderer, &player);
+  SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_NONE);
+}
+
 void          draw_map_node(state_t *state, graph_t *node, int tile_final_size, int start_x, int start_y) {
   coord_t     current_grid_coord;
   SDL_Rect    dst;
@@ -38,7 +76,7 @@ void          draw_map_node(state_t *state, graph_t *node, int tile_final_size, 
 *   For now, used to display the whole grid
 *     (the one computed by level_to_grid)
 */
-void          draw_grid(state_t *state) {
+void          draw_map_grid(state_t *state) {
   SDL_Rect          player;
   int               start_x, start_y, tile_final_size;
 

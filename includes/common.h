@@ -108,6 +108,7 @@ typedef struct graph_node {
   int                   num_doors;
   int                   is_corridor;
   int                   elevation;
+  int                   visited;
   int                   id;
 } graph_t;
 
@@ -235,6 +236,7 @@ void                    inputs_keydown(state_t *state, SDL_Event *event, int *in
 int                     clamp(int value, int min, int max);
 int                     random_int(int lower, int upper);
 double                  distance_between_coords(coord_t center_1, coord_t center_2);
+double                  squared_distance_between_coords(coord_t center_1, coord_t center_2);
 
 /*                      kruskal */
 void                    apply_kruskal(state_t *state);

@@ -17,6 +17,7 @@ graph_t       *graph_create_node(SDL_Rect rect, coord_t center, int is_corridor,
   new_node->num_doors = 0;
   new_node->is_corridor = is_corridor;
   new_node->elevation = elevation;
+  new_node->visited = 0;
   new_node->id = id;
 
   return new_node;

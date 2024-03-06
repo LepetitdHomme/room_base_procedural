@@ -69,6 +69,7 @@ void apply_kruskal(state_t *state) {
     while (other_room != NULL) {
       edges[edge_count].src = current_room->id;
       edges[edge_count].dst = other_room->id;
+      /* TODO: use squared ? */
       edges[edge_count].weight = distance_between_coords(current_room->center, other_room->center);
       edge_count++;
       other_room = other_room->next;

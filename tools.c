@@ -12,3 +12,10 @@ int     random_int(int lower, int upper) {
 double  distance_between_coords(coord_t center_1, coord_t center_2) {
   return sqrt(pow(center_2.x - center_1.x, 2) + pow(center_2.y - center_1.y, 2));
 }
+
+// more efficient
+double  squared_distance_between_coords(coord_t center_1, coord_t center_2) {
+  double  distance = pow(center_2.x - center_1.x, 2) + pow(center_2.y - center_1.y, 2);
+  printf("%f\n", distance);
+  return distance;
+}

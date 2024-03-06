@@ -1,40 +1,69 @@
 #include "includes/common.h"
 
+void          draw_map_node(state_t *state, graph_t *node, int tile_final_size, int start_x, int start_y) {
+  coord_t     current_grid_coord;
+  SDL_Rect    dst;
+  SDL_Color   color;
+
+  if (node->visited == 1) {
+    for (int i = node->rect.x ; i < node->rect.x + node->rect.w ; i++) {
+      for (int j = node->rect.y ; j < node->rect.y + node->rect.h ; j++) {
+        if (state->grid[i][j] == EMPTY || is_door_type(state->grid[i][j]) == 0) {
+          continue;
+        }
+
+        current_grid_coord.x = i;
+        current_grid_coord.y = j;
+        if (squared_distance_between_coords(current_grid_coord, state->player->pos) > 250) {
+          continue;
+        }
+
+        dst.x = i * tile_final_size + start_x;
+        dst.y = j * tile_final_size + start_y;
+        dst.w = tile_final_size;
+        dst.h = tile_final_size;
+        color = type_to_map_color(state->grid[i][j]);
+        SDL_SetRenderDrawColor(state->renderer, color.r, color.g, color.b, 70);
+        SDL_RenderFillRect(state->renderer, &dst);
+      }
+    }
+  }
+
+  for (int k = 0 ; k < node->num_children ; k++) {
+    draw_map_node(state, node->children[k], tile_final_size, start_x, start_y);
+  }
+}
+
 /*
 *   For now, used to display the whole grid
 *     (the one computed by level_to_grid)
 */
 void          draw_grid(state_t *state) {
-  SDL_Rect          dst,player;
-  SDL_Color         color;
+  SDL_Rect          player;
   int               start_x, start_y, tile_final_size;
 
   start_x = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_WIDTH - WINDOW_HEIGHT) / 2 : 0;
   start_y = (WINDOW_HEIGHT > WINDOW_WIDTH) ? (WINDOW_HEIGHT - WINDOW_WIDTH) / 2 : 0;
   tile_final_size = (WINDOW_WIDTH > WINDOW_HEIGHT) ? (WINDOW_HEIGHT / state->grid_w) : (WINDOW_WIDTH / state->grid_w);
 
+  // start_x = 0;
+  // start_y = 0;
+  // tile_final_size = 5;
+
+  // printf("x: %d, y: %d, size: %d\n", start_x, start_y, tile_final_size);
+
   SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
 
-  for (int i = 0; i < state->grid_w ; i++) {
-    for (int j = 0 ; j < state->grid_h ; j++) {
-      if (state->grid[i][j] == EMPTY || is_door_type(state->grid[i][j]) == 0) {
-        continue;
-      }
-      dst.x = i * tile_final_size + start_x;
-      dst.y = j * tile_final_size + start_y;
-      dst.w = tile_final_size;
-      dst.h = tile_final_size;
-      color = type_to_map_color(state->grid[i][j]);
-      SDL_SetRenderDrawColor(state->renderer, color.r, color.g, color.b, 70);
-      SDL_RenderFillRect(state->renderer, &dst);
-    }
-  }
+  // display player on map
   SDL_SetRenderDrawColor(state->renderer, 255, 0, 0, 128);
   player.x = state->player->pos.x * tile_final_size + start_x;
   player.y = state->player->pos.y * tile_final_size + start_y;
   player.w = tile_final_size;
   player.h = tile_final_size;
   SDL_RenderFillRect(state->renderer, &player);
+
+  draw_map_node(state, state->graph, tile_final_size, start_x, start_y);
+
   SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_NONE);
 }
 
@@ -72,7 +101,9 @@ void          draw_update_scroll(state_t *state) {
   // draw_clamp_scroll(state);
 }
 
-/* must be done after level/player init */
+/*
+*   must be done after level/player init
+*/
 void          draw_compute_screen_sizes(state_t *state) {
   // take specific distance rect before and after player = ZOOM
   if (state->zoom.x == -1) {

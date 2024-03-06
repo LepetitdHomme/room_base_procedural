@@ -30,6 +30,7 @@ void          init_player(state_t *state) {
   state->player->delta_x = 0;
 
   state->player->current_node = state->graph;
+  state->player->current_node->visited = 1;
   state->player->pos.x = state->graph->center.x;
   state->player->pos.y = state->graph->center.y;
   state->player->direction = RIGHT;
@@ -94,12 +95,14 @@ void          player_update_node(player_t *player) {
   graph_t *parent = player->current_node->parent;
   if (parent != NULL && is_in_room(player->pos, player->current_node->parent->rect) == 0) {
     player->current_node = parent;
+    // visited
     return;
   }
 
   for (int i = 0 ; i < player->current_node->num_children ; i++) {
     if (is_in_room(player->pos, player->current_node->children[i]->rect) == 0) {
       player->current_node = player->current_node->children[i];
+      // visited
       return;
     }
   }
@@ -142,9 +145,11 @@ void          player_move_to_door(state_t *state, SDL_Rect test) {
       // update node
       if (player->current_node->elevation != current_node->doors[i].dst_node->elevation) {
         player->current_node = current_node->doors[i].dst_node;
+        player->current_node->visited = 1;
         level_to_grid(state, state->graph);
       } else {
         player->current_node = current_node->doors[i].dst_node;
+        player->current_node->visited = 1;
       }
       player_reset_screen_from_grid(state);
       break;

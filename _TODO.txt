@@ -8,6 +8,11 @@ TODO DEBUG:
 	- adjustment elevation (display only current node)
 	- BRUT values
 	- player stuck on wall when zooming => because recomputation of dst_screen takes grid pos, which considers x.y as top left, where foot should be considered
+	- because we squared_distance_between_coords for map, reduce map to input pressed only ? :/
+	- complexity adds room size => nono
+	- complexity > 6 ?
+	- center tab map
+	- 
 
 IDEAS:
 	- eyes opening in the dark when opening door
@@ -18,4 +23,5 @@ IDEAS:
 	- rooms sliding when hitting door (hit space ? or on collision ?)
 	- spatial partitionning / quadtree
 	- music => attente d'un pattern dans la music pour reafficher/start nouvelle room apres porte
+	- visited graph_t attr => unlock all bonus
 	-

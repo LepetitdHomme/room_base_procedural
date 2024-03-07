@@ -63,8 +63,8 @@ void          player_reset_screen_from_grid(state_t *state) {
   // TODO: BRUT values
   state->scroll.x = player->dst_screen.x - (state->zoom.x * state->tile_screen_size);
   state->scroll.y = player->dst_screen.y - (state->zoom.y * state->tile_screen_size);
-  state->scroll_limit_x = WINDOW_WIDTH / 4;
-  state->scroll_limit_y = WINDOW_HEIGHT / 4;
+  state->scroll_limit_x = WINDOW_WIDTH / 3;
+  state->scroll_limit_y = WINDOW_HEIGHT / 3;
   state->scroll_limit_w = WINDOW_WIDTH - (2 * state->scroll_limit_x);
   state->scroll_limit_h = WINDOW_HEIGHT - (2 * state->scroll_limit_y);
 

@@ -236,6 +236,7 @@ void                    inputs_handle(state_t *state, int *quit, SDL_Event *even
 void                    inputs_keydown(state_t *state, SDL_Event *event, int *inputs_state);
 
 /*                      tools */
+void                    print_rect(SDL_Rect rect, char *name);
 int                     clamp(int value, int min, int max);
 int                     random_int(int lower, int upper);
 double                  distance_between_coords(coord_t center_1, coord_t center_2);

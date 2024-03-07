@@ -55,7 +55,9 @@ void          player_reset_screen_from_grid(state_t *state) {
   player->dst_screen.h = state->tile_screen_size;
   
   // player speed - related to movement and tile size, since player is displayed screen-wise, not grid-wise
-  player->speed = state->tile_screen_size / 4;
+  player->speed = state->tile_screen_size / 6;
+  /* TODO: BRUT value */
+  // player->speed = 6;
   
   // compute scrolling window
   // TODO: BRUT values

@@ -1,9 +1,5 @@
 TODO DEBUG:
 	- check doors side by side
-	- diagonal step means door on corner ?: linux: 1709163157 - bsd: 1709464489
-	- corridor on floor: linux: 1709467149
-	- ensure walls ok in double corridors: 1709163835
-	- corridors erasing a room: 1709381612
 	- tileprops (enum type + rect texture + angle) to avoid recomputation
 	- adjustment elevation (display only current node)
 	- BRUT values
@@ -12,7 +8,7 @@ TODO DEBUG:
 	- complexity adds room size => nono
 	- complexity > 6 ?
 	- center tab map
-	- 
+	- need to precompute a maximum of things, too many useless recomputation right now
 
 IDEAS:
 	- eyes opening in the dark when opening door
@@ -29,4 +25,7 @@ IDEAS:
 
 SEEDS:
  - mac: 1709764409 map 
- - 
+ - diagonal step means door on corner ?: linux: 1709163157 - bsd: 1709464489
+ - corridor on floor: linux: 1709467149
+ - ensure walls ok in double corridors: 1709163835
+ - corridors erasing a room: 1709381612

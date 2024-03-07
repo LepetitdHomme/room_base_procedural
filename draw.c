@@ -171,16 +171,18 @@ void          draw_scrolling_window(state_t *state) {
 void          draw_entities(state_t *state) {
   SDL_Rect    player;
 
-  // test = state->player->dst_screen;
-  // player.x = (state->player->dst_screen.x + (state->player->dst_screen.w / 2)) - state->scroll.x;
-  // player.y = (state->player->dst_screen.y + (state->player->dst_screen.h / 2)) - state->scroll.y;
-  // player.w = state->tile_screen_size;
-  // player.h = state->tile_screen_size;
-
+  // player is its own collision box ; a quarter tile ; top left
+  // we draw his sprite around his collision box , which is its position
+  // its sprite is basically a tile, so:
   player.x = state->player->dst_screen.x - state->scroll.x;
   player.y = state->player->dst_screen.y - state->scroll.y;
   player.w = state->player->dst_screen.w;
   player.h = state->player->dst_screen.h;
+  // around collision box:
+  player.x = player.x - state->tile_screen_size / 4;
+  player.y = player.y - player.h;
+  player.w = player.w * 2;
+  player.h =  player.h * 2;
 
   SDL_RenderCopy(state->renderer, state->player->texture->texture, &state->player->src_screen, &player);
   // SDL_SetRenderDrawColor(state->renderer, 0, 0, 255, 255);
@@ -190,8 +192,8 @@ void          draw_entities(state_t *state) {
     SDL_SetRenderDrawColor(state->renderer, 255, 0, 0, 255);
     player.x = (state->player->dst_screen.x) - state->scroll.x; // center of width
     player.y = (state->player->dst_screen.y) - state->scroll.y; // feet
-    player.w = state->tile_screen_size;
-    player.h = state->tile_screen_size;
+    player.w = state->player->dst_screen.w;
+    player.h = state->player->dst_screen.h;
     SDL_RenderDrawRect(state->renderer, &player);
   }
 }

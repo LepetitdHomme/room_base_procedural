@@ -1,46 +1,44 @@
 #include "includes/common.h"
 
-void          init_texture(state_t *state, const char *path, int num_x, int num_y) {
-  SDL_Surface *tmp = NULL;
-  SDL_Rect rect;
+void          init_texture(SDL_Renderer *renderer, texture_t *destination, const char *path, int num_x, int num_y) {
+  SDL_Surface   *tmp = NULL;
+  SDL_Rect      rect;
+
+  if (destination == NULL) {
+    DEBUG_MSG("destination texture NULL");
+    exit(EXIT_FAILURE);
+  }
 
   // We create a surface
-  tmp = SDL_LoadBMP(path);
-  if (tmp == NULL) {
+  if ((tmp = SDL_LoadBMP(path)) == NULL) {
     DEBUG_MSG("SDL_LoadBMP Failed");
     exit(EXIT_FAILURE);
   }
-  SDL_SetColorKey(tmp, SDL_TRUE, SDL_MapRGB(tmp->format, 25, 225, 115));
 
-  // We malloc state->level_texture
-  state->level_texture = (texture_t *)malloc(sizeof(texture_t));
-  if (state->level_texture == NULL) {
-    DEBUG_MSG("level texture malloc failed");
-    exit(EXIT_FAILURE);
-  }
+  // we select the transparent color // sdl bmp cannot handle transparency, so we set a custom 'green screen': 255 0 255 magenta
+  SDL_SetColorKey(tmp, SDL_TRUE, SDL_MapRGB(tmp->format, 255, 0, 255));
 
   // We create a texture from the surface
-  state->level_texture->texture = SDL_CreateTextureFromSurface(state->renderer, tmp);
-  if (state->level_texture->texture == NULL) {
+  if ((destination->texture = SDL_CreateTextureFromSurface(renderer, tmp)) == NULL) {
     DEBUG_MSG("SDL_Texture from surface Failed");
     exit(EXIT_FAILURE);
   }
   SDL_FreeSurface(tmp);
 
-  state->level_texture->num_tiles_x = num_x;
-  state->level_texture->num_tiles_y = num_y;
+  // brut values
+  destination->num_tiles_x = num_x;
+  destination->num_tiles_y = num_y;
 
-  SDL_QueryTexture(state->level_texture->texture, NULL, NULL, &rect.w, &rect.h);
-  state->level_texture->tile_w = rect.w / num_x;
-  state->level_texture->tile_h = rect.h / num_y;
+  SDL_QueryTexture(destination->texture, NULL, NULL, &rect.w, &rect.h);
+  destination->tile_w = rect.w / num_x;
+  destination->tile_h = rect.h / num_y;
 }
 
-void          free_texture(state_t *state) {
-  if (state->level_texture->texture != NULL) {
-    SDL_DestroyTexture(state->level_texture->texture);
+void          free_texture(texture_t *texture) {
+  if (texture != NULL) {
+    SDL_DestroyTexture(texture->texture);
   }
-  free(state->level_texture);
-  state->level_texture = NULL;
+  free(texture);
 }
 
 /*            TODO: BRUT VALUES */

@@ -1,45 +1,39 @@
 #include "includes/common.h"
 
 void          free_player(state_t *state) {
+  if (state->player->texture != NULL) {
+    free_texture(state->player->texture);
+    state->player->texture = NULL;
+  }
   free(state->player);
   state->player = NULL;
 }
 
 void          init_player(state_t *state) {
-  state->player = (player_t *)malloc(sizeof(player_t));
-  if (state->player == NULL) {
+  if ((state->player = (player_t *)malloc(sizeof(player_t))) == NULL) {
     DEBUG_MSG("Failed to malloc player");
     exit(EXIT_FAILURE);
   }
 
-  // SDL_Surface *tmp = SDL_LoadBMP("assets/sorcerer.bmp");
-  // if (tmp == NULL) {
-  //   printf("Error SDL_LoadBMP: %s\n", SDL_GetError());
-  //   return NULL;
-  // }
-  // SDL_SetColorKey(tmp, SDL_TRUE, SDL_MapRGB(tmp->format, 25, 225, 115));
-  // player.texture = SDL_CreateTextureFromSurface(app->renderer, tmp);
-  // SDL_FreeSurface(tmp);
-  // if (player.texture == NULL) {
-  //   printf("Error SDL_CreateTextureFromSurface: %s\n", SDL_GetError());
-  //   return NULL;
-  // }
-  // SDL_QueryTexture(player.texture, NULL, NULL, &player.original.w, &player.original.h);
-  
+  // init texture_t player
+  if ((state->player->texture = (texture_t *)malloc(sizeof(texture_t))) == NULL) {
+    DEBUG_MSG("player texture malloc failed");
+    exit(EXIT_FAILURE);
+  }
+  init_texture(state->renderer, state->player->texture, "assets/soldier2.bmp", 2, 2);
+  state->player->src_screen.x = 0;
+  state->player->src_screen.y = 0;
+  state->player->src_screen.w = state->player->texture->tile_w;
+  state->player->src_screen.h = state->player->texture->tile_h;
+
   state->player->delta_y = 0;
   state->player->delta_x = 0;
-
   state->player->current_node = state->graph;
   state->player->current_node->visited = 1;
   state->player->pos.x = state->graph->center.x;
   state->player->pos.y = state->graph->center.y;
   state->player->direction = RIGHT;
   state->player->last_update = 0;
-  
-  state->player->src_screen.x = -1;
-  state->player->src_screen.y = -1;
-  state->player->src_screen.w = -1;
-  state->player->src_screen.h = -1;
 
   state->player->dst_screen.x = -1;
   state->player->dst_screen.y = -1;
@@ -56,6 +50,7 @@ void          player_reset_screen_from_grid(state_t *state) {
   // compute player screen position
   player->dst_screen.x = player->pos.x * state->tile_screen_size;
   player->dst_screen.y = player->pos.y * state->tile_screen_size;
+  player_update_direction(state->player);
   player->dst_screen.w = state->tile_screen_size;
   player->dst_screen.h = state->tile_screen_size;
   
@@ -73,6 +68,33 @@ void          player_reset_screen_from_grid(state_t *state) {
 
 }
 
+void          player_update_src_from_direction(player_t *player) {
+  player->src_screen.w = player->texture->tile_w;
+  player->src_screen.h = player->texture->tile_h;  
+
+  switch (player->direction) {
+    case DOWN:
+      player->src_screen.x = 0;
+      player->src_screen.y = 0;
+      break;
+    case UP:
+      player->src_screen.x = 1 * player->texture->tile_w;
+      player->src_screen.y = 0 * player->texture->tile_h;
+      break;
+    case LEFT:
+      player->src_screen.x = 0 * player->texture->tile_w;
+      player->src_screen.y = 1 * player->texture->tile_h;
+      break;
+    case RIGHT:
+      player->src_screen.x = 1 * player->texture->tile_w;
+      player->src_screen.y = 1 * player->texture->tile_h;
+      break;
+    default:
+      player->src_screen.x = 1 * player->texture->tile_w;
+      player->src_screen.y = 1 * player->texture->tile_h;
+  }
+}
+
 void          player_update_direction(player_t *player) {
   if (abs(player->delta_x) >= abs(player->delta_y) && player->delta_x != 0) {
     player->direction = (player->delta_x > 0) ? RIGHT : LEFT;
@@ -80,6 +102,7 @@ void          player_update_direction(player_t *player) {
   else if (abs(player->delta_y) > abs(player->delta_x) && player->delta_y != 0) {
     player->direction = (player->delta_y > 0) ? DOWN : UP;
   }
+  player_update_src_from_direction(player);
 }
 
 /*
@@ -115,7 +138,7 @@ void          player_move_proceed(state_t *state, SDL_Rect test) {
   state->player->pos.x = test.x / state->tile_screen_size;
   state->player->pos.y = test.y / state->tile_screen_size;
   state->player->dst_screen = test;
-  // player_update_direction(state->player);
+  player_update_direction(state->player);
 }
 
 /*

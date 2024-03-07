@@ -182,8 +182,9 @@ void          draw_entities(state_t *state) {
   player.w = state->player->dst_screen.w;
   player.h = state->player->dst_screen.h;
 
-  SDL_SetRenderDrawColor(state->renderer, 0, 0, 255, 255);
-  SDL_RenderFillRect(state->renderer, &player);
+  SDL_RenderCopy(state->renderer, state->player->texture->texture, &state->player->src_screen, &player);
+  // SDL_SetRenderDrawColor(state->renderer, 0, 0, 255, 255);
+  // SDL_RenderFillRect(state->renderer, &player);
 
   if (DEBUG_COLLISIONS) {
     SDL_SetRenderDrawColor(state->renderer, 255, 0, 0, 255);

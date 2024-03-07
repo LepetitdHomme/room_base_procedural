@@ -20,7 +20,13 @@ int           main(int argc, char *argv[]) {
   state.graph = NULL;
   state.zoom.x = -1;
   state.display_map = 0;
-  init_texture(&state, "assets/Sprite-0003.bmp", 5, 1);
+  state.player = NULL;
+  state.level_texture = (texture_t *)malloc(sizeof(texture_t));
+  if (state.level_texture == NULL) {
+    DEBUG_MSG("level texture malloc failed");
+    exit(EXIT_FAILURE);
+  }
+  init_texture(state.renderer, state.level_texture, "assets/Sprite-0003.bmp", 5, 1);
   init_level(&state, 1);
   level_to_grid(&state, state.graph);
   draw_compute_screen_sizes(&state);
@@ -98,7 +104,7 @@ void          clean(state_t *state, SDL_Window *window) {
   free_grid(state);
   free_graph(state);
   free_connections(state);
-  free_texture(state);
+  free_texture(state->level_texture);
   SDL_DestroyRenderer(state->renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();

@@ -38,7 +38,7 @@
 #define BASE_ROOM_NUMBER 10
 
 /* PLAYER */
-#define PLAYER_SPEED 7
+#define PLAYER_SPEED 5
 
 enum Type {
   EMPTY,// 0
@@ -143,9 +143,10 @@ typedef struct {
 } state_t;
 
 typedef struct player_struct {
-  coord_t               pos; // grid values
+  texture_t             *texture;
   SDL_Rect              src_screen; // screen values, current pos on screen
   SDL_Rect              dst_screen; // screen values, attempted pos on screen
+  coord_t               pos; // grid values
   int                   delta_x,delta_y; // these are screen values
   int                   speed; // used to increment delta_x, based on state->tile_screen_size
   Uint32                last_update; // last move update ticks
@@ -226,8 +227,8 @@ int                     player_move_attempt(state_t *state, int dx, int dy);
 enum Type               is_colliding_with(state_t *state, SDL_Rect dst);
 
 /*                      textures */
-void                    init_texture(state_t *state, const char *path, int num_x, int num_y);
-void                    free_texture(state_t *state);
+void                    init_texture(SDL_Renderer *renderer, texture_t *destination, const char *path, int num_x, int num_y);
+void                    free_texture(texture_t *texture);
 SDL_Rect                grid_value_to_tileset_rect(state_t *state, int x);
 
 /*                      inputs */

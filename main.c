@@ -27,7 +27,7 @@ int           main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
   init_texture(state.renderer, state.level_texture, "assets/Sprite-0003.bmp", 5, 1);
-  init_level(&state, 1);
+  init_level(&state, 2);
   level_to_grid(&state, state.graph);
   draw_compute_screen_sizes(&state);
   quit = 0;

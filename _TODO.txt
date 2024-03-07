@@ -9,6 +9,8 @@ TODO DEBUG:
 	- complexity > 6 ?
 	- center tab map
 	- need to precompute a maximum of things, too many useless recomputation right now
+	- sdl sound ?
+	- seed on every terminal ?
 
 IDEAS:
 	- eyes opening in the dark when opening door

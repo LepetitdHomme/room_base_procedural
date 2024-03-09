@@ -50,8 +50,8 @@ enum Type {
   CORNER_TOP_RIGHT,// 6
   CORNER_BOT_LEFT,// 7
   CORNER_BOT_RIGHT,// 8
-  CORRIDOR,// 9
-  FLOOR,// 10
+  FLOOR,// 9
+  CORRIDOR,// 10
   DOOR_UP,// 11
   DOOR_UP_OPEN,// 12
   DOOR_DOWN,// 13

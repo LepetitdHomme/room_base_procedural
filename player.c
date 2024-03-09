@@ -57,14 +57,6 @@ void          player_reset_screen_from_grid(state_t *state) {
   
   // player speed - related to movement and tile size, since player is displayed screen-wise, not grid-wise
   player->speed = state->tile_screen_size / 6;
-
-  // when reset, for instance during node/room change, we force slow down
-  // if (player->delta_x != 0) {
-  //   player->delta_x = SGN(player->delta_x) * half_speed;
-  // }
-  // if (player->delta_y != 0) {
-  //   player->delta_y = SGN(player->delta_y) * half_speed;
-  // }
   
   // compute scrolling window
   // TODO: BRUT values

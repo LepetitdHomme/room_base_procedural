@@ -13,12 +13,29 @@ void          doors_append(graph_t *src_node, door_t door_node) {
 
 void          open_door(state_t *state) {
   enum Type type;
+  coord_t   next;
+  SDL_Rect  room_grid;
+
+  room_grid.x = 0;
+  room_grid.y = 0;
+  room_grid.w = state->grid_w;
+  room_grid.h = state->grid_h;
 
   type = state->grid[state->player->pos.x][state->player->pos.y];
   if (type == DOOR_UP) {
     state->grid[state->player->pos.x][state->player->pos.y] = DOOR_UP_OPEN;
+    next.x = state->player->pos.x;
+    next.y = state->player->pos.y - 1;
+    if (is_in_room(next, room_grid) == 0 && state->grid[next.x][next.y] == DOOR_DOWN) {
+      state->grid[next.x][next.y] = DOOR_DOWN_OPEN;
+    }
   } else if (type == DOOR_DOWN) {
     state->grid[state->player->pos.x][state->player->pos.y] = DOOR_DOWN_OPEN;
+    next.x = state->player->pos.x;
+    next.y = state->player->pos.y + 1;
+    if (is_in_room(next, room_grid) == 0 && state->grid[next.x][next.y] == DOOR_UP) {
+      state->grid[next.x][next.y] = DOOR_UP_OPEN;
+    }
   }
 }
 

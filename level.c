@@ -49,7 +49,7 @@ void          node_to_grid(state_t *state, graph_t *node, int with_parent, int w
       if (is_room_wall(node->rect, i, j) == 0) {
         state->grid[i][j] = wall_type(node->rect, i, j);
       } else {
-        state->grid[i][j] = FLOOR; // floor
+        state->grid[i][j] = node->is_corridor ? CORRIDOR : FLOOR; // floor
       }
     }
   }

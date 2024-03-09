@@ -167,6 +167,7 @@ void          player_move_to_door(state_t *state, SDL_Rect dest) {
 
   if (is_door_type(current_tile) == 1) { // false
     player_move_proceed(state, dest);
+    open_door(state);
     return;
   }
 
@@ -224,7 +225,7 @@ int           player_move_attempt(state_t *state, int dx, int dy) {
 
   collision = is_colliding_with(state, dest);
 
-  if (collision == FLOOR) {
+  if (is_floor_type(collision) == 0) {
     player_move_proceed(state, dest);
     return 1;
   } else if (is_door_type(collision) == 0) {

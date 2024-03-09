@@ -11,6 +11,7 @@ SDL_Color     type_to_map_color(enum Type type) {
       color.a = 255;
       break;
     case FLOOR:
+    case CORRIDOR:
       color.r = 100;
       color.g = 0;
       color.b = 0;
@@ -70,19 +71,12 @@ SDL_Color     pick_color(state_t *state, int i, int j) {
       color.b = 255;
       color.a = 255;
       break;
-    case DOOR_SRC:
     case DOOR_UP:
     case DOOR_DOWN:
     case DOOR_LEFT:
     case DOOR_RIGHT:
       color.r = 0;
       color.g = 255;
-      color.b = 0;
-      color.a = 255;
-      break;
-    case DOOR_DST:
-      color.r = 255;
-      color.g = 0;
       color.b = 0;
       color.a = 255;
       break;
@@ -116,6 +110,23 @@ enum Dir      invert_dir(enum Dir dir) {
   return invert;
 }
 
+SDL_RendererFlip   flip_from_type(enum Type type) {
+  SDL_RendererFlip    flip;
+
+  switch (type) {
+    case CORNER_TOP_RIGHT:
+    case WALL_RIGHT:
+    case CORNER_BOT_RIGHT:
+    case DOOR_RIGHT:
+      flip = SDL_FLIP_HORIZONTAL;
+      break;
+    default:
+      flip = SDL_FLIP_NONE;
+  }
+
+  return flip;
+}
+
 double        angle_from_type(enum Type type) {
   double angle;
 
@@ -123,34 +134,34 @@ double        angle_from_type(enum Type type) {
     case EMPTY:
       angle = 0.0;
       break;
-    case WALL_UP:
-    case DOOR_UP:
-      angle = 0.0;
-      break;
-    case WALL_DOWN:
-    case DOOR_DOWN:
-      angle = 180.0;
-      break;
-    case WALL_LEFT:
-    case DOOR_LEFT:
-      angle = -90.0;
-      break;
-    case WALL_RIGHT:
-    case DOOR_RIGHT:
-      angle = 90.0;
-      break;
-    case CORNER_TOP_LEFT:
-      angle = 0.0;
-      break;
-    case CORNER_TOP_RIGHT:
-      angle = 90.0;
-      break;
-    case CORNER_BOT_LEFT:
-      angle = -90.0;
-      break;
-    case CORNER_BOT_RIGHT:
-      angle = 180.0;// -180.0;
-      break;
+    // case WALL_UP:
+    // case DOOR_UP:
+    //   angle = 0.0;
+    //   break;
+    // case WALL_DOWN:
+    // case DOOR_DOWN:
+    //   angle = 180.0;
+    //   break;
+    // case WALL_LEFT:
+    // case DOOR_LEFT:
+    //   angle = -90.0;
+    //   break;
+    // case WALL_RIGHT:
+    // case DOOR_RIGHT:
+    //   angle = 90.0;
+    //   break;
+    // case CORNER_TOP_LEFT:
+    //   angle = 0.0;
+    //   break;
+    // case CORNER_TOP_RIGHT:
+    //   angle = 90.0;
+    //   break;
+    // case CORNER_BOT_LEFT:
+    //   angle = -90.0;
+    //   break;
+    // case CORNER_BOT_RIGHT:
+    //   angle = 180.0;// -180.0;
+    //   break;
     default:
       angle = 0.0;
   }
@@ -158,9 +169,18 @@ double        angle_from_type(enum Type type) {
 }
 
 int           is_door_type(enum Type type) {
-  if (type == DOOR_UP || type == DOOR_DOWN || type == DOOR_LEFT || type == DOOR_RIGHT) {
+  if (type == DOOR_UP || type == DOOR_DOWN || type == DOOR_LEFT || type == DOOR_RIGHT || type == DOOR_UP_OPEN || type == DOOR_DOWN_OPEN) {
     return 0;
   }
+
+  return 1;
+}
+
+int           is_floor_type(enum Type type) {
+  if (type == FLOOR || type == CORRIDOR) {
+    return 0;
+  }
+
   return 1;
 }
 

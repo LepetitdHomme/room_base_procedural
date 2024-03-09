@@ -26,8 +26,8 @@ int           main(int argc, char *argv[]) {
     DEBUG_MSG("level texture malloc failed");
     exit(EXIT_FAILURE);
   }
-  init_texture(state.renderer, state.level_texture, "assets/Sprite-0003.bmp", 5, 1);
-  init_level(&state, 2);
+  init_texture(state.renderer, state.level_texture, "assets/Sprite-0006.bmp", 9, 2);
+  init_level(&state, 1);
   level_to_grid(&state, state.graph);
   draw_compute_screen_sizes(&state);
   quit = 0;

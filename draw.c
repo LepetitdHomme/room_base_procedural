@@ -202,7 +202,7 @@ void          draw_entities(state_t *state) {
 void          draw_node(state_t *state) {
   graph_t           *node = state->player->current_node;
   SDL_Rect          dst_screen;
-  SDL_Rect          src_texture;
+  tile_prop_t       src_tile;
   enum Type         tile_type;
   int               minx, maxx, miny, maxy;
 
@@ -224,13 +224,14 @@ void          draw_node(state_t *state) {
       } else {
         tile_type = state->grid[i][j];
       }
-      src_texture = grid_value_to_tileset_rect(state, tile_type);
-
+      // src_texture = grid_value_to_tileset_rect(state, tile_type);
+      // tile_flip = flip_from_type(tile_type);
+      src_tile = state->level_texture->props[tile_type];
       dst_screen.x = i * state->tile_screen_size - state->scroll.x;
       dst_screen.y = j * state->tile_screen_size - state->scroll.y;
       dst_screen.w = state->tile_screen_size;
       dst_screen.h = state->tile_screen_size;
-      SDL_RenderCopyEx(state->renderer, state->level_texture->texture, &src_texture, &dst_screen, angle_from_type(tile_type), &state->center_tile, state->flip);
+      SDL_RenderCopyEx(state->renderer, state->level_texture->texture, &src_tile.src, &dst_screen, 0, &state->center_tile, state->flip);
     }
   }
   if (DEBUG_SCREEN) draw_scrolling_window(state);

@@ -50,14 +50,14 @@ enum Type {
   CORNER_TOP_RIGHT,// 6
   CORNER_BOT_LEFT,// 7
   CORNER_BOT_RIGHT,// 8
-  FLOOR,// 9
-  DOOR_UP,// 10
-  DOOR_DOWN,// 11
-  DOOR_LEFT,// 12
-  DOOR_RIGHT,// 13
-  DOOR_SRC,// 14
-  DOOR_DST,// 15
-  CORRIDOR// 16
+  CORRIDOR,// 9
+  FLOOR,// 10
+  DOOR_UP,// 11
+  DOOR_UP_OPEN,// 12
+  DOOR_DOWN,// 13
+  DOOR_DOWN_OPEN, // 14
+  DOOR_LEFT,// 15
+  DOOR_RIGHT,// 16
 };
 
 enum Dir { UP, DOWN, LEFT, RIGHT };
@@ -114,9 +114,14 @@ typedef struct graph_node {
 } graph_t;
 
 typedef struct {
+  SDL_Rect              src;
+} tile_prop_t;
+
+typedef struct {
   SDL_Texture           *texture;
   int                   tile_w,tile_h;
   int                   num_tiles_x,num_tiles_y;
+  tile_prop_t           *props;
 } texture_t;
 
 typedef struct {
@@ -178,7 +183,6 @@ int                     is_in_room(coord_t point, SDL_Rect rect);
 int                     is_corner_wall(SDL_Rect rect, int i, int j);
 int                     is_room_wall(SDL_Rect room, int i, int j);
 room_t                  *find_room_by_id(state_t *state, int id);
-enum Type               wall_type(SDL_Rect room, int x, int y);
 int                     room_is_valid(state_t *state, SDL_Rect room, int spacing, int min_size);
 SDL_Rect                place_new_room(state_t *state, int max_rect_side);
 coord_t                 room_center(SDL_Rect room);
@@ -192,6 +196,7 @@ void                    free_connections(state_t *state);
 void                    connections_print(state_t *state);
 
 /*                      door */
+void                    open_door(state_t *state);
 void                    doors_append(graph_t *src_node, door_t door_node);
 void                    free_doors(graph_t *node);
 enum Dir                door_dir(SDL_Rect room, int x, int y);
@@ -248,9 +253,11 @@ void                    apply_kruskal(state_t *state);
 /*                      type */
 SDL_Color               type_to_map_color(enum Type type);
 int                     is_door_type(enum Type type);
+int                     is_floor_type(enum Type type);
 enum Dir                invert_dir(enum Dir dir);
 enum Type               door_dir_to_type(enum Dir dir);
 SDL_Color               pick_color(state_t *state, int i, int j);
+SDL_RendererFlip        flip_from_type(enum Type type);
 double                  angle_from_type(enum Type type);
 enum Type               wall_type(SDL_Rect room, int x, int y);
 

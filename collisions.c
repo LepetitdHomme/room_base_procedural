@@ -1,12 +1,12 @@
 #include "includes/common.h"
 
 enum Type     collisions_priority(enum Type collision1, enum Type collision2) {
-  if (collision1 == FLOOR) {
+  if (is_floor_type(collision1) == 0) {
     // if (DEBUG_COLLISIONS) DEBUG_MSG("FLOOR VS 2");
     return collision2;
   }
   if (is_door_type(collision1) == 0) {
-    if (collision2 != FLOOR) {
+    if (is_floor_type(collision2) != 0) {
       if (DEBUG_COLLISIONS) DEBUG_MSG("DOOR VS NOT FLOOR");
       return collision2;
     } else {

@@ -11,6 +11,17 @@ void          doors_append(graph_t *src_node, door_t door_node) {
   src_node->doors[src_node->num_doors - 1] = door_node;
 }
 
+void          open_door(state_t *state) {
+  enum Type type;
+
+  type = state->grid[state->player->pos.x][state->player->pos.y];
+  if (type == DOOR_UP) {
+    state->grid[state->player->pos.x][state->player->pos.y] = DOOR_UP_OPEN;
+  } else if (type == DOOR_DOWN) {
+    state->grid[state->player->pos.x][state->player->pos.y] = DOOR_DOWN_OPEN;
+  }
+}
+
 /* returns door for src */
 door_t        door_coordinates(graph_t *src, graph_t *dst) {
   int         x1 = src->center.x;

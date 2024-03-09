@@ -184,6 +184,31 @@ int           is_floor_type(enum Type type) {
   return 1;
 }
 
+int           is_wall_type(enum Type type) {
+  if (type == WALL_RIGHT || type == WALL_UP || type == WALL_DOWN || type == WALL_LEFT) {
+    return 0;
+  }
+
+  return 1;
+}
+
+int           type_stops_light(enum Type type) {
+  int res;
+
+  switch (type) {
+    case FLOOR:
+    case CORRIDOR:
+    case DOOR_UP_OPEN:
+    case DOOR_DOWN_OPEN:
+      res = 1;
+      break;
+    default:
+      res = 0;
+  }
+
+  return res;
+}
+
 enum Type     door_dir_to_type(enum Dir dir) {
   switch (dir) {
     case UP:

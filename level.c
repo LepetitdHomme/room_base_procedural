@@ -42,6 +42,7 @@ int           max_rect_side(int x, int y, int n) {
 void          node_to_grid(state_t *state, graph_t *node, int with_parent, int with_children, int elevation) {
   int         diff_elevation = abs(node->elevation - elevation);
 
+  int test = 0;
   for (int i = node->rect.x ; i < node->rect.x + node->rect.w ; i++) {
     for (int j = node->rect.y ; j < node->rect.y + node->rect.h ; j++) {
       if (state->grid[i][j] != 0 || diff_elevation != 0)
@@ -49,8 +50,13 @@ void          node_to_grid(state_t *state, graph_t *node, int with_parent, int w
       if (is_room_wall(node->rect, i, j) == 0) {
         state->grid[i][j] = wall_type(node->rect, i, j);
       } else {
-        state->grid[i][j] = node->is_corridor ? CORRIDOR : FLOOR; // floor
+        if (test == 30) {
+          state->grid[i][j] = WALL_UP; // floor
+        } else {
+          state->grid[i][j] = node->is_corridor ? CORRIDOR : FLOOR; // floor
+        }
       }
+      test++;
     }
   }
 

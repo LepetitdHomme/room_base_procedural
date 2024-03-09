@@ -110,6 +110,7 @@ typedef struct graph_node {
   int                   is_corridor;
   int                   elevation;
   int                   visited;
+  int                   **light_map;
   int                   id;
 } graph_t;
 
@@ -228,6 +229,13 @@ void                    player_refine_move_attempt(state_t *state, int dx, int d
 void                    player_move(state_t *state, int dx, int dy);
 int                     player_move_attempt(state_t *state, int dx, int dy);
 
+/*                      light_map */
+void                    init_light_map(graph_t *node);
+void                    free_light_map(graph_t *node);
+void                    reset_light_map(graph_t *node);
+void                    update_light_map(state_t *state);
+void                    print_light_map(graph_t *node);
+
 /*                      entities */
 
 /*                      collisions */
@@ -256,7 +264,9 @@ void                    apply_kruskal(state_t *state);
 /*                      type */
 SDL_Color               type_to_map_color(enum Type type);
 int                     is_door_type(enum Type type);
+int                     type_stops_light(enum Type type);
 int                     is_floor_type(enum Type type);
+int                     is_wall_type(enum Type type);
 enum Dir                invert_dir(enum Dir dir);
 enum Type               door_dir_to_type(enum Dir dir);
 SDL_Color               pick_color(state_t *state, int i, int j);

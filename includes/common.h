@@ -179,6 +179,7 @@ void                    node_to_grid(state_t *state, graph_t *node, int with_par
 void                    level_to_grid(state_t *state, graph_t *node);
 
 /*                      room */
+void                    tmp_fill_grid(state_t *state, SDL_Rect rect);
 int                     is_in_room(coord_t point, SDL_Rect rect);
 int                     is_corner_wall(SDL_Rect rect, int i, int j);
 int                     is_room_wall(SDL_Rect room, int i, int j);

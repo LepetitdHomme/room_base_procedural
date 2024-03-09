@@ -4,8 +4,8 @@ void                    connections_append(state_t *state, int src, int dst) {
   // Increase the size of the connections array
   state->connections = realloc(state->connections, (state->num_connections + 1) * sizeof(con_t));
   if (state->connections == NULL) {
-      printf("Memory allocation failed!\n");
-      exit(1);
+    printf("Memory allocation failed!\n");
+    exit(1);
   }
 
   // Add the new connection

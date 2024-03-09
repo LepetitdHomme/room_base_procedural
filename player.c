@@ -66,7 +66,6 @@ void          player_reset_screen_from_grid(state_t *state) {
   state->scroll_limit_y = WINDOW_HEIGHT / 3;
   state->scroll_limit_w = WINDOW_WIDTH - (2 * state->scroll_limit_x);
   state->scroll_limit_h = WINDOW_HEIGHT - (2 * state->scroll_limit_y);
-
 }
 
 void          player_update_src_from_direction(player_t *player) {

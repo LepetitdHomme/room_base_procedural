@@ -31,3 +31,4 @@ SEEDS:
  - corridor on floor: linux: 1709467149
  - ensure walls ok in double corridors: 1709163835
  - corridors erasing a room: 1709381612
+ - fixed: linux: 1709981179 => double room bug

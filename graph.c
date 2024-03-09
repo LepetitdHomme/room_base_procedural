@@ -68,6 +68,7 @@ graph_t       *graph_create_node_from_connection(state_t *state, graph_t *parent
       elevation = -1;
     }
   }
+  tmp_fill_grid(state, corridor_rect);
 
   // persist doors on parent and child
   doors_append(parent_node, door_node_parent);
@@ -185,6 +186,7 @@ void          graph_print(graph_t *node, int depth) {
   }
   if (node->is_corridor == 1) {
     printf("Corridor: id:%d, elevation: %d, num_doors: %d\n", node->id, node->elevation, node->num_doors);
+    printf("rect: %d - %d | %d - %d\n", node->rect.x, node->rect.y, node->rect.w, node->rect.h);
   } else {
     printf("Node: id:%d, elevation: %d, num_doors: %d\n", node->id, node->elevation, node->num_doors);
   }

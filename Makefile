@@ -33,7 +33,7 @@ OBJ = main.o \
 			entities.o \
 			draw.o \
 			collisions.o \
-			inputs.o
+			inputs.o \
 
 # macOS configuration
 ifeq ($(UNAME_S),Darwin)

@@ -78,6 +78,9 @@ int           room_is_valid(state_t *state, SDL_Rect room, int spacing, int min_
     return 2;
   }
 
+  if (room.x == 45) {
+    printf("test current grid: %d - %d\n", state->grid[45][28], state->grid[45][29]);
+  }
   for (int i = room.x - spacing ; i < room.x + room.w + spacing ; i++) {
     for (int j = room.y - spacing; j < room.y + room.h + spacing ; j++) {
       if (state->grid[i][j] != 0) {
@@ -87,6 +90,16 @@ int           room_is_valid(state_t *state, SDL_Rect room, int spacing, int min_
   }
 
   return 0;
+}
+
+void          tmp_fill_grid(state_t *state, SDL_Rect rect) {
+  // place random int != 0 in grid during rectangle/rooms generation
+  // UNTIL CORRIDORS DONE
+  for(int i = rect.x ; i < rect.x + rect.w ; i++) {
+    for (int j = rect.y ; j < rect.y + rect.h ; j++) {
+      state->grid[i][j] = 1;
+    }
+  }
 }
 
 SDL_Rect      place_new_room(state_t *state, int max_rect_side) {
@@ -104,13 +117,7 @@ SDL_Rect      place_new_room(state_t *state, int max_rect_side) {
     return rect;
   }
 
-  // place random int != 0 in grid during rectangle/rooms generation
-  // UNTIL CORRIDORS DONE
-  for(int i = rect.x ; i < rect.x + rect.w ; i++) {
-    for (int j = rect.y ; j < rect.y + rect.h ; j++) {
-      state->grid[i][j] = 1;
-    }
-  }
+  tmp_fill_grid(state, rect);
   return rect;
 }
 

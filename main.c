@@ -42,8 +42,8 @@ int           main(int argc, char *argv[]) {
     SDL_SetRenderDrawColor(state.renderer, 0, 0, 0, 255);
     SDL_RenderClear(state.renderer);
 
-    /* Draw your graphics */
 
+    /* Draw your graphics */
     draw_node(&state);
     draw_entities(&state);
     if (state.display_map == 1) {
@@ -53,9 +53,9 @@ int           main(int argc, char *argv[]) {
         draw_map_grid(&state);
       }
     }
-    
-    /**********************/
 
+    /**********************/
+   
     SDL_RenderPresent(state.renderer);
     SDL_Delay(16);
   }

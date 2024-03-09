@@ -22,3 +22,18 @@ double        squared_distance_between_coords(coord_t center_1, coord_t center_2
 void          print_rect(SDL_Rect rect, char *name) {
   printf("print_rect: %s: %d - %d | %d - %d\n", name, rect.x, rect.y, rect.w, rect.h);
 }
+
+
+Uint8         alpha_light(int light, double distance) {
+  Uint8       alpha;
+  double      light_squared;
+
+  alpha = 0;
+  light_squared = light * light;
+
+  if (distance <= light_squared) {
+    alpha = (Uint8)(((double)(light_squared - distance) / light_squared) * 255);
+  }
+  // printf("distane: %f, alpha: %u\n", distance, alpha);
+  return alpha;
+}

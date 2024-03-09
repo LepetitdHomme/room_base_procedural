@@ -168,6 +168,94 @@ void          draw_scrolling_window(state_t *state) {
   SDL_RenderDrawRect(state->renderer, &scroll_display);  
 }
 
+/*
+*   Takes all rects outside player pos -/+ light radius
+*     and draw them black
+*     then takes the inner rect around light radius around player
+*     and computes light within it
+*/
+void          draw_dark(state_t *state, SDL_Rect player) {
+  SDL_Rect    dark_left, dark_right, dark_top, dark_bot;
+
+  // print_rect(player, "player");
+  // left rect of player
+  dark_left.x = 0;
+  dark_left.y = 0;
+  dark_left.w = player.x - state->player->light;
+  dark_left.h = WINDOW_HEIGHT;
+  // print_rect(dark_left, "dark_left left");
+  SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
+  SDL_RenderFillRect(state->renderer, &dark_left);
+
+  // right rect of player
+  dark_right.x = player.x + state->tile_screen_size + state->player->light;
+  dark_right.y = 0;
+  dark_right.w = WINDOW_WIDTH - dark_right.x;
+  dark_right.h = WINDOW_HEIGHT;
+  // print_rect(dark_right, "dark_right right");
+  SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
+  SDL_RenderFillRect(state->renderer, &dark_right);
+
+  // top rect of player
+  dark_top.x = player.x - state->player->light;
+  dark_top.y = 0;
+  dark_top.w = 2 * state->player->light + state->tile_screen_size;
+  dark_top.h = player.y - state->player->light;
+  // print_rect(dark_top, "dark_top top");
+  SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
+  SDL_RenderFillRect(state->renderer, &dark_top);
+
+  // bottom rect of player
+  dark_bot.x = player.x - state->player->light;
+  dark_bot.y = player.y + state->tile_screen_size + state->player->light;
+  dark_bot.w = 2 * state->player->light + state->tile_screen_size;
+  dark_bot.h = WINDOW_HEIGHT - (player.y + state->player->light);
+  // print_rect(dark_bot, "dark_bot bottom");
+  SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
+  SDL_RenderFillRect(state->renderer, &dark_bot);
+
+  // we compute the inner rect
+  SDL_Rect light_rect;
+  light_rect.x = dark_top.x;
+  light_rect.y = dark_top.h; // == h since y == 0
+  light_rect.w = dark_top.w;
+  light_rect.h = dark_bot.y - dark_top.h;
+  // print_rect(light_rect, "light");
+  coord_t player_coord, screen_coord;
+  player_coord.x = player.x + player.w / 2;
+  player_coord.y = player.y + player.h / 2;
+  Uint32 alpha;
+
+  SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
+  for (int i = light_rect.x ; i < light_rect.x + light_rect.w - 1 ; i+=4) {
+    for (int j = light_rect.y ; j < light_rect.y + light_rect.w - 1 ; j+=4) {
+      screen_coord.x = i;
+      screen_coord.y = j;
+      double distance = squared_distance_between_coords(player_coord, screen_coord);
+      // printf("dist: %f, light squared: %f\n", distance, pow(state->player->light, 2));
+      alpha = alpha_light(state->player->light, distance);
+      SDL_Rect rect;
+      rect.x = i;
+      rect.y = j;
+      rect.w = 4;
+      rect.h = 4;
+
+      // https://www.color-hex.com/color-palette/899
+      SDL_SetRenderDrawColor(state->renderer, 253, 207, 88, (Uint8)clamp((int)alpha_light(state->player->light / 8, distance), 0, 40));
+      SDL_RenderFillRect(state->renderer, &rect);
+      SDL_SetRenderDrawColor(state->renderer, 128, 9, 9, (Uint8)clamp((int)alpha_light(state->player->light / 4, distance), 0, 60));
+      SDL_RenderFillRect(state->renderer, &rect);
+      SDL_SetRenderDrawColor(state->renderer, 242, 125, 12, (Uint8)clamp((int)alpha_light(state->player->light / 2, distance), 0, 10));
+      SDL_RenderFillRect(state->renderer, &rect);
+      SDL_SetRenderDrawColor(state->renderer, 240, 127, 19, (Uint8)clamp((int)alpha_light(state->player->light, distance), 0, 80));
+      SDL_RenderFillRect(state->renderer, &rect);
+      SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255 - alpha);
+      SDL_RenderFillRect(state->renderer, &rect);
+    }
+  }
+  SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_NONE);
+}
+
 void          draw_entities(state_t *state) {
   SDL_Rect    player;
 
@@ -179,14 +267,16 @@ void          draw_entities(state_t *state) {
   player.w = state->player->dst_screen.w;
   player.h = state->player->dst_screen.h;
   // around collision box:
-  player.x = player.x - state->tile_screen_size / 4;
-  player.y = player.y - player.h;
-  player.w = player.w * 2;
-  player.h =  player.h * 2;
+  player.x -= state->tile_screen_size / 4;
+  player.y -= player.h;
+  player.w *= 2;
+  player.h *= 2;
 
+  draw_dark(state, player);
   SDL_RenderCopy(state->renderer, state->player->texture->texture, &state->player->src_screen, &player);
   // SDL_SetRenderDrawColor(state->renderer, 0, 0, 255, 255);
   // SDL_RenderFillRect(state->renderer, &player);
+
 
   if (DEBUG_COLLISIONS) {
     SDL_SetRenderDrawColor(state->renderer, 255, 0, 0, 255);

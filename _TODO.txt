@@ -22,7 +22,8 @@ IDEAS:
 	- spatial partitionning / quadtree
 	- music => attente d'un pattern dans la music pour reafficher/start nouvelle room apres porte
 	- visited graph_t attr => unlock all bonus
-	-
+	- torch of fire gives light around the player
+	- window and storm, the lightning lighten the room with shadows ellongated of ennemies.
 
 
 SEEDS:

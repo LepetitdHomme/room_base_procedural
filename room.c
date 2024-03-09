@@ -78,9 +78,6 @@ int           room_is_valid(state_t *state, SDL_Rect room, int spacing, int min_
     return 2;
   }
 
-  if (room.x == 45) {
-    printf("test current grid: %d - %d\n", state->grid[45][28], state->grid[45][29]);
-  }
   for (int i = room.x - spacing ; i < room.x + room.w + spacing ; i++) {
     for (int j = room.y - spacing; j < room.y + room.h + spacing ; j++) {
       if (state->grid[i][j] != 0) {

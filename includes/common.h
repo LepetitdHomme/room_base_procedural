@@ -157,6 +157,7 @@ typedef struct player_struct {
   Uint32                last_update; // last move update ticks
   graph_t               *current_node; // current room/node on graph
   enum Dir              direction;
+  int                   light;
 } player_t;
 
 /*                      draw */
@@ -247,6 +248,7 @@ int                     clamp(int value, int min, int max);
 int                     random_int(int lower, int upper);
 double                  distance_between_coords(coord_t center_1, coord_t center_2);
 double                  squared_distance_between_coords(coord_t center_1, coord_t center_2);
+Uint8                   alpha_light(int light, double distance);
 
 /*                      kruskal */
 void                    apply_kruskal(state_t *state);

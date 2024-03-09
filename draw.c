@@ -240,14 +240,16 @@ void          draw_dark(state_t *state, SDL_Rect player) {
       rect.w = 4;
       rect.h = 4;
 
-      // https://www.color-hex.com/color-palette/899
-      SDL_SetRenderDrawColor(state->renderer, 253, 207, 88, (Uint8)clamp((int)alpha_light(state->player->light / 8, distance), 0, 40));
-      SDL_RenderFillRect(state->renderer, &rect);
-      SDL_SetRenderDrawColor(state->renderer, 128, 9, 9, (Uint8)clamp((int)alpha_light(state->player->light / 4, distance), 0, 60));
-      SDL_RenderFillRect(state->renderer, &rect);
-      SDL_SetRenderDrawColor(state->renderer, 242, 125, 12, (Uint8)clamp((int)alpha_light(state->player->light / 2, distance), 0, 10));
-      SDL_RenderFillRect(state->renderer, &rect);
-      SDL_SetRenderDrawColor(state->renderer, 240, 127, 19, (Uint8)clamp((int)alpha_light(state->player->light, distance), 0, 80));
+      // // https://www.color-hex.com/color-palette/899
+      // SDL_SetRenderDrawColor(state->renderer, 253, 207, 88, (Uint8)clamp((int)alpha_light(state->player->light / 8, distance), 0, 40));
+      // SDL_RenderFillRect(state->renderer, &rect);
+      // SDL_SetRenderDrawColor(state->renderer, 128, 9, 9, (Uint8)clamp((int)alpha_light(state->player->light / 4, distance), 0, 60));
+      // SDL_RenderFillRect(state->renderer, &rect);
+      // SDL_SetRenderDrawColor(state->renderer, 242, 125, 12, (Uint8)clamp((int)alpha_light(state->player->light / 2, distance), 0, 10));
+      // SDL_RenderFillRect(state->renderer, &rect);
+      // SDL_SetRenderDrawColor(state->renderer, 240, 127, 19, (Uint8)clamp((int)alpha_light(state->player->light, distance), 0, 80));
+      // SDL_RenderFillRect(state->renderer, &rect);
+      SDL_SetRenderDrawColor(state->renderer, 255, 255, 0, (Uint8)clamp((int)alpha_light(state->player->light, distance), 0, 80));
       SDL_RenderFillRect(state->renderer, &rect);
       SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255 - alpha);
       SDL_RenderFillRect(state->renderer, &rect);

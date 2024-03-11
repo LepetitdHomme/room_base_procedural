@@ -31,10 +31,11 @@ void          init_player(state_t *state) {
   state->player->current_node = state->graph;
   state->player->current_node->visited = 1;
   init_light_map(state->player->current_node);
+  reset_light_map(state->player->current_node);
   state->player->pos.x = state->graph->center.x;
   state->player->pos.y = state->graph->center.y;
   state->player->direction = RIGHT;
-  state->player->light = 400;
+  state->player->light = 200;
   state->player->last_update = 0;
 
   state->player->dst_screen.x = -1;
@@ -178,6 +179,7 @@ void          player_move_to_door(state_t *state, SDL_Rect dest) {
         player->current_node->visited = 1;
       }
       init_light_map(player->current_node);
+      reset_light_map(player->current_node);
       player_reset_screen_from_grid(state);
       break;
     }

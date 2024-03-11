@@ -51,7 +51,7 @@ void          node_to_grid(state_t *state, graph_t *node, int with_parent, int w
         state->grid[i][j] = wall_type(node->rect, i, j);
       } else {
         if (test == 30) {
-          state->grid[i][j] = WALL_UP; // floor
+          state->grid[i][j] = CORRIDOR; // floor
         } else {
           state->grid[i][j] = node->is_corridor ? CORRIDOR : FLOOR; // floor
         }

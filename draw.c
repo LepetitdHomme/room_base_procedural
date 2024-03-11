@@ -221,63 +221,54 @@ void          draw_dark(state_t *state, SDL_Rect player) {
   light_rect.y = dark_top.h; // == h since y == 0
   light_rect.w = dark_top.w;
   light_rect.h = dark_bot.y - dark_top.h;
-  // print_rect(light_rect, "light");
-  coord_t player_coord, screen_coord;
-  player_coord.x = player.x + player.w / 2;
-  player_coord.y = player.y + player.h / 2;
+  SDL_Rect rect;
+
   Uint32 alpha;
-  int multiple_from_light_map;
+  // print_rect(light_rect, "light_rect");
+  // printf("scroll: %d-%d, tile: %d\n", state->scroll.x, state->scroll.y, state->tile_screen_size);
+  // print_rect(state->player->current_node->rect, "node_rect");
 
-  SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
-  for (int i = light_rect.x ; i < light_rect.x + light_rect.w - 1 ; i+=4) {
-    for (int j = light_rect.y ; j < light_rect.y + light_rect.w - 1 ; j+=4) {
-      screen_coord.x = i;
-      screen_coord.y = j;
-      double distance = squared_distance_between_coords(player_coord, screen_coord);
-      // printf("dist: %f, light squared: %f\n", distance, pow(state->player->light, 2));
-      alpha = alpha_light(state->player->light, distance);
-      SDL_Rect rect;
-      rect.x = i;
-      rect.y = j;
-      rect.w = 4;
-      rect.h = 4;
+  // SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
 
-      // https://www.color-hex.com/color-palette/899
-      // SDL_SetRenderDrawColor(state->renderer, 253, 207, 88, (Uint8)clamp((int)alpha_light(state->player->light / 8, distance), 0, 40));
-      // SDL_RenderFillRect(state->renderer, &rect);
-      // SDL_SetRenderDrawColor(state->renderer, 128, 9, 9, (Uint8)clamp((int)alpha_light(state->player->light / 4, distance), 0, 60));
-      // SDL_RenderFillRect(state->renderer, &rect);
-      // SDL_SetRenderDrawColor(state->renderer, 242, 125, 12, (Uint8)clamp((int)alpha_light(state->player->light / 2, distance), 0, 10));
-      // SDL_RenderFillRect(state->renderer, &rect);
-      // SDL_SetRenderDrawColor(state->renderer, 240, 127, 19, (Uint8)clamp((int)alpha_light(state->player->light, distance), 0, 80));
-      // SDL_RenderFillRect(state->renderer, &rect);
+  draw_light(state);
 
-      // check if light_map got some info for us
-      // screen coord to grid => + scroll / tile screen
-      coord_t light_map;
-      light_map.x = ((rect.x + state->scroll.x) / state->tile_screen_size) - state->player->current_node->rect.x;
-      light_map.y = ((rect.y + state->scroll.y) / state->tile_screen_size) - state->player->current_node->rect.y;
-      // DEBUG_MSG("");
-      // print_rect(state->player->current_node->rect, "rect");
-      // print_light_map(state->player->current_node);
-      // printf("light x: %d, y: %d\n", light_map.x, light_map.y);
-      if (light_map.x >= 0 && light_map.x < state->player->current_node->rect.w) {
-        // DEBUG_MSG("");
-        if (light_map.y >= 0 && light_map.y < state->player->current_node->rect.h) {
-          if (state->player->current_node->light_map[light_map.x][light_map.y] == 0) {
-            // DEBUG_MSG("");
-            alpha /= 4;
-            // alpha = 0;
-          }
-          // DEBUG_MSG("");
-        }
-      }
-      // DEBUG_MSG("");
-      SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255 - alpha);
-      SDL_RenderFillRect(state->renderer, &rect);
-    }
-  }
-  SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_NONE);
+  // for (int i = light_rect.x ; i < light_rect.x + light_rect.w - 1 ; i+=2) {
+  //   for (int j = light_rect.y ; j < light_rect.y + light_rect.h - 1 ; j+=2) {
+  //     rect.x = i;
+  //     rect.y = j;
+  //     rect.w = 2;
+  //     rect.h = 2;
+
+  //     coord_t light_map;
+  //     light_map.x = ((i + state->scroll.x) / state->tile_screen_size) - state->player->current_node->rect.x;
+  //     light_map.y = ((j + state->scroll.y) / state->tile_screen_size) - state->player->current_node->rect.y;
+      
+  //     if (light_map.x >= 0 && light_map.x < state->player->current_node->rect.w) {
+  //       if (light_map.y >= 0 && light_map.y < state->player->current_node->rect.h) {
+  //         // printf("x: %d, y: %d\n", light_map.x, light_map.y);
+  //         alpha = state->player->current_node->light_map[light_map.x][light_map.y];
+  //         SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255 - alpha);
+  //         SDL_RenderFillRect(state->renderer, &rect);
+  //       }
+  //     }
+  //   }
+  // }
+
+  // int light_tile = state->tile_screen_size / LIGHT_DETAIL;
+  // for (int i = 0; i < state->player->current_node->rect.w; i++) {
+  //   for (int j = 0; j < state->player->current_node->rect.h * LIGHT_DETAIL ; j++) {
+  //     rect.x = (i * light_tile) - state->scroll.x + state->player->current_node->rect.x;
+  //     rect.y = (j * light_tile) - state->scroll.y + state->player->current_node->rect.y;
+  //     rect.w = light_tile;
+  //     rect.h = light_tile;
+
+  //     alpha = state->player->current_node->light_map[i][j];
+  //     SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255 - alpha);
+  //     SDL_RenderFillRect(state->renderer, &rect);
+  //   }
+  // }
+
+  // SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_NONE);
 }
 
 void          draw_entities(state_t *state) {
@@ -312,7 +303,12 @@ void          draw_entities(state_t *state) {
   }
 }
 
-// remember that there are 3 levels of coords: grid, world, window
+/*
+*   remember that there are 3 levels of coords:
+*   grid: grid
+*   world: grid * tile
+*   window: grid * tile size - scroll
+*/
 void          draw_node(state_t *state) {
   graph_t           *node = state->player->current_node;
   SDL_Rect          dst_screen;

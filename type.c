@@ -127,6 +127,29 @@ SDL_RendererFlip   flip_from_type(enum Type type) {
   return flip;
 }
 
+int           direction_to_degrees(enum Dir dir) {
+  int         angle;
+
+  switch (dir) {
+    case UP:
+      angle = -90;
+      break;
+    case DOWN:
+      angle = -270;
+      break;
+    case RIGHT:
+      angle = 0;
+      break;
+    case LEFT:
+      angle = -180;
+      break;
+    default:
+      angle = 0;
+  }
+
+  return angle;
+}
+
 double        angle_from_type(enum Type type) {
   double angle;
 
@@ -193,20 +216,24 @@ int           is_wall_type(enum Type type) {
 }
 
 int           type_stops_light(enum Type type) {
-  int res;
-
-  switch (type) {
-    case FLOOR:
-    case CORRIDOR:
-    case DOOR_UP_OPEN:
-    case DOOR_DOWN_OPEN:
-      res = 1;
-      break;
-    default:
-      res = 0;
+  if (type == CORRIDOR) {
+    return 0;
   }
+  return 1;
+  // int res;
 
-  return res;
+  // switch (type) {
+  //   case FLOOR:
+  //   case CORRIDOR:
+  //   case DOOR_UP_OPEN:
+  //   case DOOR_DOWN_OPEN:
+  //     res = 1;
+  //     break;
+  //   default:
+  //     res = 0;
+  // }
+
+  // return res;
 }
 
 enum Type     door_dir_to_type(enum Dir dir) {

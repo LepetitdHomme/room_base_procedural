@@ -18,6 +18,7 @@
 #define DEBUG_GRAPH 0
 #define DEBUG_SCREEN 0
 #define DEBUG_COLLISIONS 0
+#define DEBUG_LIGHT_MAP 0
 
 /* WINDOW/SCREEN */
 #define WINDOW_WIDTH 1200
@@ -39,6 +40,10 @@
 
 /* PLAYER */
 #define PLAYER_SPEED 5
+
+/* LIGHT */
+#define LIGHT_DETAIL 2
+#define LIGHT_ANGLE 360
 
 enum Type {
   EMPTY,// 0
@@ -130,6 +135,7 @@ typedef struct {
   SDL_Renderer          *renderer;
   Uint32                ticks;
   texture_t             *level_texture; // contains sdl texture from tileset
+  SDL_Texture           *black_texture;
   coord_t               zoom; // default value aerial distance from player = number of tiles displayed before and after player
   int                   tile_screen_size; // precomputed tile size from WINDOW_WIDTH and default zoom
   SDL_Point             center_tile; // precomputed tile size center
@@ -234,7 +240,12 @@ void                    init_light_map(graph_t *node);
 void                    free_light_map(graph_t *node);
 void                    reset_light_map(graph_t *node);
 void                    update_light_map(state_t *state);
+void                    diffuse_light_map(state_t *state);
 void                    print_light_map(graph_t *node);
+
+/*                      light */
+void                    draw_light(state_t *state);
+void                    add_vertex(SDL_Vertex **vertices, size_t *num_vertices, size_t *capacity, int x, int y);
 
 /*                      entities */
 
@@ -267,6 +278,7 @@ int                     is_door_type(enum Type type);
 int                     type_stops_light(enum Type type);
 int                     is_floor_type(enum Type type);
 int                     is_wall_type(enum Type type);
+int                     direction_to_degrees(enum Dir dir);
 enum Dir                invert_dir(enum Dir dir);
 enum Type               door_dir_to_type(enum Dir dir);
 SDL_Color               pick_color(state_t *state, int i, int j);

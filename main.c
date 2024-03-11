@@ -27,12 +27,19 @@ int           main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
   init_texture(state.renderer, state.level_texture, "assets/Sprite-0006.bmp", 9, 2);
+  state.black_texture = SDL_CreateTexture(state.renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+  if (state.black_texture == NULL) {
+    printf("Black texture could not be created! SDL_Error: %s\n", SDL_GetError());
+    exit(EXIT_FAILURE);
+  }
   init_level(&state, 1);
   level_to_grid(&state, state.graph);
   draw_compute_screen_sizes(&state);
   quit = 0;
   // TODO: do something bout this
   int inputs_state[4] = { 0, 0, 0, 0 }; // awsd :/
+  // tmp
+  SDL_Rect window_rect = { 0,0,WINDOW_WIDTH,WINDOW_HEIGHT};
 
   while (!quit) {
     state.ticks = SDL_GetTicks();
@@ -54,8 +61,20 @@ int           main(int argc, char *argv[]) {
       }
     }
 
+    // SDL_Vertex vertex_1 = {{10.5, 10.5}, {255, 0, 0, 255}, {1, 1}};
+    // SDL_Vertex vertex_2 = {{20.5, 10.5}, {255, 0, 0, 255}, {1, 1}};
+    // SDL_Vertex vertex_3 = {{15.5, 25.5}, {255, 0, 0, 255}, {1, 1}};
+    // SDL_Vertex vertex_4 = {{10.5, 20.5}, {255, 0, 0, 255}, {1, 1}};
+    // SDL_Vertex vertices[] = {
+    //   vertex_1,
+    //   vertex_2,
+    //   vertex_3,
+    //   vertex_4
+    // };
+    // SDL_RenderGeometry(state.renderer, NULL, vertices, 4, NULL, 0);
+
     /**********************/
-   
+    SDL_RenderCopy(state.renderer, state.black_texture, NULL, &window_rect);
     SDL_RenderPresent(state.renderer);
     SDL_Delay(16);
   }

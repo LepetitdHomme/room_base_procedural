@@ -5,23 +5,19 @@ void          init_light_map(graph_t *node) {
     free_light_map(node);
   }
 
-  if ((node->light_map = (int **)malloc(sizeof(int *) * node->rect.w)) == NULL) {
+  if ((node->light_map = (int **)malloc(sizeof(int *) * node->rect.w * LIGHT_DETAIL)) == NULL) {
     DEBUG_MSG("light map malloc failed");
     exit(EXIT_FAILURE);
   }
 
-  for (int i = 0 ; i < node->rect.w ; i++) {
-    if ((node->light_map[i] = (int *)malloc(sizeof(int) * node->rect.h)) == NULL) {
+  for (int i = 0 ; i < node->rect.w * LIGHT_DETAIL; i++) {
+    if ((node->light_map[i] = (int *)malloc(sizeof(int) * node->rect.h * LIGHT_DETAIL)) == NULL) {
       DEBUG_MSG("light map malloc i failed");
       exit(EXIT_FAILURE);
     }
   }
-  for (int i = 0 ; i < node->rect.w ; i++) {
-    for (int j = 0 ; j < node->rect.h; j++) {
-      node->light_map[i][j] = 0; // meaning: cast dark opacity = 255 - light_map[i][j];
-    }
-  }
-  print_light_map(node);
+  // printf("light map: %d - %d\n", node->rect.w * LIGHT_DETAIL, node->rect.h * LIGHT_DETAIL);
+  if (DEBUG_LIGHT_MAP) print_light_map(node);
 }
 
 void          print_light_map(graph_t *node) {
@@ -29,9 +25,9 @@ void          print_light_map(graph_t *node) {
     return;
   }
 
-  for (int i = 0 ; i < node->rect.w ; i++) {
-    for (int j = 0; j < node->rect.h ; j++) {
-      printf("%d", node->light_map[i][j]);
+  for (int j = 0; j < node->rect.h * LIGHT_DETAIL; j++) {
+    for (int i = 0 ; i < node->rect.w * LIGHT_DETAIL; i++) {
+      printf("%d     ", node->light_map[i][j]);
     }
     printf("\n");
   }
@@ -39,7 +35,7 @@ void          print_light_map(graph_t *node) {
 }
 
 void          free_light_map(graph_t *node) {
-  for (int i = 0 ; i < node->rect.w; i++) {
+  for (int i = 0 ; i < node->rect.w * LIGHT_DETAIL; i++) {
     free(node->light_map[i]);
     node->light_map[i] = NULL;
   }
@@ -53,21 +49,25 @@ void          reset_light_map(graph_t *node) {
     return;
   }
 
-  for (int i = 0 ; i < node->rect.w; i++) {
-    for (int j = 0 ; j < node->rect.h; j++) {
+  for (int i = 0 ; i < node->rect.w * LIGHT_DETAIL; i++) {
+    for (int j = 0 ; j < node->rect.h * LIGHT_DETAIL; j++) {
       node->light_map[i][j] = 0;
     }
   }
 }
 
+/*            reset light map before ! */
 void          update_light_map(state_t *state) {
   float       ray_x,ray_y,ray_angle,rad;
   int         angle,distance;
   coord_t     coord_ray;
+  int         player_angle;
 
   rad = M_PI / 180;
+  player_angle = direction_to_degrees(state->player->direction);
 
-  for (angle = 0 ; angle < 360 ; angle++) {
+  // player vision angle -90 +90
+  for (angle = player_angle - LIGHT_ANGLE / 2 ; angle < LIGHT_ANGLE / 2 ; angle++) {
     ray_angle = angle * rad;
     // cast ray
     for (distance = 0; distance < state->player->light ; distance++) {
@@ -81,14 +81,54 @@ void          update_light_map(state_t *state) {
       // print_rect(state->player->current_node->rect, "node");
       if (is_in_room(coord_ray, state->player->current_node->rect) != 0) {
         break;
-      } else {
-        // printf("x: %d,y: %d\n", coord_ray.x - state->player->current_node->rect.x, coord_ray.y - state->player->current_node->rect.y);
-        state->player->current_node->light_map[coord_ray.x - state->player->current_node->rect.x][coord_ray.y - state->player->current_node->rect.y] = 255;
-        if (type_stops_light(state->grid[coord_ray.x][coord_ray.y]) == 0) {
-          break;
-        }
+      }
+      // printf("coord_ray x: %d\n", coord_ray.x);
+      // printf("x: %d,y: %d\n", coord_ray.x - state->player->current_node->rect.x, coord_ray.y - state->player->current_node->rect.y);
+      state->player->current_node->light_map[coord_ray.x - state->player->current_node->rect.x][coord_ray.y - state->player->current_node->rect.y] = 255;
+      if (type_stops_light(state->grid[coord_ray.x][coord_ray.y]) == 0) {
+        break;
       }
     }
   }
+
+  diffuse_light_map(state);
+  // print_light_map(state->player->current_node);
 }
 
+void          diffuse_light_map(state_t *state) {
+  graph_t     tmp_node;
+  graph_t     *node = state->player->current_node;
+  int         adjacent_tiles = 0;
+  int         total_light;
+
+  tmp_node.rect = node->rect;
+  tmp_node.light_map = NULL;
+  init_light_map(&tmp_node);
+  // reset with current node light map values
+  for (int i = 0 ; i < tmp_node.rect.w * LIGHT_DETAIL; i++) {
+    for (int j = 0 ; j < tmp_node.rect.h * LIGHT_DETAIL; j++) {
+      tmp_node.light_map[i][j] = node->light_map[i][j];
+    }
+  }
+  // DEBUG_MSG("");
+
+  // diffuse light in current node
+  for (int i = 0 ; i < tmp_node.rect.w * LIGHT_DETAIL; i++) {
+    for (int j = 0 ; j < tmp_node.rect.h * LIGHT_DETAIL; j++) {
+      total_light = tmp_node.light_map[i][j];
+      adjacent_tiles = 1;
+
+      for (int k = -LIGHT_DETAIL ; k < LIGHT_DETAIL ; k++) {
+        for (int l = -LIGHT_DETAIL ; l < LIGHT_DETAIL ; l++) {
+          if (i+k >= 0 && i+k < node->rect.w && j+l >= 0 && j+l < node->rect.h) {
+            total_light += node->light_map[i+k][j+l];
+            adjacent_tiles += 1;
+          }
+        }
+      }
+
+      node->light_map[i][j] = total_light / adjacent_tiles;
+    }
+  }
+  free_light_map(&tmp_node);
+}

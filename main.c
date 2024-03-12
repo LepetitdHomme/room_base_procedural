@@ -79,6 +79,7 @@ int           main(int argc, char *argv[]) {
     SDL_Delay(16);
   }
 
+  printf("SEED: %d\n", state.seed);
   clean(&state, window);
   return 0;
 }

@@ -5,18 +5,18 @@ void          init_light_map(graph_t *node) {
     free_light_map(node);
   }
 
-  if ((node->light_map = (int **)malloc(sizeof(int *) * node->rect.w * LIGHT_DETAIL)) == NULL) {
+  if ((node->light_map = (int **)malloc(sizeof(int *) * node->rect.w)) == NULL) {
     DEBUG_MSG("light map malloc failed");
     exit(EXIT_FAILURE);
   }
 
-  for (int i = 0 ; i < node->rect.w * LIGHT_DETAIL; i++) {
-    if ((node->light_map[i] = (int *)malloc(sizeof(int) * node->rect.h * LIGHT_DETAIL)) == NULL) {
+  for (int i = 0 ; i < node->rect.w; i++) {
+    if ((node->light_map[i] = (int *)malloc(sizeof(int) * node->rect.h)) == NULL) {
       DEBUG_MSG("light map malloc i failed");
       exit(EXIT_FAILURE);
     }
   }
-  // printf("light map: %d - %d\n", node->rect.w * LIGHT_DETAIL, node->rect.h * LIGHT_DETAIL);
+  // printf("light map: %d - %d\n", node->rect.w, node->rect.h);
   if (DEBUG_LIGHT_MAP) print_light_map(node);
 }
 
@@ -25,8 +25,8 @@ void          print_light_map(graph_t *node) {
     return;
   }
 
-  for (int j = 0; j < node->rect.h * LIGHT_DETAIL; j++) {
-    for (int i = 0 ; i < node->rect.w * LIGHT_DETAIL; i++) {
+  for (int j = 0; j < node->rect.h; j++) {
+    for (int i = 0 ; i < node->rect.w; i++) {
       printf("%d     ", node->light_map[i][j]);
     }
     printf("\n");
@@ -35,7 +35,7 @@ void          print_light_map(graph_t *node) {
 }
 
 void          free_light_map(graph_t *node) {
-  for (int i = 0 ; i < node->rect.w * LIGHT_DETAIL; i++) {
+  for (int i = 0 ; i < node->rect.w; i++) {
     free(node->light_map[i]);
     node->light_map[i] = NULL;
   }
@@ -49,8 +49,8 @@ void          reset_light_map(graph_t *node) {
     return;
   }
 
-  for (int i = 0 ; i < node->rect.w * LIGHT_DETAIL; i++) {
-    for (int j = 0 ; j < node->rect.h * LIGHT_DETAIL; j++) {
+  for (int i = 0 ; i < node->rect.w; i++) {
+    for (int j = 0 ; j < node->rect.h; j++) {
       node->light_map[i][j] = 0;
     }
   }
@@ -105,16 +105,16 @@ void          diffuse_light_map(state_t *state) {
   tmp_node.light_map = NULL;
   init_light_map(&tmp_node);
   // reset with current node light map values
-  for (int i = 0 ; i < tmp_node.rect.w * LIGHT_DETAIL; i++) {
-    for (int j = 0 ; j < tmp_node.rect.h * LIGHT_DETAIL; j++) {
+  for (int i = 0 ; i < tmp_node.rect.w; i++) {
+    for (int j = 0 ; j < tmp_node.rect.h; j++) {
       tmp_node.light_map[i][j] = node->light_map[i][j];
     }
   }
   // DEBUG_MSG("");
 
   // diffuse light in current node
-  for (int i = 0 ; i < tmp_node.rect.w * LIGHT_DETAIL; i++) {
-    for (int j = 0 ; j < tmp_node.rect.h * LIGHT_DETAIL; j++) {
+  for (int i = 0 ; i < tmp_node.rect.w; i++) {
+    for (int j = 0 ; j < tmp_node.rect.h; j++) {
       total_light = tmp_node.light_map[i][j];
       adjacent_tiles = 1;
 

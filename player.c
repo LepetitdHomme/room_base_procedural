@@ -35,7 +35,7 @@ void          init_player(state_t *state) {
   state->player->pos.x = state->graph->center.x;
   state->player->pos.y = state->graph->center.y;
   state->player->direction = RIGHT;
-  state->player->light = 200;
+  state->player->light = 1000;
   state->player->last_update = 0;
 
   state->player->dst_screen.x = -1;

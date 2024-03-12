@@ -44,6 +44,7 @@
 /* LIGHT */
 #define LIGHT_DETAIL 2
 #define LIGHT_ANGLE 360
+#define RADIAN (M_PI / 180)
 
 enum Type {
   EMPTY,// 0
@@ -129,6 +130,10 @@ typedef struct {
   int                   num_tiles_x,num_tiles_y;
   tile_prop_t           *props;
 } texture_t;
+
+typedef struct {
+  coord_t               a,b,c;
+} triangle_t;
 
 typedef struct {
   unsigned int          seed;
@@ -245,7 +250,8 @@ void                    print_light_map(graph_t *node);
 
 /*                      light */
 void                    draw_light(state_t *state);
-void                    add_vertex(SDL_Vertex **vertices, size_t *num_vertices, size_t *capacity, int x, int y);
+void                    add_vertex(SDL_Vertex **vertices, size_t *num_vertices, size_t *capacity, int x, int y, int opacity);
+int                     compute_transparency(int distance, int light);
 
 /*                      entities */
 

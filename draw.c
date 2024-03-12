@@ -176,7 +176,7 @@ void          draw_dark(state_t *state, SDL_Rect player) {
   SDL_Rect    dark_left, dark_right, dark_top, dark_bot;
 
   reset_light_map(state->player->current_node);
-  update_light_map(state);
+  // update_light_map(state);
 
   // print_rect(player, "player");
   // left rect of player

@@ -74,63 +74,63 @@ coord_t find_intersection(coord_t p1, coord_t p2, line_t lines[], int size_lines
   // Calculate the slope of the segment p1, p2
   float segment_slope;
   if (p1.x == p2.x) {
-      segment_slope = 1.0 / 0.0; // Vertical line
+    segment_slope = 1.0 / 0.0; // Vertical line
   } else {
-      segment_slope = (float)(p2.y - p1.y) / (p2.x - p1.x);
+    segment_slope = (float)(p2.y - p1.y) / (p2.x - p1.x);
   }
 
   for (int i = 0; i < size_lines; i++) {
-      if (lines[i].a.x == -1) {
-          continue; // Skip invalid lines
-      }
+    if (lines[i].a.x == -1) {
+      continue; // Skip invalid lines
+    }
 
-      // Check if the line is vertical
-      if (lines[i].a.x == lines[i].b.x) {
-          // Check if the segment is also vertical
-          if (p1.x == p2.x) {
-              if (p1.x == lines[i].a.x) {
-                  // Lines overlap, return one of the common points
-                  intersection.x = p1.x;
-                  intersection.y = (p1.y < p2.y) ? p2.y : p1.y;
-                  return intersection;
-              }
-          }
-      }
+    // // Check if the line is vertical
+    // if (lines[i].a.x == lines[i].b.x) {
+    //   // Check if the segment is also vertical
+    //   if (p1.x == p2.x) {
+    //     if (p1.x == lines[i].a.x) {
+    //       // Lines overlap, return one of the common points
+    //       intersection.x = p1.x;
+    //       intersection.y = (p1.y < p2.y) ? p2.y : p1.y;
+    //       return intersection;
+    //     }
+    //   }
+    // }
 
-      // Check if the line is horizontal
-      if (lines[i].a.y == lines[i].b.y) {
-          // Check if the segment is also horizontal
-          if (p1.y == p2.y) {
-              if (p1.y == lines[i].a.y) {
-                  // Lines overlap, return one of the common points
-                  intersection.x = (p1.x < p2.x) ? p2.x : p1.x;
-                  intersection.y = p1.y;
-                  return intersection;
-              }
-          }
-      }
+    // // Check if the line is horizontal
+    // if (lines[i].a.y == lines[i].b.y) {
+    //   // Check if the segment is also horizontal
+    //   if (p1.y == p2.y) {
+    //     if (p1.y == lines[i].a.y) {
+    //       // Lines overlap, return one of the common points
+    //       intersection.x = (p1.x < p2.x) ? p2.x : p1.x;
+    //       intersection.y = p1.y;
+    //       return intersection;
+    //   }
+    //   }
+    // }
 
-      // Check if the segment intersects with a vertical line
-      if (lines[i].a.x == lines[i].b.x) {
-          float line_x = lines[i].a.x;
-          float intersect_y = p1.y + (line_x - p1.x) * segment_slope;
-          if (intersect_y >= lines[i].a.y && intersect_y <= lines[i].b.y) {
-              intersection.x = line_x;
-              intersection.y = intersect_y;
-              return intersection;
-          }
+    // Check if the segment intersects with a vertical line
+    if (lines[i].a.x == lines[i].b.x) {
+      float line_x = lines[i].a.x;
+      float intersect_y = p1.y + (line_x - p1.x) * segment_slope;
+      if (intersect_y >= lines[i].a.y && intersect_y <= lines[i].b.y) {
+        intersection.x = line_x;
+        intersection.y = intersect_y;
+        return intersection;
       }
+    }
 
-      // Check if the segment intersects with a horizontal line
-      if (lines[i].a.y == lines[i].b.y) {
-          float line_y = lines[i].a.y;
-          float intersect_x = p1.x + (line_y - p1.y) / segment_slope;
-          if (intersect_x >= lines[i].a.x && intersect_x <= lines[i].b.x) {
-              intersection.x = intersect_x;
-              intersection.y = line_y;
-              return intersection;
-          }
+    // Check if the segment intersects with a horizontal line
+    if (lines[i].a.y == lines[i].b.y) {
+      float line_y = lines[i].a.y;
+      float intersect_x = p1.x + (line_y - p1.y) / segment_slope;
+      if (intersect_x >= lines[i].a.x && intersect_x <= lines[i].b.x) {
+        intersection.x = intersect_x;
+        intersection.y = line_y;
+        return intersection;
       }
+    }
   }
 
   return intersection;

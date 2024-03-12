@@ -11,6 +11,7 @@ TODO DEBUG:
 	- need to precompute a maximum of things, too many useless recomputation right now
 	- sdl sound ?
 	- seed on every terminal ?
+	- player sprite on top of doors down
 
 IDEAS:
 	- eyes opening in the dark when opening door

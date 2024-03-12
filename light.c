@@ -50,33 +50,33 @@ triangle_t    screen_triangle(state_t *state, coord_t ray, enum Octant octant) {
     triangle.c.x = ray.x * state->tile_screen_size - state->scroll.x + state->tile_screen_size - 1;
     triangle.c.y = ray.y * state->tile_screen_size - state->scroll.y;
   } else if (octant == E) {//anticlockwise! we take the back of the cell to put light on wall
+    triangle.a.x = ray.x * state->tile_screen_size - state->scroll.x;
+    triangle.a.y = ray.y * state->tile_screen_size - state->scroll.y + state->tile_screen_size - 1;
+    triangle.b.x = ray.x * state->tile_screen_size - state->scroll.x + state->tile_screen_size - 1;
+    triangle.b.y = ray.y * state->tile_screen_size - state->scroll.y + state->tile_screen_size - 1;
+    triangle.c.x = ray.x * state->tile_screen_size - state->scroll.x + state->tile_screen_size - 1;
+    triangle.c.y = ray.y * state->tile_screen_size - state->scroll.y;
+  } else if (octant == N) {
     triangle.a.x = ray.x * state->tile_screen_size - state->scroll.x + state->tile_screen_size - 1;
     triangle.a.y = ray.y * state->tile_screen_size - state->scroll.y + state->tile_screen_size - 1;
     triangle.b.x = ray.x * state->tile_screen_size - state->scroll.x + state->tile_screen_size - 1;
     triangle.b.y = ray.y * state->tile_screen_size - state->scroll.y;
-    triangle.c.x = -1;
-    triangle.c.y = -1;
-  } else if (octant == N) {
-    triangle.a.x = ray.x * state->tile_screen_size - state->scroll.x + state->tile_screen_size - 1;
-    triangle.a.y = ray.y * state->tile_screen_size - state->scroll.y;
-    triangle.b.x = ray.x * state->tile_screen_size - state->scroll.x;
-    triangle.b.y = ray.y * state->tile_screen_size - state->scroll.y;
-    triangle.c.x = -1;
-    triangle.c.y = -1;
+    triangle.c.x = ray.x * state->tile_screen_size - state->scroll.x;
+    triangle.c.y = ray.y * state->tile_screen_size - state->scroll.y ;
   } else if (octant == W) {
     triangle.a.x = ray.x * state->tile_screen_size - state->scroll.x;
     triangle.a.y = ray.y * state->tile_screen_size - state->scroll.y;
     triangle.b.x = ray.x * state->tile_screen_size - state->scroll.x;
     triangle.b.y = ray.y * state->tile_screen_size - state->scroll.y + state->tile_screen_size - 1;
-    triangle.c.x = -1;
-    triangle.c.y = -1;
+    triangle.c.x = ray.x * state->tile_screen_size - state->scroll.x + state->tile_screen_size - 1;
+    triangle.c.y = ray.y * state->tile_screen_size - state->scroll.y + state->tile_screen_size - 1;
   } else { // S-SUD
-    triangle.a.x = ray.x * state->tile_screen_size - state->scroll.x;
-    triangle.a.y = ray.y * state->tile_screen_size - state->scroll.y + state->tile_screen_size - 1;
+    triangle.a.x = ray.x * state->tile_screen_size - state->scroll.x + state->tile_screen_size - 1;
+    triangle.a.y = ray.y * state->tile_screen_size - state->scroll.y;
     triangle.b.x = ray.x * state->tile_screen_size - state->scroll.x + state->tile_screen_size - 1;
     triangle.b.y = ray.y * state->tile_screen_size - state->scroll.y + state->tile_screen_size - 1;
-    triangle.c.x = -1;
-    triangle.c.y = -1;
+    triangle.c.x = ray.x * state->tile_screen_size - state->scroll.x + state->tile_screen_size - 1;
+    triangle.c.y = ray.y * state->tile_screen_size - state->scroll.y;
   }
 
   return triangle;
@@ -191,16 +191,16 @@ void          draw_light(state_t *state) {
   indices[index++] = num_vertices - 1;
   indices[index++] = 0;
   indices[index++] = 1;
-  printf("num_triangles: %ld\n", num_triangles);
-  int j=0;
-  for (int i = 0 ; i < num_indices ; i++) {
-    if (j % 3 == 0)
-      printf("\n");
-    printf("%d - ", indices[i]);
+  // printf("num_triangles: %ld\n", num_triangles);
+  // int j=0;
+  // for (int i = 0 ; i < num_indices ; i++) {
+  //   if (j % 3 == 0)
+  //     printf("\n");
+  //   printf("%d - ", indices[i]);
 
-    j++;
-  }
-  printf("\n");
+  //   j++;
+  // }
+  // printf("\n");
   SDL_RenderGeometry(state->renderer, NULL, vertices, num_vertices, indices, num_indices);
 
   free(indices);

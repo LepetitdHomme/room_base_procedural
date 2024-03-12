@@ -199,11 +199,11 @@ void          draw_light(state_t *state) {
   indices[index++] = num_vertices - 1;
   indices[index++] = 0;
   indices[index++] = 1;
-  DEBUG_MSG("indices");
-  for (int i = 0 ; i < num_indices ; i++) {
-    printf("%d - ", indices[i]);
-  }
-  printf("\n");
+  // DEBUG_MSG("indices");
+  // for (int i = 0 ; i < num_indices ; i++) {
+  //   printf("%d - ", indices[i]);
+  // }
+  // printf("\n");
   SDL_RenderGeometry(state->renderer, NULL, vertices, num_vertices, indices, num_indices);
 
   free(indices);
@@ -212,10 +212,10 @@ void          draw_light(state_t *state) {
 }
 
 void          add_vertex(SDL_Vertex **vertices, size_t *num_vertices, size_t *capacity, int x, int y, int opacity) {
-  static int r = 0;
-  if (*num_vertices == 0) {
-    r = 0;
-  }
+  // static int r = 0;
+  // if (*num_vertices == 0) {
+  //   r = 0;
+  // }
   if (*num_vertices >= *capacity) {
     *capacity += 10;
     SDL_Vertex *tmp = realloc(*vertices, *capacity * sizeof(SDL_Vertex));
@@ -230,12 +230,12 @@ void          add_vertex(SDL_Vertex **vertices, size_t *num_vertices, size_t *ca
   (*vertices)[*num_vertices].position.y = (float)y;
   (*vertices)[*num_vertices].color.r = 0;
   (*vertices)[*num_vertices].color.g = 0;
-  (*vertices)[*num_vertices].color.b = r;
+  (*vertices)[*num_vertices].color.b = 0;
   (*vertices)[*num_vertices].color.a = 255 - opacity;
   (*vertices)[*num_vertices].tex_coord.x = 1;
   (*vertices)[*num_vertices].tex_coord.y = 1;
   (*num_vertices)++;
-  r+=20;
+  // r+=20;
 }
 
 int           compute_transparency(int distance, int light) {

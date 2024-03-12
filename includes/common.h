@@ -67,6 +67,7 @@ enum Type {
 };
 
 enum Dir { UP, DOWN, LEFT, RIGHT };
+enum Octant { E, NE, N, NW, W, SW, S, SE };
 
 enum Orientation { VERTICAL, HORIZONTAL };
 
@@ -284,6 +285,7 @@ int                     is_door_type(enum Type type);
 int                     type_stops_light(enum Type type);
 int                     is_floor_type(enum Type type);
 int                     is_wall_type(enum Type type);
+enum Octant             corner_to_octant(enum Type corner);
 int                     direction_to_degrees(enum Dir dir);
 enum Dir                invert_dir(enum Dir dir);
 enum Type               door_dir_to_type(enum Dir dir);

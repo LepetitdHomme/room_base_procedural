@@ -236,6 +236,26 @@ int           type_stops_light(enum Type type) {
   // return res;
 }
 
+enum Octant   corner_to_octant(enum Type corner) {
+  enum Octant octant;
+
+  switch (corner) {
+    case CORNER_TOP_RIGHT:
+      octant = NE;
+      break;
+    case CORNER_TOP_LEFT:
+      octant = NW;
+      break;
+    case CORNER_BOT_LEFT:
+      octant = SW;
+      break;
+    default:
+      octant = SE;
+  }
+
+  return octant;
+}
+
 enum Type     door_dir_to_type(enum Dir dir) {
   switch (dir) {
     case UP:

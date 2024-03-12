@@ -150,6 +150,43 @@ int           direction_to_degrees(enum Dir dir) {
   return angle;
 }
 
+/*
+*   In which direction is the wall we are looking at ? player to grid cell direction
+*/
+enum Octant wall_to_octant(coord_t src, coord_t dst) {
+  int dx = dst.x - src.x;
+  int dy = dst.y - src.y;
+
+  // Check relative position to determine octant
+  if (dx == 0) {
+    if (dy > 0) {
+      return S;
+    } else {
+      return N;
+    }
+  } else if (dy == 0) {
+    if (dx > 0) {
+      return E;
+    } else {
+      return W;
+    }
+  } else {
+    if (dx > 0) {
+      if (dy > 0) {
+        return SE;
+      } else {
+        return NE;
+      }
+    } else {
+      if (dy > 0) {
+        return SW;
+      } else {
+        return NW;
+      }
+    }
+  }
+}
+
 double        angle_from_type(enum Type type) {
   double angle;
 

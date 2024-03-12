@@ -80,6 +80,10 @@ typedef struct {
   int                   x,y;
 } coord_t;
 
+typedef struct {
+  coord_t               a,b;
+} line_t;
+
 typedef struct connection {
   int                   src,dst;
 } con_t;
@@ -275,6 +279,9 @@ int                     random_int(int lower, int upper);
 double                  distance_between_coords(coord_t center_1, coord_t center_2);
 double                  squared_distance_between_coords(coord_t center_1, coord_t center_2);
 Uint8                   alpha_light(int light, double distance);
+coord_t                 extend_segment(coord_t player, coord_t corner);
+coord_t                 find_intersection(coord_t p1, coord_t p2, line_t lines[], int size_lines);
+coord_t                 find_intersection_with_walls(state_t *state, coord_t player, coord_t corner, enum Octant octant);
 
 /*                      kruskal */
 void                    apply_kruskal(state_t *state);
@@ -286,6 +293,7 @@ int                     type_stops_light(enum Type type);
 int                     is_floor_type(enum Type type);
 int                     is_wall_type(enum Type type);
 enum Octant             corner_to_octant(enum Type corner);
+enum Octant             wall_to_octant(coord_t src, coord_t dst);
 int                     direction_to_degrees(enum Dir dir);
 enum Dir                invert_dir(enum Dir dir);
 enum Type               door_dir_to_type(enum Dir dir);

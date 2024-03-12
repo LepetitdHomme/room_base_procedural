@@ -1,43 +1,10 @@
 #include "includes/common.h"
 
 /*
-*   In which direction is the wall we are looking at ? player to grid cell direction
+*     Gets a grid coord and computes the 3 vertices on which we
+*       want to display light.
+*       => anti clockwise
 */
-enum Octant wall_to_octant(coord_t src, coord_t dst) {
-  int dx = dst.x - src.x;
-  int dy = dst.y - src.y;
-  
-  // Check relative position to determine octant
-  if (dx == 0) {
-    if (dy > 0) {
-      return S;
-    } else {
-      return N;
-    }
-  } else if (dy == 0) {
-    if (dx > 0) {
-      return E;
-    } else {
-      return W;
-    }
-  } else {
-    if (dx > 0) {
-      if (dy > 0) {
-        return SE;
-      } else {
-        return NE;
-      }
-    } else {
-      if (dy > 0) {
-        return SW;
-      } else {
-        return NW;
-      }
-    }
-  }
-}
-
-// anti clockwise
 triangle_t    screen_triangle(state_t *state, coord_t ray, enum Octant octant) {
   triangle_t  triangle;
 
@@ -126,6 +93,7 @@ void          draw_light(state_t *state) {
   size_t          capacity = 0;
   enum Octant     octant;
   triangle_t      triangle;
+  coord_t         intersection;
 
   player_angle = direction_to_degrees(state->player->direction);
   light_map.x = state->player->current_node->rect.x;
@@ -140,6 +108,7 @@ void          draw_light(state_t *state) {
     ray_angle = angle * RADIAN;
     // cast ray in pixels
     for (distance = 0; distance < state->player->light ; distance++) {
+      intersection.x = -1;
       ray_x = state->player->dst_screen.x + distance * cos(ray_angle);
       ray_y = state->player->dst_screen.y + distance * sin(ray_angle);
 
@@ -158,9 +127,9 @@ void          draw_light(state_t *state) {
         }
         octant = corner_to_octant(state->grid[coord_ray.x][coord_ray.y]);
         triangle = screen_triangle(state, coord_ray, octant);
-        add_vertex(&vertices, &num_vertices, &capacity, triangle.a.x, triangle.a.y, opacity);
-        add_vertex(&vertices, &num_vertices, &capacity, triangle.b.x, triangle.b.y, opacity);
-        add_vertex(&vertices, &num_vertices, &capacity, triangle.c.x, triangle.c.y, opacity);
+        add_vertex(&vertices, &num_vertices, &capacity, triangle.a.x, triangle.a.y, 255);
+        add_vertex(&vertices, &num_vertices, &capacity, triangle.b.x, triangle.b.y, 255);
+        add_vertex(&vertices, &num_vertices, &capacity, triangle.c.x, triangle.c.y, 255);
         state->player->current_node->light_map[coord_ray.x - light_map.x][coord_ray.y - light_map.y] = 1;
         break;
       } else if (type_stops_light(state->grid[coord_ray.x][coord_ray.y]) == 0) {
@@ -168,11 +137,35 @@ void          draw_light(state_t *state) {
           break;
         }
         octant = wall_to_octant(state->player->pos, coord_ray);
+        printf("octant: %d\n", octant);
         triangle = screen_triangle(state, coord_ray, octant);
-        add_vertex(&vertices, &num_vertices, &capacity, triangle.a.x, triangle.a.y, opacity);
-        add_vertex(&vertices, &num_vertices, &capacity, triangle.b.x, triangle.b.y, opacity);
+        // find intersection to wall with each found screen corner of grid corner
+        // triangle 1
+        intersection = find_intersection_with_walls(state, p, triangle.a, octant);
+        if (intersection.x != -1) {
+          add_vertex(&vertices, &num_vertices, &capacity, intersection.x, intersection.y, 255);
+          add_vertex(&vertices, &num_vertices, &capacity, triangle.a.x, triangle.a.y, 255);
+        }
+        
+        // triangle 2
+        intersection = find_intersection_with_walls(state, p, triangle.b, octant);
+        if (intersection.x != -1) {
+          if (triangle.c.x == -1) {//if wall is lighten up in 3 corners, we dont join the middle one
+            add_vertex(&vertices, &num_vertices, &capacity, triangle.b.x, triangle.b.y, 255);
+            add_vertex(&vertices, &num_vertices, &capacity, intersection.x, intersection.y, 255);
+          } else {
+            add_vertex(&vertices, &num_vertices, &capacity, triangle.b.x, triangle.b.y, 255);
+          }
+        }
+
+        // triangle 3
         if (triangle.c.x != -1) {
-          add_vertex(&vertices, &num_vertices, &capacity, triangle.c.x, triangle.c.y, opacity);
+          intersection = find_intersection_with_walls(state, p, triangle.c, octant);
+          if (intersection.x != -1) {
+            // on third corner we put intersection last, cuz the order should be the ray cast angle (anticlockwise)
+            add_vertex(&vertices, &num_vertices, &capacity, triangle.c.x, triangle.c.y, 255);
+            add_vertex(&vertices, &num_vertices, &capacity, intersection.x, intersection.y, 255);
+          }
         }
         state->player->current_node->light_map[coord_ray.x - light_map.x][coord_ray.y - light_map.y] = 1;
         break;
@@ -184,7 +177,6 @@ void          draw_light(state_t *state) {
   SDL_SetRenderTarget(state->renderer, state->black_texture);
   SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
   SDL_RenderClear(state->renderer);
-  printf("num_vertices: %ld\n", num_vertices);
   size_t num_triangles = num_vertices - 2 + 1;
   size_t num_indices = num_triangles * 3; // Each triangle has 3 vertices
   int *indices = (int *)malloc(num_indices * sizeof(int)); // ensure alloc OK
@@ -199,11 +191,16 @@ void          draw_light(state_t *state) {
   indices[index++] = num_vertices - 1;
   indices[index++] = 0;
   indices[index++] = 1;
-  // DEBUG_MSG("indices");
-  // for (int i = 0 ; i < num_indices ; i++) {
-  //   printf("%d - ", indices[i]);
-  // }
-  // printf("\n");
+  printf("num_triangles: %ld\n", num_triangles);
+  int j=0;
+  for (int i = 0 ; i < num_indices ; i++) {
+    if (j % 3 == 0)
+      printf("\n");
+    printf("%d - ", indices[i]);
+
+    j++;
+  }
+  printf("\n");
   SDL_RenderGeometry(state->renderer, NULL, vertices, num_vertices, indices, num_indices);
 
   free(indices);

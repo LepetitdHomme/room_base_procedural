@@ -38,36 +38,6 @@ Uint8         alpha_light(int light, double distance) {
   return alpha;
 }
 
-// coord_t       find_intersection(coord_t p1, coord_t p2, line_t lines[], int size_lines) {
-//   coord_t     intersection = {-1, -1};
-//   float       m1, m2, b1, b2;
-
-//   // Calculate the slope and intercept of the segment
-//   m1 = (float)(p2.y - p1.y) / (p2.x - p1.x);
-//   b1 = p1.y - m1 * p1.x;
-
-//   for (int i = 0; i < size_lines; i++) {
-//     if (lines[i].a.x == -1) {
-//       continue;
-//     }
-    
-//     // Calculate the slope and intercept of the line
-//     m2 = (float)(lines[i].b.y - lines[i].a.y) / (lines[i].b.x - lines[i].a.x);
-//     b2 = lines[i].a.y - m2 * lines[i].a.x;
-
-//     // Check if the lines are parallel
-//     if (m1 == m2) {
-//       continue; // Parallel lines, no intersection
-//     }
-
-//     // Calculate the intersection point
-//     intersection.x = (b2 - b1) / (m1 - m2);
-//     intersection.y = m1 * intersection.x + b1;
-//     break;
-//   }
-//   return intersection;
-// }
-
 coord_t find_intersection(coord_t p1, coord_t p2, line_t lines[], int size_lines) {
   coord_t intersection = {-1, -1};
 
@@ -77,6 +47,7 @@ coord_t find_intersection(coord_t p1, coord_t p2, line_t lines[], int size_lines
     segment_slope = 1.0 / 0.0; // Vertical line
   } else {
     segment_slope = (float)(p2.y - p1.y) / (p2.x - p1.x);
+    // printf("slope: %f\n", segment_slope);
   }
 
   for (int i = 0; i < size_lines; i++) {
@@ -84,40 +55,48 @@ coord_t find_intersection(coord_t p1, coord_t p2, line_t lines[], int size_lines
       continue; // Skip invalid lines
     }
 
-    // // Check if the line is vertical
-    // if (lines[i].a.x == lines[i].b.x) {
-    //   // Check if the segment is also vertical
-    //   if (p1.x == p2.x) {
-    //     if (p1.x == lines[i].a.x) {
-    //       // Lines overlap, return one of the common points
-    //       intersection.x = p1.x;
-    //       intersection.y = (p1.y < p2.y) ? p2.y : p1.y;
-    //       return intersection;
-    //     }
-    //   }
-    // }
+    // Check if the line is vertical
+    if (lines[i].a.x == lines[i].b.x) {
+      // Check if the segment is also vertical
+      if (p1.x == p2.x) {
+        if (p1.x == lines[i].a.x) {
+          // Lines overlap, return one of the common points
+          intersection.x = p1.x;
+          intersection.y = (p1.y < p2.y) ? p2.y : p1.y;
+          return intersection;
+        }
+      }
+    }
 
-    // // Check if the line is horizontal
-    // if (lines[i].a.y == lines[i].b.y) {
-    //   // Check if the segment is also horizontal
-    //   if (p1.y == p2.y) {
-    //     if (p1.y == lines[i].a.y) {
-    //       // Lines overlap, return one of the common points
-    //       intersection.x = (p1.x < p2.x) ? p2.x : p1.x;
-    //       intersection.y = p1.y;
-    //       return intersection;
-    //   }
-    //   }
-    // }
+    // Check if the line is horizontal
+    if (lines[i].a.y == lines[i].b.y) {
+      // Check if the segment is also horizontal
+      if (p1.y == p2.y) {
+        if (p1.y == lines[i].a.y) {
+          // Lines overlap, return one of the common points
+          intersection.x = (p1.x < p2.x) ? p2.x : p1.x;
+          intersection.y = p1.y;
+          return intersection;
+      }
+      }
+    }
 
     // Check if the segment intersects with a vertical line
     if (lines[i].a.x == lines[i].b.x) {
       float line_x = lines[i].a.x;
       float intersect_y = p1.y + (line_x - p1.x) * segment_slope;
-      if (intersect_y >= lines[i].a.y && intersect_y <= lines[i].b.y) {
-        intersection.x = line_x;
-        intersection.y = intersect_y;
-        return intersection;
+      if (lines[i].a.y > lines[i].b.y) {
+        if (intersect_y <= lines[i].a.y && intersect_y >= lines[i].b.y) {
+          intersection.x = line_x;
+          intersection.y = intersect_y;
+          return intersection;
+        }
+      } else {
+        if (intersect_y >= lines[i].a.y && intersect_y <= lines[i].b.y) {
+          intersection.x = line_x;
+          intersection.y = intersect_y;
+          return intersection;
+        }
       }
     }
 
@@ -125,10 +104,18 @@ coord_t find_intersection(coord_t p1, coord_t p2, line_t lines[], int size_lines
     if (lines[i].a.y == lines[i].b.y) {
       float line_y = lines[i].a.y;
       float intersect_x = p1.x + (line_y - p1.y) / segment_slope;
-      if (intersect_x >= lines[i].a.x && intersect_x <= lines[i].b.x) {
-        intersection.x = intersect_x;
-        intersection.y = line_y;
-        return intersection;
+      if (lines[i].a.x > lines[i].b.x) {
+        if (intersect_x <= lines[i].a.x && intersect_x >= lines[i].b.x) {
+          intersection.x = intersect_x;
+          intersection.y = line_y;
+          return intersection;
+        }
+      } else {
+        if (intersect_x >= lines[i].a.x && intersect_x <= lines[i].b.x) {
+          intersection.x = intersect_x;
+          intersection.y = line_y;
+          return intersection;
+        }
       }
     }
   }
@@ -162,14 +149,14 @@ coord_t       find_intersection_with_walls(state_t *state, coord_t player, coord
   corner1.x = rect.x * state->tile_screen_size - state->scroll.x;
   corner1.y = rect.y * state->tile_screen_size - state->scroll.y;
   // top right
-  corner2.x = (rect.x + rect.w - 1) * state->tile_screen_size - state->scroll.x;
+  corner2.x = (rect.x + rect.w) * state->tile_screen_size - state->scroll.x;
   corner2.y = rect.y * state->tile_screen_size - state->scroll.y;
   // bot right
-  corner3.x = (rect.x + rect.w - 1) * state->tile_screen_size - state->scroll.x;
-  corner3.y = (rect.y + rect.h - 1) * state->tile_screen_size - state->scroll.y;
+  corner3.x = (rect.x + rect.w) * state->tile_screen_size - state->scroll.x;
+  corner3.y = (rect.y + rect.h) * state->tile_screen_size - state->scroll.y;
   // bot left
   corner4.x = rect.x * state->tile_screen_size - state->scroll.x;
-  corner4.y = (rect.y + rect.h - 1) * state->tile_screen_size - state->scroll.y;
+  corner4.y = (rect.y + rect.h) * state->tile_screen_size - state->scroll.y;
 
   invalid.x = -1;
   invalid.y = -1;

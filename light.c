@@ -71,12 +71,12 @@ triangle_t    screen_triangle(state_t *state, coord_t ray, enum Octant octant) {
     triangle.c.x = ray.x * state->tile_screen_size - state->scroll.x + state->tile_screen_size - 1;
     triangle.c.y = ray.y * state->tile_screen_size - state->scroll.y + state->tile_screen_size - 1;
   } else { // S-SUD
-    triangle.a.x = ray.x * state->tile_screen_size - state->scroll.x + state->tile_screen_size - 1;
+    triangle.a.x = ray.x * state->tile_screen_size - state->scroll.x;
     triangle.a.y = ray.y * state->tile_screen_size - state->scroll.y;
-    triangle.b.x = ray.x * state->tile_screen_size - state->scroll.x + state->tile_screen_size - 1;
+    triangle.b.x = ray.x * state->tile_screen_size - state->scroll.x;
     triangle.b.y = ray.y * state->tile_screen_size - state->scroll.y + state->tile_screen_size - 1;
     triangle.c.x = ray.x * state->tile_screen_size - state->scroll.x + state->tile_screen_size - 1;
-    triangle.c.y = ray.y * state->tile_screen_size - state->scroll.y;
+    triangle.c.y = ray.y * state->tile_screen_size - state->scroll.y + state->tile_screen_size - 1;
   }
 
   return triangle;
@@ -121,23 +121,12 @@ void          draw_light(state_t *state) {
 
       opacity = compute_transparency(distance, state->player->light);
 
-      if (is_corner_wall(state->player->current_node->rect, coord_ray.x, coord_ray.y) == 0) {
-        if (state->player->current_node->light_map[coord_ray.x - light_map.x][coord_ray.y - light_map.y] == 1) {
-          break;
-        }
-        octant = corner_to_octant(state->grid[coord_ray.x][coord_ray.y]);
-        triangle = screen_triangle(state, coord_ray, octant);
-        add_vertex(&vertices, &num_vertices, &capacity, triangle.a.x, triangle.a.y, 255);
-        add_vertex(&vertices, &num_vertices, &capacity, triangle.b.x, triangle.b.y, 255);
-        add_vertex(&vertices, &num_vertices, &capacity, triangle.c.x, triangle.c.y, 255);
-        state->player->current_node->light_map[coord_ray.x - light_map.x][coord_ray.y - light_map.y] = 1;
-        break;
-      } else if (type_stops_light(state->grid[coord_ray.x][coord_ray.y]) == 0) {
+      if (type_stops_light(state->grid[coord_ray.x][coord_ray.y]) == 0) {
         if (state->player->current_node->light_map[coord_ray.x - light_map.x][coord_ray.y - light_map.y] == 1) {
           break;
         }
         octant = wall_to_octant(state->player->pos, coord_ray);
-        printf("octant: %d\n", octant);
+        // printf("octant: %d\n", octant);
         triangle = screen_triangle(state, coord_ray, octant);
         // find intersection to wall with each found screen corner of grid corner
         // triangle 1
@@ -165,8 +154,21 @@ void          draw_light(state_t *state) {
             // on third corner we put intersection last, cuz the order should be the ray cast angle (anticlockwise)
             add_vertex(&vertices, &num_vertices, &capacity, triangle.c.x, triangle.c.y, 255);
             add_vertex(&vertices, &num_vertices, &capacity, intersection.x, intersection.y, 255);
+          } else {
+            DEBUG_MSG("");
           }
         }
+        state->player->current_node->light_map[coord_ray.x - light_map.x][coord_ray.y - light_map.y] = 1;
+        break;
+      } else if (is_corner_wall(state->player->current_node->rect, coord_ray.x, coord_ray.y) == 0) {
+        if (state->player->current_node->light_map[coord_ray.x - light_map.x][coord_ray.y - light_map.y] == 1) {
+          break;
+        }
+        octant = corner_to_octant(state->grid[coord_ray.x][coord_ray.y]);
+        triangle = screen_triangle(state, coord_ray, octant);
+        add_vertex(&vertices, &num_vertices, &capacity, triangle.a.x, triangle.a.y, 255);
+        add_vertex(&vertices, &num_vertices, &capacity, triangle.b.x, triangle.b.y, 255);
+        add_vertex(&vertices, &num_vertices, &capacity, triangle.c.x, triangle.c.y, 255);
         state->player->current_node->light_map[coord_ray.x - light_map.x][coord_ray.y - light_map.y] = 1;
         break;
       }

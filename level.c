@@ -53,7 +53,8 @@ void          node_to_grid(state_t *state, graph_t *node, int with_parent, int w
         if (test == 30 || test == 80 || test == 60) {
           state->grid[i][j] = CORRIDOR; // floor
         } else {
-          state->grid[i][j] = node->is_corridor ? CORRIDOR : FLOOR; // floor
+          // state->grid[i][j] = node->is_corridor ? CORRIDOR : FLOOR; // floor
+          state->grid[i][j] = FLOOR; // floor
         }
       }
       test++;

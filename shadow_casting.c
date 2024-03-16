@@ -1,7 +1,9 @@
 #include "includes/common.h"
 
 void          add_vertex(light_edge **vertices, size_t *num_vertices, size_t *capacity, int x, int y, int opacity, float angle) {
-  int first = 0;
+  int         first = 0;
+
+  // starts with a dirty trick to force player pos to stay on top of qsort
   if (*capacity == 0) {
     first = 1;
   }
@@ -125,8 +127,8 @@ int           init_edges(state_t *state, light_edge **edges) {
   (*edges)[num_edge_tmp].a.position.y = (room.y + room.h) * state->tile_screen_size - state->scroll.y;
   (*edges)[num_edge_tmp].b.position.x = room.x * state->tile_screen_size - state->scroll.x;
   (*edges)[num_edge_tmp].b.position.y = room.y * state->tile_screen_size - state->scroll.y;
-  num_edge_tmp++;
-  // printf("num_edge: %d - num tmp: %d\n",num_edge, num_edge_tmp);
+  // num_edge_tmp++;
+
   return num_edge;
 }
 
@@ -145,6 +147,36 @@ int           compare_vertex_angles(const void* a, const void* b) {
   return 0;
 }
 
+// void          add_torch_light(state_t *state) {
+//   // Iterate through each pixel in the bounding box
+//   for (int x = playerX - radius; x <= playerX + radius; x++) {
+//     for (int y = playerY - radius; y <= playerY + radius; y++) {
+//       // Check if the pixel is within the texture bounds
+//       if (x >= 0 && x < textureWidth && y >= 0 && y < textureHeight) {
+//         // Calculate distance from the player
+//         int distanceSquared = (x - playerX) * (x - playerX) + (y - playerY) * (y - playerY);
+//         int alpha = 255 - (255 * distanceSquared) / (radius * radius);
+
+//         // Get the existing pixel color
+//         Uint32 pixel;
+//         SDL_Rect rect = {x, y, 1, 1};
+//         SDL_RenderReadPixels(renderer, &rect, SDL_PIXELFORMAT_RGBA8888, &pixel, textureWidth * sizeof(Uint32));
+
+//         // Blend the pixel color with torch light color based on alpha
+//         Uint8 r, g, b;
+//         SDL_GetRGB(pixel, SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), &r, &g, &b);
+//         r = (r * alpha) / 255;
+//         g = (g * alpha) / 255;
+//         b = (b * alpha) / 255;
+
+//         // Set the blended color back to the texture
+//         SDL_SetRenderDrawColor(renderer, r, g, b, alpha);
+//         SDL_RenderFillRect(renderer, &rect);
+//         }
+//       }
+//   }
+// }
+
 void          perform_shadow_casting(state_t *state) {
   light_edge      *blocking_light_edges = NULL;
   int             num_edge;
@@ -156,10 +188,7 @@ void          perform_shadow_casting(state_t *state) {
 
   // initialize the array of blocking light edges
   num_edge = init_edges(state, &blocking_light_edges);
-  // printf("num_edge: %d\n", num_edge);
-  // for (int i = 0; i < num_edge ; i++) {
-  //   printf("edge %d, %f - %f, %f - %f\n", i, blocking_light_edges[i].a.position.x, blocking_light_edges[i].a.position.y, blocking_light_edges[i].b.position.x, blocking_light_edges[i].b.position.y);
-  // }
+
   player_position.position.x = state->player->dst_screen.x - state->scroll.x;
   player_position.position.y = state->player->dst_screen.y - state->scroll.y;
   add_vertex(&vertices, &num_vertices, &capacity, player_position.position.x, player_position.position.y, 200, 0);
@@ -180,7 +209,6 @@ void          perform_shadow_casting(state_t *state) {
 
       float base_ang = atan2f(rdy, rdx);
       float ang = 0;
-
 
       // Iterate over 3 rays: one directly at the point and two slightly offset
       for (int j = 0; j < 3; j++) {
@@ -230,14 +258,11 @@ void          perform_shadow_casting(state_t *state) {
   }
   // sort vertices by angle
   qsort(vertices, num_vertices, sizeof(light_edge), compare_vertex_angles);
-  // for (int i = 0; i < num_vertices ; i++) {
-  //   printf("%f\n", vertices[i].angle_a);
-  // }
-  // printf("\n\n");
 
   SDL_Vertex* final_vertices_array = malloc(num_vertices * sizeof(SDL_Vertex));
   if (final_vertices_array == NULL) {
-    // Handle allocation failure
+    DEBUG_MSG("malloc failed for final_vertices_array");
+    exit(EXIT_FAILURE);
   }
 
   // Extract SDL_Vertex instances from light_edge.a and store them in vertices_array
@@ -249,10 +274,10 @@ void          perform_shadow_casting(state_t *state) {
   SDL_SetRenderTarget(state->renderer, state->black_texture);
   SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
   SDL_RenderClear(state->renderer);
+
   // prepare draw on texture
   size_t num_triangles = num_vertices - 2 + 1;
   size_t num_indices = num_triangles * 3; // Each triangle has 3 vertices
-  // printf("num_indices: %ld\n", num_indices);
   int *indices = (int *)malloc(num_indices * sizeof(int)); // ensure alloc OK
   if (indices == NULL) {
     DEBUG_MSG("failed malloc for indices");
@@ -270,6 +295,7 @@ void          perform_shadow_casting(state_t *state) {
   indices[index++] = 1;
 
   SDL_RenderGeometry(state->renderer, NULL, final_vertices_array, num_vertices, indices, num_indices);
+  // add_torch_light(state);
   SDL_SetRenderTarget(state->renderer, NULL);
   free(blocking_light_edges);
   free(indices);

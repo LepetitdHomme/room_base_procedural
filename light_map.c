@@ -84,7 +84,7 @@ void          update_light_map(state_t *state) {
       }
       // printf("coord_ray x: %d\n", coord_ray.x);
       // printf("x: %d,y: %d\n", coord_ray.x - state->player->current_node->rect.x, coord_ray.y - state->player->current_node->rect.y);
-      state->player->current_node->light_map[coord_ray.x - state->player->current_node->rect.x][coord_ray.y - state->player->current_node->rect.y] = 255;
+      state->player->current_node->light_map[coord_ray.x - state->player->current_node->rect.x][coord_ray.y - state->player->current_node->rect.y] = 100;
       if (type_stops_light(state->grid[coord_ray.x][coord_ray.y]) == 0) {
         break;
       }

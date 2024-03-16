@@ -26,7 +26,7 @@ int           main(int argc, char *argv[]) {
     DEBUG_MSG("level texture malloc failed");
     exit(EXIT_FAILURE);
   }
-  init_texture(state.renderer, state.level_texture, "assets/Sprite-0006.bmp", 9, 2);
+  init_texture(state.renderer, state.level_texture, "assets/Sprite-0006 Copy.bmp", 9, 2);
   state.black_texture = SDL_CreateTexture(state.renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
   if (state.black_texture == NULL) {
     printf("Black texture could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -49,10 +49,12 @@ int           main(int argc, char *argv[]) {
     SDL_SetRenderDrawColor(state.renderer, 0, 0, 0, 255);
     SDL_RenderClear(state.renderer);
 
-
     /* Draw your graphics */
     draw_node(&state);
     draw_entities(&state);
+    perform_shadow_casting(&state);
+    SDL_RenderCopy(state.renderer, state.black_texture, NULL, &window_rect);
+
     if (state.display_map == 1) {
       if (DEBUG_GRID) {
         draw_grid(&state);
@@ -61,20 +63,6 @@ int           main(int argc, char *argv[]) {
       }
     }
 
-    // SDL_Vertex vertex_1 = {{10.5, 10.5}, {255, 0, 0, 255}, {1, 1}};
-    // SDL_Vertex vertex_2 = {{20.5, 10.5}, {255, 0, 0, 255}, {1, 1}};
-    // SDL_Vertex vertex_3 = {{15.5, 25.5}, {255, 0, 0, 255}, {1, 1}};
-    // SDL_Vertex vertex_4 = {{10.5, 20.5}, {255, 0, 0, 255}, {1, 1}};
-    // SDL_Vertex vertices[] = {
-    //   vertex_1,
-    //   vertex_2,
-    //   vertex_3,
-    //   vertex_4
-    // };
-    // SDL_RenderGeometry(state.renderer, NULL, vertices, 4, NULL, 0);
-
-    /**********************/
-    SDL_RenderCopy(state.renderer, state.black_texture, NULL, &window_rect);
     SDL_RenderPresent(state.renderer);
     SDL_Delay(16);
   }

@@ -1,4 +1,6 @@
-#include "includes/common.h"
+#include "../include/macros.h"
+#include "../include/type.h"
+#include "../include/collisions.h"
 
 enum Type     collisions_priority(enum Type collision1, enum Type collision2) {
   if (is_floor_type(collision1) == 0) {

@@ -1,4 +1,6 @@
-#include "includes/common.h"
+#include <stdlib.h>
+#include "../include/grid.h"
+#include "../include/macros.h"
 
 void          init_grid(state_t *state, int complexity) {
   if (state->grid != NULL) {

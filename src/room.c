@@ -1,4 +1,7 @@
-#include "includes/common.h"
+#include <stdlib.h>
+#include "../include/macros.h"
+#include "../include/room.h"
+#include "../include/tools.h"
 
 SDL_Rect      g_rect(int grid_w, int grid_h, int w, int h) {
   SDL_Rect    rect;

@@ -1,4 +1,9 @@
-#include "includes/common.h"
+#include <stdlib.h>
+#include "../include/macros.h"
+#include "../include/door.h"
+#include "../include/room.h"
+#include "../include/type.h"
+#include "../include/graph.h"
 
 // Function to create a new node
 graph_t       *graph_create_node(SDL_Rect rect, coord_t center, int is_corridor, int elevation, int id) {

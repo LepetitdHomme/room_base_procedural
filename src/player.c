@@ -1,4 +1,13 @@
-#include "includes/common.h"
+#include <stdlib.h>
+#include "../include/macros.h"
+#include "../include/textures.h"
+#include "../include/door.h"
+#include "../include/light_map.h"
+#include "../include/room.h"
+#include "../include/type.h"
+#include "../include/level.h"
+#include "../include/collisions.h"
+#include "../include/player.h"
 
 void          free_player(state_t *state) {
   if (state->player->texture != NULL) {
@@ -59,7 +68,7 @@ void          player_reset_screen_from_grid(state_t *state) {
   player_update_direction(state->player);
   
   // player speed - related to movement and tile size, since player is displayed screen-wise, not grid-wise
-  player->speed = state->tile_screen_size / 6;
+  player->speed = state->tile_screen_size / 4;
   
   // compute scrolling window
   // TODO: BRUT values

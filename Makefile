@@ -12,30 +12,19 @@
 
 UNAME_S := $(shell uname -s)
 
-CC=gcc
-CFLAGS=-I/includes -Wall -Wextra
-LDFLAGS=
+CC := gcc
+CFLAGS := -I/include -Wall -Wextra
+LDFLAGS :=
 LIBS=
 
-DEPS = common.h
-OBJ = main.o \
-			grid.o \
-			level.o \
-			room.o \
-			door.o \
-			tools.o \
-			kruskal.o \
-			player.o \
-			textures.o \
-			type.o \
-			graph.o \
-			connections.o \
-			entities.o \
-			draw.o \
-			collisions.o \
-			inputs.o \
-			light_map.o \
-			shadow_casting.o
+SRC_DIR := src
+OBJ_DIR := obj
+
+# List of source files
+SRC := $(wildcard $(SRC_DIR)/*.c)
+
+# Generate list of object files
+OBJ := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRC))
 
 # macOS configuration
 ifeq ($(UNAME_S),Darwin)
@@ -51,13 +40,23 @@ ifeq ($(UNAME_S),Linux)
 	LIBS+=-lSDL2_ttf -lm
 endif
 
-%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+# Targets
+EXECUTABLE := play
 
-play: $(OBJ)
-	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
+# Compile rule
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Link rule
+$(EXECUTABLE): $(OBJ)
+	$(CC) $^ $(LDFLAGS) $(LIBS) -o $@
+
+$(OBJ_DIR):
+	mkdir -p $@
+
+.PHONY: clean re
 
 clean:
-	rm -f *.o play
+	rm -rf $(OBJ_DIR) $(EXECUTABLE)
 
-re: clean play
+re: clean $(EXECUTABLE)

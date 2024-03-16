@@ -1,4 +1,7 @@
-#include "includes/common.h"
+#include <stdlib.h>
+#include "../include/macros.h"
+#include "../include/door.h"
+#include "../include/room.h"
 
 void          doors_append(graph_t *src_node, door_t door_node) {
   src_node->num_doors += 1;

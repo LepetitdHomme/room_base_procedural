@@ -1,4 +1,7 @@
-#include "includes/common.h"
+#include <stdlib.h>
+#include "../include/macros.h"
+#include "../include/type.h"
+#include "../include/shadow_casting.h"
 
 void          add_vertex(light_edge **vertices, size_t *num_vertices, size_t *capacity, int x, int y, int opacity, float angle) {
   int         first = 0;
@@ -146,36 +149,6 @@ int           compare_vertex_angles(const void* a, const void* b) {
   if (va->angle_a > vb->angle_a) return 1;
   return 0;
 }
-
-// void          add_torch_light(state_t *state) {
-//   // Iterate through each pixel in the bounding box
-//   for (int x = playerX - radius; x <= playerX + radius; x++) {
-//     for (int y = playerY - radius; y <= playerY + radius; y++) {
-//       // Check if the pixel is within the texture bounds
-//       if (x >= 0 && x < textureWidth && y >= 0 && y < textureHeight) {
-//         // Calculate distance from the player
-//         int distanceSquared = (x - playerX) * (x - playerX) + (y - playerY) * (y - playerY);
-//         int alpha = 255 - (255 * distanceSquared) / (radius * radius);
-
-//         // Get the existing pixel color
-//         Uint32 pixel;
-//         SDL_Rect rect = {x, y, 1, 1};
-//         SDL_RenderReadPixels(renderer, &rect, SDL_PIXELFORMAT_RGBA8888, &pixel, textureWidth * sizeof(Uint32));
-
-//         // Blend the pixel color with torch light color based on alpha
-//         Uint8 r, g, b;
-//         SDL_GetRGB(pixel, SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), &r, &g, &b);
-//         r = (r * alpha) / 255;
-//         g = (g * alpha) / 255;
-//         b = (b * alpha) / 255;
-
-//         // Set the blended color back to the texture
-//         SDL_SetRenderDrawColor(renderer, r, g, b, alpha);
-//         SDL_RenderFillRect(renderer, &rect);
-//         }
-//       }
-//   }
-// }
 
 void          perform_shadow_casting(state_t *state) {
   light_edge      *blocking_light_edges = NULL;

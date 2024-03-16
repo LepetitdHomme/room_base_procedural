@@ -1,4 +1,6 @@
-#include "includes/common.h"
+#include <stdlib.h>
+#include "../include/textures.h"
+#include "../include/macros.h"
 
 void          init_texture(SDL_Renderer *renderer, texture_t *destination, const char *path, int num_x, int num_y) {
   SDL_Surface   *tmp = NULL;

@@ -1,4 +1,5 @@
-#include "includes/common.h"
+#include "../include/tools.h"
+#include "../include/macros.h"
 
 int           clamp(int value, int min, int max) {
   return (value < min) ? min : (value > max) ? max : value;

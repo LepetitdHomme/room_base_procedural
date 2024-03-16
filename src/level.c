@@ -1,6 +1,11 @@
-#include "includes/common.h"
+#include "../include/level.h"
+#include "../include/macros.h"
 
-int           max_rect_side(int x, int y, int n);
+#include "../include/grid.h"
+#include "../include/room.h"
+#include "../include/kruskal.h"
+#include "../include/graph.h"
+#include "../include/player.h"
 
 void          init_level(state_t *state, int complexity) {
   int         rooms_number,max_rect,clamped_complexity;

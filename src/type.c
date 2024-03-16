@@ -1,4 +1,5 @@
-#include "includes/common.h"
+#include "../include/type.h"
+#include "../include/macros.h"
 
 SDL_Color     type_to_map_color(enum Type type) {
   SDL_Color color;

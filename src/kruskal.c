@@ -1,12 +1,17 @@
-#include "includes/common.h"
+#include <stdlib.h>
+#include <stdbool.h>
+#include "../include/kruskal.h"
+#include "../include/macros.h"
+#include "../include/tools.h"
+#include "../include/connections.h"
 
-int find_subset(subset_t subsets[], int i) {
+int           find_subset(subset_t subsets[], int i) {
   if (subsets[i].parent != i)
     subsets[i].parent = find_subset(subsets, subsets[i].parent);
   return subsets[i].parent;
 }
 
-void union_subsets(subset_t subsets[], int x, int y) {
+void          union_subsets(subset_t subsets[], int x, int y) {
     int xroot = find_subset(subsets, x);
     int yroot = find_subset(subsets, y);
 
@@ -20,7 +25,7 @@ void union_subsets(subset_t subsets[], int x, int y) {
     }
 }
 // Comparison function for sorting edges by weight
-int compare_edges(const void* a, const void* b) {
+int           compare_edges(const void* a, const void* b) {
   edge_t* edge1 = (edge_t*)a;
   edge_t* edge2 = (edge_t*)b;
   if (edge1->weight < edge2->weight)
@@ -31,21 +36,21 @@ int compare_edges(const void* a, const void* b) {
     return 0;
 }
 
-void printf_subsets(subset_t subsets[], int num_rooms) {
+void          printf_subsets(subset_t subsets[], int num_rooms) {
   printf("Subset information:\n");
   for (int i = 0; i < num_rooms; i++) {
     printf("Subset %d: parent = %d, rank = %d\n", i, subsets[i].parent, subsets[i].rank);
   }
 }
 
-void print_edges(edge_t edges[], int edge_count) {
+void          print_edges(edge_t edges[], int edge_count) {
   printf("Edges information:\n");
   for (int i = 0; i < edge_count; i++) {
     printf("Edge %d: src = %d, dst = %d, weight = %lf\n", i, edges[i].src, edges[i].dst, edges[i].weight);
   }
 }
 
-void display_added_array(bool *added, int size) {
+void          display_added_array(bool *added, int size) {
   printf("Added array:\n");
   for (int i = 0; i < size; i++) {
       printf("Index %d: %s\n", i, added[i] ? "true" : "false");
@@ -53,7 +58,7 @@ void display_added_array(bool *added, int size) {
 }
 
 // Function to apply Kruskal's algorithm
-void apply_kruskal(state_t *state) {
+void          apply_kruskal(state_t *state) {
   room_t *current_room = state->rooms;
   room_t *other_room = NULL;
   int num_rooms = state->num_rooms;

@@ -1,4 +1,6 @@
-#include "includes/common.h"
+#include <stdlib.h>
+#include "../include/macros.h"
+#include "../include/connections.h"
 
 void                    connections_append(state_t *state, int src, int dst) {
   // Increase the size of the connections array

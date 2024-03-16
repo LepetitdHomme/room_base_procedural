@@ -1,4 +1,8 @@
-#include "includes/common.h"
+#include "../include/macros.h"
+#include "../include/tools.h"
+#include "../include/type.h"
+#include "../include/player.h"
+#include "../include/draw.h"
 
 /*
 *   For now, used to display the whole grid

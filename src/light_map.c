@@ -1,4 +1,7 @@
-#include "includes/common.h"
+#include <stdlib.h>
+#include "../include/macros.h"
+#include "../include/light_map.h"
+#include "../include/type.h"
 
 void          init_light_map(graph_t *node) {
   if (node->light_map != NULL) {

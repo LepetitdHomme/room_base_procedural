@@ -1,4 +1,7 @@
-#include "includes/common.h"
+#include "../include/macros.h"
+#include "../include/draw.h"
+#include "../include/tools.h"
+#include "../include/inputs.h"
 
 void 					inputs_keydown(state_t *state, SDL_Event *event, int *inputs_state) {
 	if (event->key.keysym.sym == SDLK_w) {

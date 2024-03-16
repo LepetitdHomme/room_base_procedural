@@ -1,16 +1,28 @@
-#include "includes/common.h"
-
-SDL_Window    *init_sdl();
-unsigned int  set_seed(int argc, char *argv[]);
-void          clean(state_t *state, SDL_Window *window);
+#include <stdlib.h>// exit/exitfailure/malloc
+#include <unistd.h>// read/write
+#include <time.h>
+#include "../include/main.h"
+#include "../include/macros.h"// stdio/math
+#include "../include/textures.h"
+#include "../include/level.h"
+#include "../include/inputs.h"
+#include "../include/player.h"
+#include "../include/grid.h"
+#include "../include/graph.h"
+#include "../include/connections.h"
+#include "../include/shadow_casting.h"
+#include "../include/draw.h"
+// #include <stdio.h>
+// #include <stdbool.h>
 
 int           main(int argc, char *argv[]) {
   SDL_Window  *window;
-  state_t     state;
   SDL_Event   event;
+  state_t     state;
   int         quit;
 
   window = init_sdl();
+  // We initiate the main state structure
   state.seed = set_seed(argc, argv);
   state.renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
   state.grid = NULL;
@@ -32,13 +44,14 @@ int           main(int argc, char *argv[]) {
     printf("Black texture could not be created! SDL_Error: %s\n", SDL_GetError());
     exit(EXIT_FAILURE);
   }
+  // We compute the first level
   init_level(&state, 1);
   level_to_grid(&state, state.graph);
   draw_compute_screen_sizes(&state);
+
+  // We prepare the main loop
   quit = 0;
-  // TODO: do something bout this
   int inputs_state[4] = { 0, 0, 0, 0 }; // awsd :/
-  // tmp
   SDL_Rect window_rect = { 0,0,WINDOW_WIDTH,WINDOW_HEIGHT};
 
   while (!quit) {

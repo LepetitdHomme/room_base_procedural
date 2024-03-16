@@ -84,6 +84,14 @@ typedef struct {
   coord_t               a,b;
 } line_t;
 
+typedef struct {
+  SDL_Vertex            a;
+  SDL_Vertex            b;
+  float                 angle_a;
+  float                 angle_b;
+  int                   hit;
+} light_edge;
+
 typedef struct connection {
   int                   src,dst;
 } con_t;
@@ -255,8 +263,11 @@ void                    print_light_map(graph_t *node);
 
 /*                      light */
 void                    draw_light(state_t *state);
-void                    add_vertex(SDL_Vertex **vertices, size_t *num_vertices, size_t *capacity, int x, int y, int opacity);
+void                    add_vertex(light_edge **vertices, size_t *num_vertices, size_t *capacity, int x, int y, int opacity, float angle);
 int                     compute_transparency(int distance, int light);
+
+/*                      shadow_casting */
+void                    perform_shadow_casting(state_t *state);
 
 /*                      entities */
 

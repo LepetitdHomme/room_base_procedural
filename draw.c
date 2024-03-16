@@ -175,53 +175,53 @@ void          draw_scrolling_window(state_t *state) {
 void          draw_dark(state_t *state, SDL_Rect player) {
   SDL_Rect    dark_left, dark_right, dark_top, dark_bot;
 
-  reset_light_map(state->player->current_node);
-  // update_light_map(state);
+  // reset_light_map(state->player->current_node);
+  // // update_light_map(state);
 
-  // print_rect(player, "player");
-  // left rect of player
-  dark_left.x = 0;
-  dark_left.y = 0;
-  dark_left.w = player.x - state->player->light;
-  dark_left.h = WINDOW_HEIGHT;
-  // print_rect(dark_left, "dark_left left");
-  SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
-  SDL_RenderFillRect(state->renderer, &dark_left);
+  // // print_rect(player, "player");
+  // // left rect of player
+  // dark_left.x = 0;
+  // dark_left.y = 0;
+  // dark_left.w = player.x - state->player->light;
+  // dark_left.h = WINDOW_HEIGHT;
+  // // print_rect(dark_left, "dark_left left");
+  // SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
+  // SDL_RenderFillRect(state->renderer, &dark_left);
 
-  // right rect of player
-  dark_right.x = player.x + state->tile_screen_size + state->player->light;
-  dark_right.y = 0;
-  dark_right.w = WINDOW_WIDTH - dark_right.x;
-  dark_right.h = WINDOW_HEIGHT;
-  // print_rect(dark_right, "dark_right right");
-  SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
-  SDL_RenderFillRect(state->renderer, &dark_right);
+  // // right rect of player
+  // dark_right.x = player.x + state->tile_screen_size + state->player->light;
+  // dark_right.y = 0;
+  // dark_right.w = WINDOW_WIDTH - dark_right.x;
+  // dark_right.h = WINDOW_HEIGHT;
+  // // print_rect(dark_right, "dark_right right");
+  // SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
+  // SDL_RenderFillRect(state->renderer, &dark_right);
 
-  // top rect of player
-  dark_top.x = player.x - state->player->light;
-  dark_top.y = 0;
-  dark_top.w = 2 * state->player->light + state->tile_screen_size;
-  dark_top.h = player.y - state->player->light;
-  // print_rect(dark_top, "dark_top top");
-  SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
-  SDL_RenderFillRect(state->renderer, &dark_top);
+  // // top rect of player
+  // dark_top.x = player.x - state->player->light;
+  // dark_top.y = 0;
+  // dark_top.w = 2 * state->player->light + state->tile_screen_size;
+  // dark_top.h = player.y - state->player->light;
+  // // print_rect(dark_top, "dark_top top");
+  // SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
+  // SDL_RenderFillRect(state->renderer, &dark_top);
 
-  // bottom rect of player
-  dark_bot.x = player.x - state->player->light;
-  dark_bot.y = player.y + state->tile_screen_size + state->player->light;
-  dark_bot.w = 2 * state->player->light + state->tile_screen_size;
-  dark_bot.h = WINDOW_HEIGHT - (player.y + state->player->light);
-  // print_rect(dark_bot, "dark_bot bottom");
-  SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
-  SDL_RenderFillRect(state->renderer, &dark_bot);
+  // // bottom rect of player
+  // dark_bot.x = player.x - state->player->light;
+  // dark_bot.y = player.y + state->tile_screen_size + state->player->light;
+  // dark_bot.w = 2 * state->player->light + state->tile_screen_size;
+  // dark_bot.h = WINDOW_HEIGHT - (player.y + state->player->light);
+  // // print_rect(dark_bot, "dark_bot bottom");
+  // SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
+  // SDL_RenderFillRect(state->renderer, &dark_bot);
 
-  // we compute the inner rect
-  SDL_Rect light_rect;
-  light_rect.x = dark_top.x;
-  light_rect.y = dark_top.h; // == h since y == 0
-  light_rect.w = dark_top.w;
-  light_rect.h = dark_bot.y - dark_top.h;
-  SDL_Rect rect;
+  // // we compute the inner rect
+  // SDL_Rect light_rect;
+  // light_rect.x = dark_top.x;
+  // light_rect.y = dark_top.h; // == h since y == 0
+  // light_rect.w = dark_top.w;
+  // light_rect.h = dark_bot.y - dark_top.h;
+  // SDL_Rect rect;
 
   Uint32 alpha;
   // print_rect(light_rect, "light_rect");
@@ -230,7 +230,8 @@ void          draw_dark(state_t *state, SDL_Rect player) {
 
   // SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
 
-  draw_light(state);
+  perform_shadow_casting(state);
+  // draw_light(state);
 
   // for (int i = light_rect.x ; i < light_rect.x + light_rect.w - 1 ; i+=2) {
   //   for (int j = light_rect.y ; j < light_rect.y + light_rect.h - 1 ; j+=2) {
@@ -287,8 +288,8 @@ void          draw_entities(state_t *state) {
   player.w *= 2;
   player.h *= 2;
 
-  draw_dark(state, player);
   SDL_RenderCopy(state->renderer, state->player->texture->texture, &state->player->src_screen, &player);
+  draw_dark(state, player);
   // SDL_SetRenderDrawColor(state->renderer, 0, 0, 255, 255);
   // SDL_RenderFillRect(state->renderer, &player);
 

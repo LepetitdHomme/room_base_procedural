@@ -35,7 +35,7 @@ OBJ = main.o \
 			collisions.o \
 			inputs.o \
 			light_map.o \
-			light.o
+			shadow_casting.o
 
 # macOS configuration
 ifeq ($(UNAME_S),Darwin)

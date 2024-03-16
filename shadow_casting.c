@@ -32,20 +32,6 @@ void          add_vertex(light_edge **vertices, size_t *num_vertices, size_t *ca
   (*num_vertices)++;
 }
 
-double        compute_vertex_angle(SDL_Vertex vertex, SDL_Vertex player_position) {
-  // Calculate the vector from the player's position to the vertex
-  double dx = vertex.position.x - player_position.position.x;
-  double dy = vertex.position.y - player_position.position.y;
-
-  // Compute the angle relative to the positive x-axis
-  double angle = atan2(dy, dx);
-
-  // Convert angle to degrees if needed
-  // angle = angle * 180 / M_PI;
-
-  return angle;
-}
-
 int           init_edges(state_t *state, light_edge **edges) {
   int           num_blocking_cells;
   int           num_edge,num_edge_tmp;

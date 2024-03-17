@@ -181,7 +181,7 @@ void          perform_shadow_casting(state_t *state) {
   light_edge      *vertices = NULL;
   size_t          num_vertices = 0;
   size_t          capacity = 0;
-  float           radius = 100.0;
+  float           radius = 1000.0;
 
   // initialize the array of blocking light edges
   num_edge = init_edges(state, &blocking_light_edges);

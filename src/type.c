@@ -13,6 +13,12 @@ SDL_Color     type_to_map_color(enum Type type) {
       break;
     case FLOOR:
     case CORRIDOR:
+    case DOOR_UP:
+    case DOOR_UP_OPEN:
+    case DOOR_DOWN:
+    case DOOR_DOWN_OPEN:
+    case DOOR_LEFT:
+    case DOOR_RIGHT:
       color.r = 100;
       color.g = 0;
       color.b = 0;
@@ -26,7 +32,7 @@ SDL_Color     type_to_map_color(enum Type type) {
     case CORNER_TOP_RIGHT:
     case CORNER_BOT_LEFT:
     case CORNER_BOT_RIGHT:
-      color.r = 150;
+      color.r = 200;
       color.g = 0;
       color.b = 0;
       color.a = 255;
@@ -247,6 +253,22 @@ int           is_floor_type(enum Type type) {
 
 int           is_wall_type(enum Type type) {
   if (type == WALL_RIGHT || type == WALL_UP || type == WALL_DOWN || type == WALL_LEFT) {
+    return 0;
+  }
+
+  return 1;
+}
+
+int           is_corner_type(enum Type type) {
+  if (type == CORNER_TOP_RIGHT || type == CORNER_TOP_LEFT || type == CORNER_BOT_LEFT || type ==  CORNER_BOT_RIGHT) {
+    return 0;
+  }
+
+  return 1;
+}
+
+int           is_wall_or_corner_type(enum Type type) {
+  if (is_wall_type(type) == 0 || is_corner_type(type) == 0) {
     return 0;
   }
 

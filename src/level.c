@@ -1,6 +1,9 @@
 #include "../include/level.h"
 #include "../include/macros.h"
 
+#include "../include/tools.h"
+#include "../include/type.h"
+#include "../include/door.h"
 #include "../include/grid.h"
 #include "../include/room.h"
 #include "../include/kruskal.h"

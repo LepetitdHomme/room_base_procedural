@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "../include/macros.h"
+#include "../include/room.h"
 #include "../include/light_map.h"
 #include "../include/type.h"
 

@@ -5,10 +5,14 @@
 
 /*                      type */
 SDL_Color               type_to_map_color(enum Type type);
-int                     is_door_type(enum Type type);
 int                     type_stops_light(enum Type type);
+
+int                     is_door_type(enum Type type);
 int                     is_floor_type(enum Type type);
 int                     is_wall_type(enum Type type);
+int           					is_corner_type(enum Type type);
+int           					is_wall_or_corner_type(enum Type type);
+
 enum Octant             corner_to_octant(enum Type corner);
 enum Octant             wall_to_octant(coord_t src, coord_t dst);
 int                     direction_to_degrees(enum Dir dir);

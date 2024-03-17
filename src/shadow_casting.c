@@ -239,7 +239,7 @@ void          perform_shadow_casting(state_t *state) {
   }
 
   // Extract SDL_Vertex instances from light_edge.a and store them in vertices_array
-  for (int i = 0; i < num_vertices; i++) {
+  for (size_t i = 0; i < num_vertices; i++) {
     final_vertices_array[i] = vertices[i].a;
   }
 

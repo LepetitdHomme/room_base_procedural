@@ -42,6 +42,8 @@ int           init_edges(state_t *state, light_edge **edges) {
   int           num_edge,num_edge_tmp;
   SDL_Vertex    corner_1, corner_2, corner_3, corner_4;
   SDL_Rect      room;
+  coord_t       cell_coord;
+  enum Octant   octant;
 
   room = state->player->current_node->rect;
 
@@ -66,6 +68,12 @@ int           init_edges(state_t *state, light_edge **edges) {
   for (int i = room.x ; i < room.x + room.w ; i++) {
     for (int j = room.y ; j < room.y + room.h ; j++) {
       if (type_stops_light(state->grid[i][j]) == 0) {
+        // We check the visibility octant
+        cell_coord.x = i;
+        cell_coord.y = j;
+        octant = wall_to_octant(state->player->pos, cell_coord);
+
+        // We compute the corners
         corner_1.position.x = i * state->tile_screen_size - state->scroll.x;
         corner_1.position.y = j * state->tile_screen_size - state->scroll.y;
 
@@ -79,28 +87,44 @@ int           init_edges(state_t *state, light_edge **edges) {
         corner_4.position.y = (j + 1) * state->tile_screen_size - state->scroll.y - 1;
 
         // top edge of cell
-        (*edges)[num_edge_tmp].a.position.x = corner_1.position.x;
-        (*edges)[num_edge_tmp].a.position.y = corner_1.position.y;
-        (*edges)[num_edge_tmp].b.position.x = corner_2.position.x;
-        (*edges)[num_edge_tmp].b.position.y = corner_2.position.y;
+        if (octant == NW || octant == N || octant == NE || octant == W || octant == E) {
+          (*edges)[num_edge_tmp].a.position.x = corner_1.position.x;
+          (*edges)[num_edge_tmp].a.position.y = corner_1.position.y;
+          (*edges)[num_edge_tmp].b.position.x = corner_2.position.x;
+          (*edges)[num_edge_tmp].b.position.y = corner_2.position.y;
+        } else {
+          (*edges)[num_edge_tmp].a.position.x = INFINITY;
+        }
         num_edge_tmp++;
         // right edge of cell
-        (*edges)[num_edge_tmp].a.position.x = corner_2.position.x;
-        (*edges)[num_edge_tmp].a.position.y = corner_2.position.y;
-        (*edges)[num_edge_tmp].b.position.x = corner_3.position.x;
-        (*edges)[num_edge_tmp].b.position.y = corner_3.position.y;
+        if (octant == N || octant == NE || octant == E || octant == SE || octant == S) {
+          (*edges)[num_edge_tmp].a.position.x = corner_2.position.x;
+          (*edges)[num_edge_tmp].a.position.y = corner_2.position.y;
+          (*edges)[num_edge_tmp].b.position.x = corner_3.position.x;
+          (*edges)[num_edge_tmp].b.position.y = corner_3.position.y;
+        } else {
+          (*edges)[num_edge_tmp].a.position.x = INFINITY;
+        }
         num_edge_tmp++;
         // bot edge of cell
-        (*edges)[num_edge_tmp].a.position.x = corner_3.position.x;
-        (*edges)[num_edge_tmp].a.position.y = corner_3.position.y;
-        (*edges)[num_edge_tmp].b.position.x = corner_4.position.x;
-        (*edges)[num_edge_tmp].b.position.y = corner_4.position.y;
+        if (octant == E || octant == SE || octant == S || octant == SW || octant == W) {
+          (*edges)[num_edge_tmp].a.position.x = corner_3.position.x;
+          (*edges)[num_edge_tmp].a.position.y = corner_3.position.y;
+          (*edges)[num_edge_tmp].b.position.x = corner_4.position.x;
+          (*edges)[num_edge_tmp].b.position.y = corner_4.position.y;
+        } else {
+          (*edges)[num_edge_tmp].a.position.x = INFINITY;
+        }
         num_edge_tmp++;
         // left edge of cell
-        (*edges)[num_edge_tmp].a.position.x = corner_4.position.x;
-        (*edges)[num_edge_tmp].a.position.y = corner_4.position.y;
-        (*edges)[num_edge_tmp].b.position.x = corner_1.position.x;
-        (*edges)[num_edge_tmp].b.position.y = corner_1.position.y;
+        if (octant == NW || octant == N || octant == S || octant == SW || octant == W) {
+          (*edges)[num_edge_tmp].a.position.x = corner_4.position.x;
+          (*edges)[num_edge_tmp].a.position.y = corner_4.position.y;
+          (*edges)[num_edge_tmp].b.position.x = corner_1.position.x;
+          (*edges)[num_edge_tmp].b.position.y = corner_1.position.y;
+        } else {
+          (*edges)[num_edge_tmp].a.position.x = INFINITY;
+        }
         num_edge_tmp++;
       }
     }
@@ -169,6 +193,8 @@ void          perform_shadow_casting(state_t *state) {
   // Cast rays from the player's position to each edge
   for (int i = 0 ; i < num_edge ; i++) {
     light_edge current_edge = blocking_light_edges[i];
+    if (current_edge.a.position.x == INFINITY)
+      continue;
     
     // Iterate over both endpoints of the edge
     SDL_Vertex edge_endpoints[2] = {current_edge.a, current_edge.b};

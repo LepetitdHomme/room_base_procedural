@@ -160,7 +160,7 @@ int           direction_to_degrees(enum Dir dir) {
 /*
 *   In which direction is the wall we are looking at ? player to grid cell direction
 */
-enum Octant wall_to_octant(coord_t src, coord_t dst) {
+enum Octant   wall_to_octant(coord_t src, coord_t dst) {
   int dx = dst.x - src.x;
   int dy = dst.y - src.y;
 

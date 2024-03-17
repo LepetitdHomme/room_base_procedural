@@ -75,7 +75,7 @@ int           main(int argc, char *argv[]) {
         draw_map_grid(&state);
       }
     }
-
+    printf("speed: %d\n", state.player->speed);
     SDL_RenderPresent(state.renderer);
     SDL_Delay(16);
   }

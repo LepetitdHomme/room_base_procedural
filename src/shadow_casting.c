@@ -251,7 +251,7 @@ void          perform_shadow_casting(state_t *state) {
         // Add the closest intersection point to the visibility polygon
         if (valid == 1) {
           add_vertex(&vertices, &num_vertices, &capacity, min_px, min_py, 200, min_ang);
-        } 
+        }
       }
     }
   }

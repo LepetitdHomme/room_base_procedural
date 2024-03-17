@@ -25,7 +25,6 @@ void          draw_grid(state_t *state) {
         continue;
       if (is_wall_or_corner_type(state->grid[i][j]) == 0)
         continue;
-      printf("%d\n", state->grid[i][j]);
       dst.x = i * tile_final_size + start_x;
       dst.y = j * tile_final_size + start_y;
       dst.w = tile_final_size;

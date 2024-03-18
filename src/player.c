@@ -14,6 +14,10 @@ void          free_player(state_t *state) {
     free_texture(state->player->texture);
     state->player->texture = NULL;
   }
+  if (state->player->light_texture != NULL) {
+    free_texture_image(state->player->light_texture);
+    state->player->light_texture = NULL;
+  }
   free(state->player);
   state->player = NULL;
 }
@@ -30,6 +34,11 @@ void          init_player(state_t *state) {
     exit(EXIT_FAILURE);
   }
   init_texture(state->renderer, state->player->texture, "assets/soldier2.bmp", 2, 2);
+  if ((state->player->light_texture = (texture_t *)malloc(sizeof(texture_t))) == NULL) {
+    DEBUG_MSG("player light texture malloc failed");
+    exit(EXIT_FAILURE);
+  }
+  init_image(state->renderer, state->player->light_texture, "assets/light.png");
   state->player->src_screen.x = 0;
   state->player->src_screen.y = 0;
   state->player->src_screen.w = state->player->texture->tile_w;
@@ -44,7 +53,7 @@ void          init_player(state_t *state) {
   state->player->pos.x = state->graph->center.x;
   state->player->pos.y = state->graph->center.y;
   state->player->direction = RIGHT;
-  state->player->light = 1000;
+  state->player->light = 250;
   state->player->last_update = 0;
 
   state->player->dst_screen.x = -1;

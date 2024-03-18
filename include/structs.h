@@ -107,6 +107,7 @@ typedef struct {
 
 typedef struct player_struct {
   texture_t             *texture;
+  texture_t             *light_texture;
   SDL_Rect              src_screen; // screen values, current pos on screen
   SDL_Rect              dst_screen; // screen values, attempted pos on screen
   coord_t               pos; // grid values

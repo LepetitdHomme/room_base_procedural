@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "../include/macros.h"
 #include "../include/type.h"
+#include "../include/tools.h"
 #include "../include/shadow_casting.h"
 
 void          add_vertex(light_edge **vertices, size_t *num_vertices, size_t *capacity, int x, int y, int opacity, float angle) {
@@ -174,6 +175,62 @@ int           compare_vertex_angles(const void* a, const void* b) {
   return 0;
 }
 
+SDL_Rect         perform_torch_light(state_t *state, SDL_Vertex player) {
+  SDL_Rect    light_rect;
+
+  // light_rect.x = player.position.x - state->player->light;
+  // light_rect.y = player.position.y - state->player->light;
+  // light_rect.w = state->player->light * 2;
+  // light_rect.h = state->player->light * 2;
+
+  SDL_Rect    dark_left, dark_right, dark_top, dark_bot;
+
+  // left rect of player
+  dark_left.x = 0;
+  dark_left.y = 0;
+  dark_left.w = player.position.x - state->player->light;
+  dark_left.h = WINDOW_HEIGHT;
+  SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
+  SDL_RenderFillRect(state->renderer, &dark_left);
+
+  // right rect of player
+  dark_right.x = player.position.x + state->tile_screen_size + state->player->light;
+  dark_right.y = 0;
+  dark_right.w = WINDOW_WIDTH - dark_right.x;
+  dark_right.h = WINDOW_HEIGHT;
+  SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
+  SDL_RenderFillRect(state->renderer, &dark_right);
+
+  // top rect of player
+  dark_top.x = player.position.x - state->player->light;
+  dark_top.y = 0;
+  dark_top.w = 2 * state->player->light + state->tile_screen_size;
+  dark_top.h = player.position.y - state->player->light;
+  SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
+  SDL_RenderFillRect(state->renderer, &dark_top);
+
+  // bottom rect of player
+  dark_bot.x = player.position.x - state->player->light;
+  dark_bot.y = player.position.y + state->tile_screen_size + state->player->light;
+  dark_bot.w = 2 * state->player->light + state->tile_screen_size;
+  dark_bot.h = WINDOW_HEIGHT - (player.position.y + state->player->light);
+  // print_rect(dark_bot, "dark_bot bottom");
+  SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
+  SDL_RenderFillRect(state->renderer, &dark_bot);
+
+  // we compute the inner rect
+  light_rect.x = dark_top.x - 1;
+  light_rect.y = dark_top.h - 1; // == h since y == 0
+  light_rect.w = dark_top.w + 2;
+  light_rect.h = dark_bot.y - dark_top.h + 2;
+  // coord_t player_coord, screen_coord;
+  // player_coord.x = player.position.x + player.w / 2;
+  // player_coord.y = player.position.y + player.h / 2;
+  // SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
+  // SDL_RenderFillRect(state->renderer, &light_rect);
+  return light_rect;
+}
+
 void          perform_shadow_casting(state_t *state) {
   light_edge      *blocking_light_edges = NULL;
   int             num_edge;
@@ -181,7 +238,7 @@ void          perform_shadow_casting(state_t *state) {
   light_edge      *vertices = NULL;
   size_t          num_vertices = 0;
   size_t          capacity = 0;
-  float           radius = 1000.0;
+  float           radius = 100.0;
 
   // initialize the array of blocking light edges
   num_edge = init_edges(state, &blocking_light_edges);
@@ -269,7 +326,6 @@ void          perform_shadow_casting(state_t *state) {
     final_vertices_array[i] = vertices[i].a;
   }
 
-  SDL_SetTextureBlendMode(state->black_texture, SDL_BLENDMODE_BLEND);
   SDL_SetRenderTarget(state->renderer, state->black_texture);
   SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 255);
   SDL_RenderClear(state->renderer);
@@ -293,9 +349,16 @@ void          perform_shadow_casting(state_t *state) {
   indices[index++] = 0;
   indices[index++] = 1;
 
+  SDL_Rect light_rect;
+  SDL_SetTextureBlendMode(state->black_texture, SDL_BLENDMODE_BLEND);
   SDL_RenderGeometry(state->renderer, NULL, final_vertices_array, num_vertices, indices, num_indices);
-  // add_torch_light(state);
+
+  SDL_Rect window_rect = { 0,0,WINDOW_WIDTH,WINDOW_HEIGHT};
+  light_rect = perform_torch_light(state, player_position);
+  SDL_RenderCopy(state->renderer, state->player->light_texture->texture, NULL, &light_rect);
   SDL_SetRenderTarget(state->renderer, NULL);
+  SDL_RenderCopy(state->renderer, state->black_texture, NULL, &window_rect);
+
   free(blocking_light_edges);
   free(indices);
   free(vertices);

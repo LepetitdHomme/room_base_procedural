@@ -9,6 +9,8 @@
 #   ../configure
 #   make
 #   sudo make install
+# for SDL2_image:
+# 	https://github.com/libsdl-org/SDL_image/releases
 
 UNAME_S := $(shell uname -s)
 
@@ -37,7 +39,7 @@ endif
 ifeq ($(UNAME_S),Linux)
 	CFLAGS+=`sdl2-config --cflags`
 	LDFLAGS+=`sdl2-config --libs`
-	LIBS+=-lSDL2_ttf -lm
+	LIBS+=-lSDL2_image -lm
 endif
 
 # Targets

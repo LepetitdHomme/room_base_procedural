@@ -52,7 +52,6 @@ int           main(int argc, char *argv[]) {
   // We prepare the main loop
   quit = 0;
   int inputs_state[4] = { 0, 0, 0, 0 }; // awsd :/
-  SDL_Rect window_rect = { 0,0,WINDOW_WIDTH,WINDOW_HEIGHT};
 
   while (!quit) {
     state.ticks = SDL_GetTicks();
@@ -66,7 +65,6 @@ int           main(int argc, char *argv[]) {
     draw_node(&state);
     draw_entities(&state);
     perform_shadow_casting(&state);
-    SDL_RenderCopy(state.renderer, state.black_texture, NULL, &window_rect);
 
     if (state.display_map == 1) {
       if (DEBUG_GRID) {
@@ -75,7 +73,7 @@ int           main(int argc, char *argv[]) {
         draw_map_grid(&state);
       }
     }
-    printf("speed: %d\n", state.player->speed);
+    // printf("speed: %d\n", state.player->speed);
     SDL_RenderPresent(state.renderer);
     SDL_Delay(16);
   }

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <SDL2/SDL_image.h>
 #include "../include/textures.h"
 #include "../include/macros.h"
 
@@ -49,6 +50,51 @@ void          init_texture(SDL_Renderer *renderer, texture_t *destination, const
   }
 
   // printf("texture: numx: %d, numy: %d, w: %d, h: %d\n", num_x, num_y, destination->tile_w, destination->tile_h);
+}
+
+void          init_image(SDL_Renderer *renderer, texture_t *destination, const char *path) {
+  SDL_Surface   *tmp = NULL;
+  SDL_Rect      rect;
+
+  if (destination == NULL) {
+    DEBUG_MSG("destination image NULL");
+    exit(EXIT_FAILURE);
+  }
+
+  // We create a surface
+  if ((tmp = IMG_Load(path)) == NULL) {
+    DEBUG_MSG("IMG_Load Failed");
+    exit(EXIT_FAILURE);
+  }
+
+  // we select the transparent color // sdl bmp cannot handle transparency, so we set a custom 'green screen': 255 0 255 magenta
+  // SDL_SetColorKey(tmp, SDL_TRUE, SDL_MapRGB(tmp->format, 255, 0, 255));
+
+  // We create a texture from the surface
+  if ((destination->texture = SDL_CreateTextureFromSurface(renderer, tmp)) == NULL) {
+    DEBUG_MSG("SDL_Texture from surface Failed");
+    exit(EXIT_FAILURE);
+  }
+  SDL_FreeSurface(tmp);
+
+  // Uint8 alpha = 0x7F;
+  // Sets the alpha into the texture.
+  // SDL_SetTextureAlphaMod(destination->texture, alpha);
+
+  SDL_QueryTexture(destination->texture, NULL, NULL, &rect.w, &rect.h);
+  destination->tile_w = rect.w;
+  destination->tile_h = rect.h;
+
+  destination->num_tiles_x = -1;
+  destination->num_tiles_y = -1;
+  destination->props = NULL;
+}
+
+void          free_texture_image(texture_t *texture) {
+  if (texture != NULL) {
+    SDL_DestroyTexture(texture->texture);
+  }
+  free(texture);
 }
 
 void          free_texture(texture_t *texture) {

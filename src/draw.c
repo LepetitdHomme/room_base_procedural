@@ -150,7 +150,7 @@ void          draw_update_scroll(state_t *state) {
 void          draw_compute_screen_sizes(state_t *state) {
   // take specific distance rect before and after player = ZOOM
   if (state->zoom.x == -1) {
-    state->zoom.x = 15; // clamped in inputs
+    state->zoom.x = 12; // clamped in inputs
   }
   // compute the final tile size based on WINDOW WIDTH and ZOOM
   state->tile_screen_size = WINDOW_WIDTH / (state->zoom.x * 2);
